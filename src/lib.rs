@@ -3,6 +3,7 @@ extern crate nalgebra as na;
 
 pub mod dynamics;
 pub mod controls;
+pub mod linalg;
 
 #[cfg(test)]
 mod tests {
