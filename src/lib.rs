@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 
 extern crate nalgebra as na;
 
@@ -34,16 +35,16 @@ mod tests {
         let D = B.clone();
 
 
-        let Q = DMatrix::<f32>::identity(2, 2) * 1E-2;
+        let Q = DMatrix::<f32>::identity(2, 2) * 1E-1;
         let R = DMatrix::from_vec(1,1, vec![1.]);
 
-        // LinearSystem owns the dynamics model
-        let mut double_integrator = LinearSystem::new(A, B, C, D);
+        // LinearSystem owns the dynamics matrices
+        let double_integrator = LinearSystem::new(A, B, C, D);
         // LQR borrows the dynamics model
-        let mut lqr = LQR::new(&double_integrator.A, &double_integrator.B, &Q, &R);
+        let lqr = LQR::new(&double_integrator.A, &double_integrator.B, &Q, &R);
 
         let mut x = DVector::from_vec(vec![10.,10.]);
-        let (K, P) = lqr.solve();
+        let (K, _P) = lqr.solve();
         for _ in 0..10 {
             let u = -&K * &x;
             x = double_integrator.solve(&x, Some(&u));

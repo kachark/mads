@@ -1,11 +1,11 @@
 
-use na::{DMatrix, DVector};
+use na::DMatrix;
 
 use crate::linalg;
 
+/// Continuous Infinite-Horizon Linear Quadratic Regulator
 pub struct LinearQuadraticRegulator<'a> {
 
-    // TODO maybe just have a reference to some dynamics
     A: &'a DMatrix<f32>,
     B: &'a DMatrix<f32>,
     R: &'a DMatrix<f32>,
@@ -33,6 +33,7 @@ impl<'a> LinearQuadraticRegulator<'a> {
 
     }
 
+    /// Returns LQR gain and solution to the Continuous Algebraic Riccati Equation
     pub fn solve(&self) -> (DMatrix<f32>, DMatrix<f32>) {
 
         let K: DMatrix<f32>;

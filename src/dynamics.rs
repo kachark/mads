@@ -4,6 +4,8 @@ pub mod linear_dynamics {
 
     use na::{DVector, DMatrix};
 
+    /// Defines an interface for solving linear systems of equations according to a State Space
+    /// model
     pub trait StateSpaceRepresentation {
 
         fn solve(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32>;
@@ -11,7 +13,16 @@ pub mod linear_dynamics {
 
     }
 
+    /// Defines a linear system of equations
     pub struct LinearSystem {
+
+        /// A: State/system matrix
+        /// B: Input matrix
+        /// C: Output matrix
+        /// D: Feedforward matrix
+        /// dx: Statespace size
+        /// du: control input size
+
         pub A: DMatrix<f32>,
         pub B: DMatrix<f32>,
         pub C: DMatrix<f32>,
@@ -41,6 +52,9 @@ pub mod linear_dynamics {
 
     impl StateSpaceRepresentation for LinearSystem {
 
+        /// Solves for the State vector - \dot{x} = Ax + Bu
+        /// x: State vector
+        /// u: Control/input vector
         fn solve(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
 
             let result: DVector<f32>;
@@ -54,6 +68,10 @@ pub mod linear_dynamics {
 
         }
 
+        /// Solves for the Output vector - y = Cx + Du
+        /// y: Output vector
+        /// x: State vector
+        /// u: Control/input vector
         fn solve_output(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
 
             let result: DVector<f32>;
@@ -95,7 +113,7 @@ fn test_LinearSystem_solve() {
     let D = B.clone();
 
     // move A, B, C, D into double_integrator
-    let mut double_integrator = linear_dynamics::LinearSystem::new(A, B, C, D);
+    let double_integrator = linear_dynamics::LinearSystem::new(A, B, C, D);
 
     let x = DVector::from_vec(vec![10.,10.]);
     let u = DVector::from_vec(vec![10.]);
@@ -124,7 +142,7 @@ fn test_LinearSystem_solve_output() {
     let B = D.clone();
 
     // move A, B, C, D into double_integrator
-    let mut double_integrator = linear_dynamics::LinearSystem::new(A, B, C, D);
+    let double_integrator = linear_dynamics::LinearSystem::new(A, B, C, D);
 
     let x = DVector::from_vec(vec![
         10.,
