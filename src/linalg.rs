@@ -73,14 +73,22 @@ pub fn solve_discrete_riccati_iterative(A: &DMatrix<f32>,
 
 }
 
-// solve algebraic riccati equation using Hamiltonian
-// fn solve_continuous_riccati_hamiltonian(&self) -> DMatrix<f32> {
+// // solve algebraic riccati equation using Hamiltonian eigenvalue decomposition
+// fn solve_continuous_riccati_eigen(&self) -> DMatrix<f32> {
 
 //     let dx = self.A.shape().0;
 //     let du = self.B.shape().1;
 
 //     let P: DMatrix<f32>;
 //     let hamiltonian = DMatrix::<f32>::zeros(2*dx, 2*du);
+
+//     // TODO iterate over the hamiltonian
+//     // place elements in locations
+//     for i in hamiltonian.shape().0 {
+//         for j in hamiltonian.shape().1 {
+
+//         }
+//     }
 
 //     let R_inv: DMatrix<f32>;
 //     match &self.R.try_inverse() {

@@ -1,67 +1,71 @@
 
-use na::{DVector, DMatrix};
 
-trait StateSpaceRepresentation {
+pub mod linear_dynamics {
 
-    fn solve(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32>;
-    fn solve_output(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32>;
+    use na::{DVector, DMatrix};
 
-}
+    pub trait StateSpaceRepresentation {
 
-pub struct LinearSystem {
-    A: DMatrix<f32>,
-    B: DMatrix<f32>,
-    C: DMatrix<f32>,
-    D: DMatrix<f32>,
-    dx: u32,
-    du: u32
-}
-
-impl LinearSystem {
-
-    fn new(A: DMatrix<f32>, B: DMatrix<f32>, C: DMatrix<f32>, D: DMatrix<f32>) -> Self {
-
-        let dx = A.shape().1 as u32;
-        let du = B.shape().1 as u32;
-
-        Self {
-            A,
-            B,
-            C,
-            D,
-            dx,
-            du
-        }
+        fn solve(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32>;
+        fn solve_output(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32>;
 
     }
 
-}
-
-impl StateSpaceRepresentation for LinearSystem {
-
-    fn solve(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
-
-        let result: DVector<f32>;
-
-        match u {
-            Some(u) => result = &self.A*x + &self.B*u,
-            None => result = &self.A*x
-        }
-
-        result
-
+    pub struct LinearSystem {
+        pub A: DMatrix<f32>,
+        pub B: DMatrix<f32>,
+        pub C: DMatrix<f32>,
+        pub D: DMatrix<f32>,
+        pub dx: u32,
+        pub du: u32
     }
 
-    fn solve_output(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
+    impl LinearSystem {
 
-        let result: DVector<f32>;
+        pub fn new(A: DMatrix<f32>, B: DMatrix<f32>, C: DMatrix<f32>, D: DMatrix<f32>) -> Self {
 
-        match u {
-            Some(u) => result = &self.C*x + &self.D*u,
-            None => result = &self.C*x
+            let dx = A.shape().1 as u32;
+            let du = B.shape().1 as u32;
+
+            Self {
+                A,
+                B,
+                C,
+                D,
+                dx,
+                du
+            }
+
+        }
+    }
+
+    impl StateSpaceRepresentation for LinearSystem {
+
+        fn solve(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
+
+            let result: DVector<f32>;
+
+            match u {
+                Some(u) => result = &self.A*x + &self.B*u,
+                None => result = &self.A*x
+            }
+
+            result
+
         }
 
-        result
+        fn solve_output(&self, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
+
+            let result: DVector<f32>;
+
+            match u {
+                Some(u) => result = &self.C*x + &self.D*u,
+                None => result = &self.C*x
+            }
+
+            result
+
+        }
 
     }
 
@@ -71,6 +75,10 @@ impl StateSpaceRepresentation for LinearSystem {
 
 #[test]
 fn test_LinearSystem_solve() {
+
+    // import StateSpaceRepresentation trait to access related methods
+    use linear_dynamics::StateSpaceRepresentation;
+    use na::{DVector, DMatrix};
 
     // generate row-major matrices
     let A = DMatrix::from_row_slice(2,2, &[
@@ -87,7 +95,7 @@ fn test_LinearSystem_solve() {
     let D = B.clone();
 
     // move A, B, C, D into double_integrator
-    let mut double_integrator = LinearSystem::new(A, B, C, D);
+    let mut double_integrator = linear_dynamics::LinearSystem::new(A, B, C, D);
 
     let x = DVector::from_vec(vec![10.,10.]);
     let u = DVector::from_vec(vec![10.]);
@@ -104,6 +112,10 @@ fn test_LinearSystem_solve() {
 #[test]
 fn test_LinearSystem_solve_output() {
 
+    // import StateSpaceRepresentation trait to access related methods
+    use linear_dynamics::StateSpaceRepresentation;
+    use na::{DVector, DMatrix};
+
     let C = DMatrix::from_row_slice(1, 2, &[
         1.,0.
     ]);
@@ -112,7 +124,7 @@ fn test_LinearSystem_solve_output() {
     let B = D.clone();
 
     // move A, B, C, D into double_integrator
-    let mut double_integrator = LinearSystem::new(A, B, C, D);
+    let mut double_integrator = linear_dynamics::LinearSystem::new(A, B, C, D);
 
     let x = DVector::from_vec(vec![
         10.,

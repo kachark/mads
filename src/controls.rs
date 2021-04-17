@@ -3,19 +3,19 @@ use na::{DMatrix, DVector};
 
 use crate::linalg;
 
-struct LinearQuadraticRegulator {
+pub struct LinearQuadraticRegulator<'a> {
 
     // TODO maybe just have a reference to some dynamics
-    A: DMatrix<f32>,
-    B: DMatrix<f32>,
-    R: DMatrix<f32>,
-    Q: DMatrix<f32>
+    A: &'a DMatrix<f32>,
+    B: &'a DMatrix<f32>,
+    R: &'a DMatrix<f32>,
+    Q: &'a DMatrix<f32>
 
 }
 
-impl LinearQuadraticRegulator {
+impl<'a> LinearQuadraticRegulator<'a> {
 
-    fn new(A: DMatrix<f32>, B: DMatrix<f32>, Q: DMatrix<f32>, R: DMatrix<f32>) -> Self {
+    pub fn new(A: &'a DMatrix<f32>, B: &'a DMatrix<f32>, Q: &'a DMatrix<f32>, R: &'a DMatrix<f32>) -> Self {
 
         // TODO assert correct sizes
         assert_eq!(A.shape().0, A.shape().1);
@@ -33,7 +33,7 @@ impl LinearQuadraticRegulator {
 
     }
 
-    fn solve(&self) -> (DMatrix<f32>, DMatrix<f32>) {
+    pub fn solve(&self) -> (DMatrix<f32>, DMatrix<f32>) {
 
         let K: DMatrix<f32>;
         let P: DMatrix<f32>;
@@ -44,7 +44,7 @@ impl LinearQuadraticRegulator {
         let mut Rinv = self.R.clone_owned();
         Rinv.try_inverse_mut();
 
-        K = -Rinv*self.B.transpose()*&P;
+        K = Rinv*self.B.transpose()*&P;
 
         (K, P)
 
@@ -72,7 +72,7 @@ fn test_LinearQuadraticRegulator_solve() {
     let Q = DMatrix::<f32>::identity(2, 2);
     let R = DMatrix::from_vec(1,1, vec![1.]);
 
-    let controller = LinearQuadraticRegulator::new(A, B, Q, R);
+    let controller = LinearQuadraticRegulator::new(&A, &B, &Q, &R);
 
     let (K, P) = controller.solve();
 
