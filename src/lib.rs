@@ -1,10 +1,13 @@
 #![allow(non_snake_case)]
 
 extern crate nalgebra as na;
+extern crate lapack;
+extern crate lapack_src;
 
 pub mod dynamics;
 pub mod controls;
 pub mod linalg;
+pub mod util;
 
 #[cfg(test)]
 mod tests {
@@ -33,7 +36,6 @@ mod tests {
 
         let C = A.clone();
         let D = B.clone();
-
 
         let Q = DMatrix::<f32>::identity(2, 2) * 1E-1;
         let R = DMatrix::from_vec(1,1, vec![1.]);
