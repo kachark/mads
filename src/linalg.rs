@@ -2,7 +2,7 @@
 use na::DMatrix;
 use lapack::{Select2F32, sgees};
 
-use crate::util::{hcombine, vcombine, MatrixCompareError, print_matrix};
+use crate::util::{block, hcombine, vcombine, MatrixCompareError, print_matrix};
 
 /// Iterative solver for Algebraic Riccati Equation for continuous models
 pub fn solve_continuous_riccati_iterative(A: &DMatrix<f32>,
@@ -117,8 +117,8 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
     print_matrix(&hamiltonian); // looks good here
     println!("**************");
 
-    let mut u11 = DMatrix::<f32>::zeros(n,n);
-    let mut u21 = DMatrix::<f32>::zeros(n,n);
+    // let mut u11 = DMatrix::<f32>::zeros(n,n);
+    // let mut u21 = DMatrix::<f32>::zeros(n,n);
 
     // manual stable eigenvalue/eigenvector extraction
     // let eigenvectors = hamiltonian.clone().symmetric_eigen().eigenvectors;
@@ -172,28 +172,58 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
     //
 
     // use LAPACK to compute ordered real schur decomposition of hamiltonian
-    let (nrows, ncols) = hamiltonian.shape();
-    extern "C" fn selectfcn(wr_j: *const f32, wr_i: *const f32) -> i32 { 1 } // TODO
+
+    // C function to sort only the eigenvalues with a negative real part
+    // "An eigenvalue wr(j)+sqrt(-1)wi(j) is selected if select(wr(j), wi(j)) is true"
+    // wr_j: real part of the eigenvalue
+    // wi_j: imaginary part of eigenvalue
+    extern "C" fn selectfcn(wr_j: *const f32, _wi_j: *const f32) -> i32 { 
+        unsafe {
+            match wr_j.as_ref() { // dereference raw pointer
+                Some(val) => (*val < 0.0) as i32,
+                None => 0
+            }
+       }
+    }
+
+    println!("{:?}", hamiltonian.eigenvalues());
+
+
+    let (nrows, _ncols) = hamiltonian.shape();
     let select: Select2F32 = Some(selectfcn);
-    let mut a = hamiltonian.as_mut_slice();
-    let lda = n as i32;
+    // let mut test = hamiltonian.clone().transpose();
+    let lda = nrows as i32;
     let mut sdim = 0;
-    let mut wr = Vec::<f32>::with_capacity(n);
-    let mut wi = Vec::<f32>::with_capacity(n);
-    let ldvs = n as i32;
-    let mut vs =  Vec::<f32>::with_capacity(ldvs as usize);
-    let mut work = Vec::<f32>::with_capacity(n);
-    let lwork = 3*n as i32;
-    let mut bwork = Vec::<i32>::with_capacity(n);
+    // let mut wr = vec![0.0];
+    // let mut wi = vec![0.0];
+    // let ldvs = nrows as i32;
+    // let mut vs = vec![0.0];
+    let mut wr = Vec::with_capacity(nrows);
+    unsafe { wr.set_len(nrows) };
+    let mut wi = Vec::with_capacity(nrows);
+    unsafe { wi.set_len(nrows) };
+    let ldvs = nrows as i32;
+    let mut vs = Vec::with_capacity((ldvs as usize)*nrows);
+    unsafe { vs.set_len((ldvs as usize) * nrows) };
+    let mut work = Vec::with_capacity(1 as usize);
+    unsafe { work.set_len(1 as usize) };
+    let mut bwork = Vec::with_capacity(nrows);
+    unsafe { bwork.set_len(nrows) };
+    let lwork = -1;
+    // let mut work = vec![0.0];
+    // let mut bwork = vec![0];
+
     let mut info = 0;
 
+    // Compute the optimal size of the workspace array
+    // Z*T*Z^H = A
     unsafe {
         sgees(
             b'V',
             b'S',
             select,
-            n as i32,
-            &mut a,
+            nrows as i32,
+            hamiltonian.as_mut_slice(),
             lda,
             &mut sdim,
             &mut wr,
@@ -207,17 +237,82 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
         );
     }
 
+    println!("lwork:");
+    println!("{:?}", work[0]);
+
+    let mut test = hamiltonian.clone().transpose();
+    let mut a = test.as_mut_slice(); // looks like this outputs in col-major. make sure the slice is row-major
+    // let mut a = hamiltonian.as_mut_slice();
+    println!("a:");
+    println!("{:?}", &hamiltonian.as_slice());
+    let lda = nrows as i32;
+    let mut sdim = 0;
+    let lwork = work[0] as i32;
+    let mut wr = Vec::with_capacity(nrows);
+    unsafe { wr.set_len(nrows) };
+    let mut wi = Vec::with_capacity(nrows);
+    unsafe { wi.set_len(nrows) };
+    let ldvs = nrows as i32;
+    let mut vs = Vec::with_capacity((ldvs as usize)*_ncols);
+    unsafe { vs.set_len((ldvs as usize) * _ncols) };
+    let mut work = Vec::with_capacity(lwork as usize);
+    unsafe { work.set_len(lwork as usize) };
+    let mut bwork = Vec::with_capacity(nrows);
+    unsafe { bwork.set_len(nrows) };
+    let mut info = 0;
 
 
+    unsafe {
+        sgees(
+            b'V',
+            b'S',
+            select,
+            nrows as i32,
+            hamiltonian.as_mut_slice(),
+            lda,
+            &mut sdim,
+            wr.as_mut_slice(),
+            wi.as_mut_slice(),
+            vs.as_mut_slice(),
+            ldvs,
+            &mut work,
+            lwork,
+            &mut bwork,
+            &mut info
+        );
+    }
 
+    println!("a: {:?}", a);
+    println!("vs: {:?}", vs);
+    println!("sdim: {:?}", sdim);
+    println!("wr:");
+    println!("{:?}", wr);
+    println!("wi:");
+    println!("{:?}", wi);
+    println!("work:");
+    println!("{:?}", work); // 68
+    println!("lwork:");
+    println!("{:?}", lwork);
+    println!("bwork:");
+    println!("{:?}", bwork);
+    println!("info:");
+    println!("{:?}", info);
 
+    println!("Z");
+    let Z = DMatrix::from_column_slice(nrows, _ncols, &a);
+    print_matrix(&Z);
+    println!("T");
+    let T = DMatrix::from_column_slice(nrows, _ncols, &vs);
+    print_matrix(&T);
+
+    let u11 = block((0,0), (1,1), &T);
+    let u21 = block((2,0), (3,1), &T);
 
     println!("u11");
     print_matrix(&u11);
     println!("u21");
     print_matrix(&u21);
 
-    // let u11_inv = u11.clone().try_inverse().unwrap();
     let u11_inv = u11.clone().try_inverse().unwrap();
 
     // TODO solve this as a linear system
@@ -325,6 +420,7 @@ fn test_solve_continuous_riccati_eigen() {
                                 6., 4.
     ]);
     let R = DMatrix::from_vec(1,1, vec![1.]);
+
 
     let P = solve_continuous_riccati_eigen(&A, &B, &Q, &R);
 
