@@ -4,6 +4,8 @@ use lapack::{Select2F32, sgees};
 
 use crate::util::{block, hcombine, vcombine, MatrixCompareError, print_matrix};
 
+// TODO error type for linalg failures?
+
 /// Iterative solver for Algebraic Riccati Equation for continuous models
 pub fn solve_continuous_riccati_iterative(A: &DMatrix<f32>,
                            B: &DMatrix<f32>,
@@ -75,9 +77,9 @@ pub fn solve_discrete_riccati_iterative(A: &DMatrix<f32>,
 
 }
 
+// TODO return error on failure
 /// solve algebraic riccati equation using Hamiltonian eigenvalue decomposition
 /// Reference: "A Schur Method for Solving Algebraic Riccati Equations" - Alan J. Laub
-/// Broken
 fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
                                   B: &DMatrix<f32>,
                                   Q: &DMatrix<f32>,
@@ -93,7 +95,7 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
     let BRinvBT = B*Rinv*B.transpose(); // matrix operations perform a move
     let AT = A.transpose();
 
-    // multiplication of DMatrix returns DMatrix not a borrow
+    // multiplication of DMatrix returns DMatrix, not a borrow
     // row-major listing matrices to be placed into hamiltonian
     // let matrices: [&DMatrix<f32>; 4] = [A, &BRinvBT, &(-Q), &AT];
 
@@ -112,66 +114,8 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
         Err(MatrixCompareError) => DMatrix::<f32>::zeros(2*dx, 2*dx)
     };
 
-    let n = hamiltonian.shape().0 / 2; // U is shaped 2n x 2n
-
-    print_matrix(&hamiltonian); // looks good here
-    println!("**************");
-
-    // let mut u11 = DMatrix::<f32>::zeros(n,n);
-    // let mut u21 = DMatrix::<f32>::zeros(n,n);
-
-    // manual stable eigenvalue/eigenvector extraction
-    // let eigenvectors = hamiltonian.clone().symmetric_eigen().eigenvectors;
-    // let eigenvalues = hamiltonian.clone().eigenvalues(); // row vector
-    // // println!("{:?}", hamiltonian.clone().symmetric_eigen().eigenvalues);
-    let mut U = DMatrix::<f32>::zeros(2*n, n);
-    // let mut eigvec_list = Vec::<Vec<f32>>::new();
-    // for (j, eig) in eigenvalues.unwrap().iter().enumerate() {
-    //     println!("{:?}", eig);
-    //     if eig < &0. {
-    //         let mut eigvec = Vec::new();
-    //         for i in 0..2*n {
-    //             // println!("{:?}", eigenvectors[(i,j)]);
-    //             // pull out the eigenvector corresponding to the stable eigenvalues
-    //             eigvec.push(eigenvectors[(i,j)]);
-    //         }
-    //         eigvec_list.push(eigvec);
-    //     }
-
-    // }
-
-    // println!("{:?}", eigvec_list);
-    // // place eigenvector values into U
-    // for (j, eigvec) in eigvec_list.iter().enumerate() {
-    //     for (i, val) in eigvec.iter().enumerate() {
-    //         // println!("{:?}", (i,j));
-    //         U[(i,j)] = *val;
-    //     }
-    // }
-
-
-    // perform Real Schur Decomposition (not a general schur decomposition)
-    // Schur(hamiltonian) aka eigendecomposition of hamiltonian doesn't have eigenvalues on the
-    // let schur = hamiltonian.schur();
-    // let bub = hamiltonian.clone_owned();
-    // let schur = hamiltonian.schur();
-
-    // let (U, _Z) = schur.unpack();
-    // need schur decomposition where upper eigenvalues are sorted by those in the left-hand plane
-    // print_matrix(&U); // looks good here
-    // println!("**************");
-    // print_matrix(&_Z); // looks good here
-    // println!("**************");
-    // print_matrix(&_Z); // looks good here
-    // println!("**************");
-
-    //
-
-    // The following works if schur decomposition can be ordered by lhp eigenvalues
-    // indices defining U11 and U21 block matrices in U
-    //
-
     // use LAPACK to compute ordered real schur decomposition of hamiltonian
+    // Ordering ensures eigenvalues placed in top left of quasi-upper triangular matrix are stable / negative
 
     // C function to sort only the eigenvalues with a negative real part
     // "An eigenvalue wr(j)+sqrt(-1)wi(j) is selected if select(wr(j), wi(j)) is true"
@@ -186,37 +130,31 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
        }
     }
 
-    println!("{:?}", hamiltonian.eigenvalues());
-
-
     let (nrows, _ncols) = hamiltonian.shape();
     let select: Select2F32 = Some(selectfcn);
-    // let mut test = hamiltonian.clone().transpose();
     let lda = nrows as i32;
     let mut sdim = 0;
-    // let mut wr = vec![0.0];
-    // let mut wi = vec![0.0];
-    // let ldvs = nrows as i32;
-    // let mut vs = vec![0.0];
+    // wr
     let mut wr = Vec::with_capacity(nrows);
     unsafe { wr.set_len(nrows) };
+    // wi
     let mut wi = Vec::with_capacity(nrows);
     unsafe { wi.set_len(nrows) };
+    // vs
     let ldvs = nrows as i32;
     let mut vs = Vec::with_capacity((ldvs as usize)*nrows);
     unsafe { vs.set_len((ldvs as usize) * nrows) };
+    // rwork
     let mut work = Vec::with_capacity(1 as usize);
     unsafe { work.set_len(1 as usize) };
+    // bwork
     let mut bwork = Vec::with_capacity(nrows);
     unsafe { bwork.set_len(nrows) };
     let lwork = -1;
-    // let mut work = vec![0.0];
-    // let mut bwork = vec![0];
 
     let mut info = 0;
 
     // Compute the optimal size of the workspace array
-    // Z*T*Z^H = A
     unsafe {
         sgees(
             b'V',
@@ -237,31 +175,23 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
         );
     }
 
-    println!("lwork:");
-    println!("{:?}", work[0]);
-
-    let mut test = hamiltonian.clone().transpose();
-    let mut a = test.as_mut_slice(); // looks like this outputs in col-major. make sure the slice is row-major
-    // let mut a = hamiltonian.as_mut_slice();
-    println!("a:");
-    println!("{:?}", &hamiltonian.as_slice());
     let lda = nrows as i32;
     let mut sdim = 0;
-    let lwork = work[0] as i32;
+    let lwork = work[0] as i32; // retrieve optimal workspace size
     let mut wr = Vec::with_capacity(nrows);
     unsafe { wr.set_len(nrows) };
     let mut wi = Vec::with_capacity(nrows);
     unsafe { wi.set_len(nrows) };
     let ldvs = nrows as i32;
-    let mut vs = Vec::with_capacity((ldvs as usize)*_ncols);
-    unsafe { vs.set_len((ldvs as usize) * _ncols) };
+    let mut vs = Vec::with_capacity((ldvs as usize) * nrows);
+    unsafe { vs.set_len((ldvs as usize) * nrows) };
     let mut work = Vec::with_capacity(lwork as usize);
     unsafe { work.set_len(lwork as usize) };
     let mut bwork = Vec::with_capacity(nrows);
     unsafe { bwork.set_len(nrows) };
     let mut info = 0;
 
-
+    // Compute the Schur Factorization
     unsafe {
         sgees(
             b'V',
@@ -282,43 +212,22 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
         );
     }
 
-    println!("a: {:?}", a);
-    println!("vs: {:?}", vs);
-    println!("sdim: {:?}", sdim);
-    println!("wr:");
-    println!("{:?}", wr);
-    println!("wi:");
-    println!("{:?}", wi);
-    println!("work:");
-    println!("{:?}", work); // 68
-    println!("lwork:");
-    println!("{:?}", lwork);
-    println!("bwork:");
-    println!("{:?}", bwork);
-    println!("info:");
-    println!("{:?}", info);
-
-    println!("Z");
-    let Z = DMatrix::from_column_slice(nrows, _ncols, &a);
-    print_matrix(&Z);
-    println!("T");
+    // println!("Z"); //  Real-schur form matrix
+    // print_matrix(&hamiltonian);
+    // println!("T"); // unitary matrix
     let T = DMatrix::from_column_slice(nrows, _ncols, &vs);
-    print_matrix(&T);
+    // print_matrix(&T);
+
+    // println!("T Z T^T");
+    // print_matrix(&(&T * &hamiltonian * &T.transpose()));
 
     let u11 = block((0,0), (1,1), &T);
     let u21 = block((2,0), (3,1), &T);
 
-    println!("u11");
-    print_matrix(&u11);
-    println!("u21");
-    print_matrix(&u21);
-
+    // TODO handle optional safely
     let u11_inv = u11.clone().try_inverse().unwrap();
 
-    // TODO solve this as a linear system
-    // P*u11 = u21
     P = u21 * u11_inv;
-
     P
 
 }
