@@ -1,17 +1,26 @@
 
+use std::fmt;
+
 use na::DMatrix;
 use lapack::{Select2F32, sgees};
 
 use crate::util::{block, hcombine, vcombine, MatrixCompareError, print_matrix};
 
-// TODO error type for linalg failures?
+#[derive(Debug, Clone)]
+pub struct LinAlgError;
+
+impl fmt::Display for LinAlgError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Linear algebra error")
+    }
+}
 
 /// Iterative solver for Algebraic Riccati Equation for continuous models
 pub fn solve_continuous_riccati_iterative(A: &DMatrix<f32>,
-                           B: &DMatrix<f32>,
-                           Q: &DMatrix<f32>,
-                           R: &DMatrix<f32>,
-                           dt: f32, iter_max: u32, tolerance: f32) -> DMatrix<f32> {
+                                          B: &DMatrix<f32>,
+                                          Q: &DMatrix<f32>,
+                                          R: &DMatrix<f32>,
+                                          dt: f32, iter_max: u32, tolerance: f32) -> Result<DMatrix<f32>, LinAlgError> {
 
     let mut P = Q.clone_owned();
 
@@ -19,8 +28,11 @@ pub fn solve_continuous_riccati_iterative(A: &DMatrix<f32>,
 
     let AT = A.transpose();
     let BT = B.transpose();
+
     let mut Rinv = R.clone_owned();
-    Rinv.try_inverse_mut();
+    if !Rinv.try_inverse_mut() {
+        return Err(LinAlgError);
+    }
 
     let mut diff: f32;
     for i in 0..iter_max {
@@ -36,16 +48,16 @@ pub fn solve_continuous_riccati_iterative(A: &DMatrix<f32>,
         }
     }
 
-    P
+    Ok(P)
 
 }
 
 /// Iterative solver for Algebraic Riccati Equation for discrete models
 pub fn solve_discrete_riccati_iterative(A: &DMatrix<f32>,
-                           B: &DMatrix<f32>,
-                           Q: &DMatrix<f32>,
-                           R: &DMatrix<f32>,
-                           iter_max: u32, tolerance: f32) -> DMatrix<f32> {
+                                        B: &DMatrix<f32>,
+                                        Q: &DMatrix<f32>,
+                                        R: &DMatrix<f32>,
+                                        iter_max: u32, tolerance: f32) -> Result<DMatrix<f32>, LinAlgError> {
 
     let mut P = Q.clone_owned();
 
@@ -53,8 +65,11 @@ pub fn solve_discrete_riccati_iterative(A: &DMatrix<f32>,
 
     let AT = A.transpose();
     let BT = B.transpose();
+
     let mut Rinv = R.clone_owned();
-    Rinv.try_inverse_mut();
+    if !Rinv.try_inverse_mut() {
+        return Err(LinAlgError);
+    }
 
     let mut diff: f32;
     for i in 0..iter_max {
@@ -73,17 +88,16 @@ pub fn solve_discrete_riccati_iterative(A: &DMatrix<f32>,
         }
     }
 
-    P
+    Ok(P)
 
 }
 
-// TODO return error on failure
 /// solve algebraic riccati equation using Hamiltonian eigenvalue decomposition
 /// Reference: "A Schur Method for Solving Algebraic Riccati Equations" - Alan J. Laub
-fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
-                                  B: &DMatrix<f32>,
-                                  Q: &DMatrix<f32>,
-                                  R: &DMatrix<f32>) -> DMatrix<f32> {
+pub fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
+                                      B: &DMatrix<f32>,
+                                      Q: &DMatrix<f32>,
+                                      R: &DMatrix<f32>) -> Result<DMatrix<f32>, LinAlgError> {
 
     let dx = A.shape().0;
 
@@ -91,7 +105,10 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
 
     let mut Rinv = DMatrix::<f32>::zeros(R.shape().0, R.shape().1);
     let r = R.clone_owned();
-    na::linalg::try_invert_to(r, &mut Rinv);
+    if !na::linalg::try_invert_to(r, &mut Rinv) {
+        return Err(LinAlgError);
+    }
+
     let BRinvBT = B*Rinv*B.transpose(); // matrix operations perform a move
     let AT = A.transpose();
 
@@ -101,17 +118,17 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
 
     let upper_block = match hcombine(A, &(-BRinvBT)) {
         Ok(concatenated) => concatenated, // assign concatenated to upper block
-        Err(MatrixCompareError) => DMatrix::<f32>::zeros(2*dx, 2*dx)
+        Err(MatrixCompareError) => return Err(LinAlgError)
     };
 
     let lower_block = match hcombine(&(-Q), &(-AT)) {
         Ok(concatenated) => concatenated, // assign concatenated to lower block
-        Err(MatrixCompareError) => DMatrix::<f32>::zeros(2*dx, 2*dx)
+        Err(MatrixCompareError) => return Err(LinAlgError)
     };
 
     let mut hamiltonian = match vcombine(&upper_block, &lower_block) {
         Ok(concatenated) => concatenated, // assign concatenated to hamiltonian
-        Err(MatrixCompareError) => DMatrix::<f32>::zeros(2*dx, 2*dx)
+        Err(MatrixCompareError) => return Err(LinAlgError)
     };
 
     // use LAPACK to compute ordered real schur decomposition of hamiltonian
@@ -175,6 +192,10 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
         );
     }
 
+    if info == -1 {
+        return Err(LinAlgError);
+    }
+
     let lda = nrows as i32;
     let mut sdim = 0;
     let lwork = work[0] as i32; // retrieve optimal workspace size
@@ -212,6 +233,10 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
         );
     }
 
+    if info == -1 {
+        return Err(LinAlgError);
+    }
+
     // println!("Z"); //  Real-schur form matrix
     // print_matrix(&hamiltonian);
     // println!("T"); // unitary matrix
@@ -224,11 +249,13 @@ fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
     let u11 = block((0,0), (1,1), &T);
     let u21 = block((2,0), (3,1), &T);
 
-    // TODO handle optional safely
-    let u11_inv = u11.clone().try_inverse().unwrap();
+    let u11_inv = match u11.clone().try_inverse() {
+        Some(inverse) => inverse,
+        None => return Err(LinAlgError)
+    };
 
     P = u21 * u11_inv;
-    P
+    Ok(P)
 
 }
 
@@ -255,8 +282,10 @@ fn test_solve_continuous_riccati_iterative() {
     let Q = DMatrix::<f32>::identity(2, 2);
     let R = DMatrix::from_vec(1,1, vec![1.]);
 
-    let P = solve_continuous_riccati_iterative(&A, &B, &Q, &R,
-                                            0.001, 100000, 1E-5);
+    let P = match solve_continuous_riccati_iterative(&A, &B, &Q, &R, 0.001, 100000, 1E-5) {
+        Ok(result) => result,
+        Err(_) => DMatrix::<f32>::zeros(2,2)
+    };
 
     let P_true = DMatrix::from_row_slice(2,2, &[
                             3.0_f32.sqrt(), 1.,
@@ -295,8 +324,10 @@ fn test_solve_discrete_riccati_iterative() {
                               3., 1.
     ]);
 
-    let P = solve_discrete_riccati_iterative(&A, &B, &Q, &R,
-                            100000, 1E-5);
+    let P = match solve_discrete_riccati_iterative(&A, &B, &Q, &R, 100000, 1E-5) {
+        Ok(result) => result,
+        Err(_) => DMatrix::<f32>::zeros(2,2)
+    };
 
     let P_true = DMatrix::from_row_slice(2,2, &[
                             -4.0, -4.0,
@@ -330,8 +361,10 @@ fn test_solve_continuous_riccati_eigen() {
     ]);
     let R = DMatrix::from_vec(1,1, vec![1.]);
 
-
-    let P = solve_continuous_riccati_eigen(&A, &B, &Q, &R);
+    let P = match solve_continuous_riccati_eigen(&A, &B, &Q, &R) {
+        Ok(result) => result,
+        Err(_) => DMatrix::<f32>::zeros(2,2)
+    };
 
     let P_true = DMatrix::from_row_slice(2,2, &[
                             21.72792206, 14.48528137,

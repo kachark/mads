@@ -46,7 +46,11 @@ mod tests {
         let lqr = LQR::new(&double_integrator.A, &double_integrator.B, &Q, &R);
 
         let mut x = DVector::from_vec(vec![10.,10.]);
-        let (K, _P) = lqr.solve();
+        let (K, _P) = match lqr.solve(){
+            Ok( (value1, value2) ) => (value1, value2),
+            Err(_) => (DMatrix::<f32>::zeros(1,1), DMatrix::<f32>::zeros(1,1))
+        };
+
         for _ in 0..10 {
             let u = -&K * &x;
             x = double_integrator.solve(&x, Some(&u));

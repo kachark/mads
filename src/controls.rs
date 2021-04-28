@@ -1,7 +1,17 @@
 
+use std::fmt;
 use na::DMatrix;
 
-use crate::linalg;
+use crate::linalg::*;
+
+#[derive(Clone, Debug)]
+pub struct ControlError;
+
+impl fmt::Display for ControlError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Control error")
+    }
+}
 
 /// Continuous Infinite-Horizon Linear Quadratic Regulator
 pub struct LinearQuadraticRegulator<'a> {
@@ -34,20 +44,22 @@ impl<'a> LinearQuadraticRegulator<'a> {
     }
 
     /// Returns LQR gain and solution to the Continuous Algebraic Riccati Equation
-    pub fn solve(&self) -> (DMatrix<f32>, DMatrix<f32>) {
+    pub fn solve(&self) -> Result<(DMatrix<f32>, DMatrix<f32>), ControlError> {
 
         let K: DMatrix<f32>;
         let P: DMatrix<f32>;
 
-        P = linalg::solve_continuous_riccati_iterative(&self.A, &self.B, &self.Q, &self.R,
-                                0.001, 100000, 1E-5);
+        P = match solve_continuous_riccati_eigen(&self.A, &self.B, &self.Q, &self.R) {
+            Ok(result) => result,
+            Err(LinAlgError) => return Err(ControlError)
+        };
 
         let mut Rinv = self.R.clone_owned();
         Rinv.try_inverse_mut();
 
         K = Rinv*self.B.transpose()*&P;
 
-        (K, P)
+        Ok( (K, P) )
 
     }
 
@@ -75,7 +87,10 @@ fn test_LinearQuadraticRegulator_solve() {
 
     let controller = LinearQuadraticRegulator::new(&A, &B, &Q, &R);
 
-    let (K, P) = controller.solve();
+    let (K, P) = match controller.solve() {
+        Ok( (value1, value2) ) => (value1, value2),
+        _ => (DMatrix::<f32>::zeros(2,2), DMatrix::<f32>::zeros(2,2))
+    };
 
     let P_true = DMatrix::from_row_slice(2,2, &[
                             3.0_f32.sqrt(), 1.,
