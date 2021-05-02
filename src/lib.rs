@@ -5,9 +5,9 @@ extern crate lapack;
 extern crate lapack_src;
 
 pub mod dynamics;
-pub mod controls;
-pub mod linalg;
+pub mod math;
 pub mod util;
+pub mod physics;
 
 #[cfg(test)]
 mod tests {
@@ -20,8 +20,8 @@ mod tests {
     fn test_dynamics() {
 
         use super::na::{DMatrix, DVector};
-        use super::dynamics::linear_dynamics::*;
-        use super::controls::LinearQuadraticRegulator as LQR;
+        use super::dynamics::linear_system::linear_dynamics::*;
+        use super::dynamics::controls::lqr::LinearQuadraticRegulator as LQR;
 
         // generate row-major matrices
         let A = DMatrix::from_row_slice(2,2, &[

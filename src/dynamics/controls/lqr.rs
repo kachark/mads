@@ -2,7 +2,7 @@
 use std::fmt;
 use na::DMatrix;
 
-use crate::linalg::*;
+use crate::math::riccati::*;
 
 #[derive(Clone, Debug)]
 pub struct ControlError;
