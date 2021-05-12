@@ -3,11 +3,14 @@
 extern crate nalgebra as na;
 extern crate lapack;
 extern crate lapack_src;
+extern crate serde_json;
 
 pub mod dynamics;
 pub mod math;
 pub mod util;
 pub mod physics;
+pub mod scene;
+pub mod ecs;
 
 #[cfg(test)]
 mod tests {
