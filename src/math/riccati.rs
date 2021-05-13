@@ -29,26 +29,29 @@ pub fn solve_continuous_riccati_iterative(A: &DMatrix<f32>,
     let AT = A.transpose();
     let BT = B.transpose();
 
-    let mut Rinv = R.clone_owned();
-    if !Rinv.try_inverse_mut() {
-        return Err(LinAlgError);
-    }
+    if let Some(Rinv) = R.clone().try_inverse() {
 
-    let mut diff: f32;
-    for i in 0..iter_max {
+        let mut diff: f32;
+        for i in 0..iter_max {
 
-        P_next = &P + ((&P * A) + (&AT * &P) - (&P*B*&Rinv*&BT*&P) + Q) * dt;
+            P_next = &P + ((&P * A) + (&AT * &P) - (&P*B*&Rinv*&BT*&P) + Q) * dt;
 
-        diff = (&P_next - &P).amax();
-        P = P_next;
+            diff = (&P_next - &P).amax();
+            P = P_next;
 
-        if diff < tolerance {
-            println!("{:?}", i);
-            break;
+            if diff < tolerance {
+                println!("{:?}", i);
+                break;
+            }
         }
-    }
 
-    Ok(P)
+        Ok(P)
+
+    } else {
+
+        return Err(LinAlgError);
+
+    }
 
 }
 
@@ -66,15 +69,10 @@ pub fn solve_discrete_riccati_iterative(A: &DMatrix<f32>,
     let AT = A.transpose();
     let BT = B.transpose();
 
-    let mut Rinv = R.clone_owned();
-    if !Rinv.try_inverse_mut() {
-        return Err(LinAlgError);
-    }
-
     let mut diff: f32;
     for i in 0..iter_max {
 
-        let mut RBTPBinv = (R + &BT * &P * B).clone_owned();
+        let mut RBTPBinv = (R + &BT * &P * B).clone();
         RBTPBinv.try_inverse_mut();
 
         P_next = &AT * &P * A - &AT * &P * B * RBTPBinv * &BT * &P * A + Q;
@@ -292,10 +290,12 @@ fn test_solve_continuous_riccati_iterative() {
                             1., 3.0_f32.sqrt()
     ]);
 
-    println!("P: ");
-    print_matrix(&P);
-    println!("P_true: ");
-    print_matrix(&P_true);
+    // println!("P: ");
+    // print_matrix(&P);
+    // println!("P_true: ");
+    // print_matrix(&P_true);
+
+    relative_eq!(P, P_true);
 
 }
 
@@ -334,10 +334,12 @@ fn test_solve_discrete_riccati_iterative() {
                             -4.0, 7.0
     ]);
 
-    println!("P: ");
-    print_matrix(&P);
-    println!("P_true: ");
-    print_matrix(&P_true);
+    // println!("P: ");
+    // print_matrix(&P);
+    // println!("P_true: ");
+    // print_matrix(&P_true);
+
+    relative_eq!(P, P_true);
 
 }
 
@@ -371,10 +373,12 @@ fn test_solve_continuous_riccati_eigen() {
                             14.48528137, 9.65685425
     ]);
 
-    println!("P: ");
-    print_matrix(&P);
-    println!("P_true: ");
-    print_matrix(&P_true);
+//     println!("P: ");
+//     print_matrix(&P);
+//     println!("P_true: ");
+//     print_matrix(&P_true);
+
+    relative_eq!(P, P_true);
 
 }
 

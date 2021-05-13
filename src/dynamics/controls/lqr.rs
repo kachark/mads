@@ -14,18 +14,18 @@ impl fmt::Display for ControlError {
 }
 
 /// Continuous Infinite-Horizon Linear Quadratic Regulator
-pub struct LinearQuadraticRegulator<'a> {
+pub struct LinearQuadraticRegulator {
 
-    A: &'a DMatrix<f32>,
-    B: &'a DMatrix<f32>,
-    R: &'a DMatrix<f32>,
-    Q: &'a DMatrix<f32>
+    A: DMatrix<f32>,
+    B: DMatrix<f32>,
+    R: DMatrix<f32>,
+    Q: DMatrix<f32>
 
 }
 
-impl<'a> LinearQuadraticRegulator<'a> {
+impl LinearQuadraticRegulator {
 
-    pub fn new(A: &'a DMatrix<f32>, B: &'a DMatrix<f32>, Q: &'a DMatrix<f32>, R: &'a DMatrix<f32>) -> Self {
+    pub fn new(A: DMatrix<f32>, B: DMatrix<f32>, Q: DMatrix<f32>, R: DMatrix<f32>) -> Self {
 
         // TODO assert correct sizes
         assert_eq!(A.shape().0, A.shape().1);
@@ -54,12 +54,17 @@ impl<'a> LinearQuadraticRegulator<'a> {
             Err(LinAlgError) => return Err(ControlError)
         };
 
-        let mut Rinv = self.R.clone_owned();
-        Rinv.try_inverse_mut();
+        if let Some(Rinv) = &self.R.clone().try_inverse() {
 
-        K = Rinv*self.B.transpose()*&P;
+            K = Rinv*&self.B.transpose()*&P;
 
-        Ok( (K, P) )
+            Ok( (K, P) )
+
+        } else {
+
+            return Err(ControlError);
+
+        }
 
     }
 
@@ -85,7 +90,7 @@ fn test_LinearQuadraticRegulator_solve() {
     let Q = DMatrix::<f32>::identity(2, 2);
     let R = DMatrix::from_vec(1,1, vec![1.]);
 
-    let controller = LinearQuadraticRegulator::new(&A, &B, &Q, &R);
+    let controller = LinearQuadraticRegulator::new(A, B, Q, R);
 
     let (K, P) = match controller.solve() {
         Ok( (value1, value2) ) => (value1, value2),

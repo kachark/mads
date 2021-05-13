@@ -11,7 +11,7 @@ pub struct UUIDComponent(u32);
 pub struct FullStateComponent(Vec<f32>);
 pub struct CollisionComponent();
 pub struct LinearDynamicsComponent(LinearSystem);
-pub struct LinearControllerComponent<'a>(LinearQuadraticRegulator<'a>); // TODO change to raw data, not borrows
+pub struct LinearControllerComponent(LinearQuadraticRegulator); // TODO change to raw data, not borrows
 
 // Renderable Components
 pub struct ColorComponent(Vec<f32>);

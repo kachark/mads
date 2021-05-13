@@ -1,5 +1,8 @@
 #![allow(non_snake_case)]
 
+#[macro_use]
+extern crate approx;
+
 extern crate nalgebra as na;
 extern crate lapack;
 extern crate lapack_src;
@@ -45,8 +48,7 @@ mod tests {
 
         // LinearSystem owns the dynamics matrices
         let double_integrator = LinearSystem::new(A, B, C, D);
-        // LQR borrows the dynamics model
-        let lqr = LQR::new(&double_integrator.A, &double_integrator.B, &Q, &R);
+        let lqr = LQR::new(double_integrator.A.clone(), double_integrator.B.clone(), Q, R);
 
         let mut x = DVector::from_vec(vec![10.,10.]);
         let (K, _P) = match lqr.solve(){

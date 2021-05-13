@@ -130,9 +130,16 @@ fn test_hconcat() {
 
     let concatenated = hcombine(&lmatrix, &rmatrix);
 
-    print_matrix(&lmatrix);
-    print_matrix(&rmatrix);
-    print_matrix(&concatenated.unwrap());
+    // print_matrix(&lmatrix);
+    // print_matrix(&rmatrix);
+    // print_matrix(&concatenated.unwrap());
+
+    let correct = DMatrix::from_row_slice(2, 3, &[
+                            0., 1., 0.,
+                            0., 0., 1.
+    ]);
+
+    relative_eq!(concatenated.unwrap(), correct); 
 
 }
 
@@ -150,9 +157,17 @@ fn test_vconcat() {
 
     let concatenated = vcombine(&umatrix, &bmatrix);
 
-    print_matrix(&umatrix);
-    print_matrix(&bmatrix);
-    print_matrix(&concatenated.unwrap());
+    // print_matrix(&umatrix);
+    // print_matrix(&bmatrix);
+    // print_matrix(&concatenated.unwrap());
+
+    let correct = DMatrix::from_row_slice(3, 2, &[
+                            0., 1.,
+                            0., 0.,
+                            0., 1.
+    ]);
+
+    relative_eq!(concatenated.unwrap(), correct); 
 
 }
 
@@ -174,10 +189,12 @@ fn test_block() {
                             9., 10.
     ]);
 
-    println!("block: ");
-    print_matrix(&block);
-    println!("true: ");
-    print_matrix(&block_true);
+    // println!("block: ");
+    // print_matrix(&block);
+    // println!("true: ");
+    // print_matrix(&block_true);
+
+    relative_eq!(block, block_true);
 
 }
 
