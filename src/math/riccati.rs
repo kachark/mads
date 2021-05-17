@@ -101,11 +101,10 @@ pub fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
 
     let P: DMatrix<f32>;
 
-    let mut Rinv = DMatrix::<f32>::zeros(R.shape().0, R.shape().1);
-    let r = R.clone_owned();
-    if !na::linalg::try_invert_to(r, &mut Rinv) {
-        return Err(LinAlgError);
-    }
+    let Rinv = match R.clone().try_inverse() {
+        Some(inverse) => inverse,
+        None => return Err(LinAlgError)
+    };
 
     let BRinvBT = B*Rinv*B.transpose(); // matrix operations perform a move
     let AT = A.transpose();
@@ -244,8 +243,9 @@ pub fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
     // println!("T Z T^T");
     // print_matrix(&(&T * &hamiltonian * &T.transpose()));
 
-    let u11 = block((0,0), (1,1), &T);
-    let u21 = block((2,0), (3,1), &T);
+    // Extract submatrices corresponding to stable eigenvectors
+    let u11 = block((0,0), (dx-1,dx-1), &T);
+    let u21 = block((dx,0), (2*dx-1,dx-1), &T);
 
     let u11_inv = match u11.clone().try_inverse() {
         Some(inverse) => inverse,
@@ -253,6 +253,7 @@ pub fn solve_continuous_riccati_eigen(A: &DMatrix<f32>,
     };
 
     P = u21 * u11_inv;
+
     Ok(P)
 
 }
