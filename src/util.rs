@@ -14,6 +14,7 @@ impl fmt::Display for MatrixCompareError {
 }
 
 
+/// Extracts desired block from a matrix
 pub fn block(start: (usize, usize), end: (usize, usize), matrix: &DMatrix<f32>) -> DMatrix<f32> {
 
     //TODO check for start and end valid for matrix
@@ -36,6 +37,7 @@ pub fn block(start: (usize, usize), end: (usize, usize), matrix: &DMatrix<f32>) 
 }
 
 
+/// Horizontally combines two matrices of similar dimensions
 pub fn hcombine(lmatrix: &DMatrix<f32>, rmatrix: &DMatrix<f32>) -> Result<DMatrix<f32>, MatrixCompareError> {
 
     // Check for matching number of rows
@@ -68,6 +70,7 @@ pub fn hcombine(lmatrix: &DMatrix<f32>, rmatrix: &DMatrix<f32>) -> Result<DMatri
 }
 
 
+/// Vertically combines two matrices of similar dimensions
 pub fn vcombine(umatrix: &DMatrix<f32>, bmatrix: &DMatrix<f32>) -> Result<DMatrix<f32>, MatrixCompareError> {
 
     // Check for matching number of rows
@@ -100,6 +103,7 @@ pub fn vcombine(umatrix: &DMatrix<f32>, bmatrix: &DMatrix<f32>) -> Result<DMatri
 }
 
 
+/// Prints matrix to console in an easy to read way
 pub fn print_matrix(matrix: &DMatrix<f32>) {
 
     for i in 0..matrix.shape().0 {
@@ -109,6 +113,23 @@ pub fn print_matrix(matrix: &DMatrix<f32>) {
         }
         println!("{:?}", row);
     }
+
+}
+
+
+/// Returns a Vector of values corresponding to [start : step : end]
+pub fn range_step(start: f32, end: f32, step: f32) -> Vec<f32> {
+
+    // TODO: assert non-negative, step is a factor of end or something like that
+
+    let mut result: Vec<f32> = Vec::new();
+    let mut count = start;
+    while count < end {
+        result.push(count);
+        count += step;
+    }
+
+    result
 
 }
 
@@ -195,6 +216,17 @@ fn test_block() {
     // print_matrix(&block_true);
 
     relative_eq!(block, block_true);
+
+}
+
+
+#[test]
+fn test_range_step() {
+
+    let range = range_step(0.0, 1.0, 0.1);
+
+    assert_eq!(range.len(), 10);
+    assert_eq!(range.iter().sum::<f32>(), 4.5);
 
 }
 

@@ -3,6 +3,8 @@
 use crate::dynamics::linear_system::linear_dynamics::*;
 use crate::dynamics::controls::lqr::LinearQuadraticRegulator as LQR;
 
+use crate::util::range_step;
+
 use na::{DMatrix, DVector};
 
 pub fn ForwardEuler(t0: f32, y0: DVector<f32>, h: f32, tn: f32) -> (Vec<f32>, Vec<DVector<f32>>) {
@@ -35,16 +37,8 @@ pub fn ForwardEuler(t0: f32, y0: DVector<f32>, h: f32, tn: f32) -> (Vec<f32>, Ve
         Err(_) => (DMatrix::<f32>::zeros(1,1), DMatrix::<f32>::zeros(1,1))
     };
 
-    // TODO: put into separate "linspace" function
-    // linspace (t0, h, tn);
-
-    let mut time = Vec::new();
-    let mut count = t0;
-    while count < tn {
-        time.push(count);
-        count += h;
-    }
-    // println!("{:?}", time);
+    // begin actual function body
+    let time = range_step(t0, tn, h);
 
     let mut y: Vec<DVector<f32>> = vec![DVector::<f32>::zeros(y0.len()); time.len()];
     y[0] = y0.clone();
@@ -98,15 +92,8 @@ pub fn MidPointEuler(t0: f32, y0: DVector<f32>, h: f32, tn: f32) -> (Vec<f32>, V
         Err(_) => panic!["LQR solve"]
     };
 
-    // TODO: put into separate "linspace" function
-    // linspace (t0, h, tn);
-
-    let mut time = Vec::new();
-    let mut count = t0;
-    while count < tn {
-        time.push(count);
-        count += h;
-    }
+    // begin actual function body
+    let time = range_step(t0, tn, h);
 
     let mut y: Vec<DVector<f32>> = vec![DVector::<f32>::zeros(y0.len()); time.len()];
     y[0] = y0.clone();
@@ -208,7 +195,7 @@ fn test_MidPointEuler() {
 //     let double_integrator = LinearSystem::new(A, B, C, D);
 //     let lqr = LQR::new(double_integrator.A.clone(), double_integrator.B.clone(), Q, R);
 
-    let y0 = DVector::from_vec(vec![10.,-40., 100., 100.]);
+    let y0 = DVector::from_vec(vec![10.,10., 10., 10.]);
 //     let (K, _P) = match lqr.solve(){
 //         Ok( (value1, value2) ) => (value1, value2),
 //         Err(_) => (DMatrix::<f32>::zeros(1,1), DMatrix::<f32>::zeros(1,1))
