@@ -1,3 +1,2 @@
-
-pub mod riccati;
 pub mod euler;
+pub mod riccati;

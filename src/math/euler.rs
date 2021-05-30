@@ -51,7 +51,7 @@ where
 
         let y_half = yk + (h / 2.0 * f(time[k], yk));
 
-        y[k + 1] = yk + h * f(time[k], &y_half);
+        y[k + 1] = yk + (h * f(time[k] + (h/2.0), &y_half));
     }
 
     (time, y)
@@ -62,8 +62,8 @@ where
 fn test_ForwardEuler() {
 
     use na::DMatrix;
-    use crate::dynamics::controls::lqr::LinearQuadraticRegulator as LQR;
-    use crate::dynamics::linear_system::linear_dynamics::*;
+    use crate::controls::lqr::LinearQuadraticRegulator as LQR;
+    use crate::dynamics::linear_system::*;
 
     // generate row-major matrices
     let A = DMatrix::from_row_slice(
@@ -121,8 +121,8 @@ fn test_ForwardEuler() {
 fn test_MidPointEuler() {
 
     use na::DMatrix;
-    use crate::dynamics::controls::lqr::LinearQuadraticRegulator as LQR;
-    use crate::dynamics::linear_system::linear_dynamics::*;
+    use crate::controls::lqr::LinearQuadraticRegulator as LQR;
+    use crate::dynamics::linear_system::*;
 
     // generate row-major matrices
     let A = DMatrix::from_row_slice(

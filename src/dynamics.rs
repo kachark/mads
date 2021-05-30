@@ -1,6 +1,5 @@
-
 // Dynamics
 pub mod linear_system;
 
-// Controls
-pub mod controls;
+// Models
+pub mod double_integrator;
