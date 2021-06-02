@@ -5,7 +5,7 @@ use specs::{Builder, Component, Read, ReadStorage, WriteStorage, System, VecStor
 use formflight::dynamics::double_integrator::*;
 use formflight::dynamics::linear_system::*;
 use formflight::controls::lqr::LinearQuadraticRegulator;
-use formflight::math::euler::MidPointEuler;
+use formflight::math::euler::RungeKutta45;
 
 
 // Define Resources
@@ -113,7 +113,7 @@ impl<'a> System<'a> for ContinuousDynamicsSystem {
                 };
 
                 // Integrate dynamics
-                let (_t_history, traj) = MidPointEuler(t as f32, x_prev, step, (t as f32)+1f32, f);
+                let (_t_history, traj) = RungeKutta45(f, t as f32, x_prev, (t as f32)+1f32, step, 1E-5);
 
                 // Store result
                 for state in traj {

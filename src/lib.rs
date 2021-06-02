@@ -64,7 +64,7 @@ mod tests {
             };
 
             // Integrate dynamics
-            let (_t_history, traj) = MidPointEuler(t as f32, x_prev, step, (t as f32)+1f32, f);
+            let (_t_history, traj) = MidPointEuler(f, t as f32, x_prev, (t as f32)+1f32, step);
 
             // Store result
             for state in traj {
