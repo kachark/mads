@@ -1,2 +1,2 @@
-pub mod euler;
+pub mod ivp_solver;
 pub mod riccati;

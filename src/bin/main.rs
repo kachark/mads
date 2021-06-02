@@ -5,7 +5,7 @@ use specs::{Builder, Component, Read, ReadStorage, WriteStorage, System, VecStor
 use formflight::dynamics::double_integrator::*;
 use formflight::dynamics::linear_system::*;
 use formflight::controls::lqr::LinearQuadraticRegulator;
-use formflight::math::euler::RungeKutta45;
+use formflight::math::ivp_solver::rk45::RungeKutta45;
 
 
 // Define Resources

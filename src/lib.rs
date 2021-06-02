@@ -19,7 +19,7 @@ mod tests {
         // TODO: this is basically a System in the ECS sense (solving the dynamics and controller)
         // combined with a 10 tick game loop
 
-        use super::math::euler::MidPointEuler;
+        use super::math::ivp_solver::euler::MidPointEuler;
         use super::controls::lqr::LinearQuadraticRegulator as LQR;
         use super::dynamics::double_integrator::DoubleIntegrator2D;
         use super::dynamics::linear_system::StateSpaceRepresentation;
