@@ -13,7 +13,7 @@ use formflight::math::ivp_solver::rk45::RungeKutta45;
 struct Time(f32);
 
 #[derive(Default)]
-struct SimStepSize(u32);
+struct SimStepSize(f32);
 
 #[derive(Default)]
 struct StepSize(f32);
@@ -116,7 +116,7 @@ impl<'a> System<'a> for ContinuousDoubleIntegratorLQR {
             let mut trajectory: Vec<DVector<f32>> = vec![x0];
             let step = h;
             // let t0 = 0;
-            let tf = time.0 + 1.0;
+            let tf = time.0 + dt;
             let rtol = 1E-3;
 
 
@@ -149,9 +149,8 @@ impl<'a> System<'a> for ContinuousDoubleIntegratorLQR {
 
         }
 
-        // TODO: hardcoded
         // increment time
-        time.0 += 1.0;
+        time.0 += dt;
 
     }
 
@@ -166,7 +165,7 @@ fn main() {
     world.register::<LinearFeedbackController>();
 
     world.insert(Time(0.0));
-    world.insert(SimStepSize(1));
+    world.insert(SimStepSize(1f32));
     world.insert(StepSize(0.1));
 
     let double_integrator = DoubleIntegrator2D::new();
