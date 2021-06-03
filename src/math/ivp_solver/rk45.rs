@@ -45,7 +45,7 @@ where
         let truncation_error: f32 = (&w2 - &w1).norm() / h;
         let s = 0.84 * (rtol / truncation_error).powf(0.25);
 
-        // Step size satisfies error tolerance, accept this value
+        // If step size satisfies error tolerance, accept this value
         if truncation_error <= rtol {
 
             time.push(tk + h);
