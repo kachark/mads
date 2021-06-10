@@ -6,10 +6,14 @@ extern crate lapack;
 extern crate lapack_src;
 extern crate nalgebra as na;
 
+// FormFlight Core
 pub mod controls;
 pub mod dynamics;
 pub mod math;
 pub mod util;
+
+// FormFlight Engine
+pub mod ecs;
 
 #[cfg(test)]
 mod tests {

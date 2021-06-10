@@ -20,13 +20,15 @@ where
     time.push(t0);
     y.push(y0);
 
+    let mut tk = t0;
     let mut _k = 0;
     let mut count = 0;
-    while time[time.len()-1] < tf {
+    while tk < tf {
 
-        h = h.min(tf - time[time.len()-1]);
+        // h = h.min(tf - time[time.len()-1]);
+        h = h.min(tf - tk);
 
-        let tk = time[time.len()-1];
+        // let tk = time[time.len()-1];
         let yk = &y[y.len()-1].clone();
 
         let k1 = h * f(tk, yk);
@@ -48,7 +50,8 @@ where
         // If step size satisfies error tolerance, accept this value
         if truncation_error <= rtol {
 
-            time.push(tk + h);
+            tk += h;
+            time.push(tk);
             y.push(w1);
             _k += 1;
             h = s*h;
