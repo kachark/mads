@@ -3,6 +3,7 @@ use nalgebra::{DMatrix, DVector};
 use specs::{Read, ReadStorage, Write, WriteStorage, System};
 
 use crate::dynamics::linear_system::*;
+use crate::dynamics::statespace::StateSpaceRepresentation;
 use crate::math::ivp_solver::rk45::RungeKutta45;
 use crate::ecs::resources::*;
 use crate::ecs::components::*;

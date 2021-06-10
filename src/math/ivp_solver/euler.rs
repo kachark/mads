@@ -1,6 +1,7 @@
 
 use na::DVector;
 use crate::util::range_step;
+use crate::dynamics::statespace::StateSpaceRepresentation;
 
 pub fn ForwardEuler<F>(
     f: F,

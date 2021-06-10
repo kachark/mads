@@ -1,7 +1,8 @@
 
 use na::{DMatrix, DVector};
-use crate::dynamics::linear_system::{StateSpaceRepresentation, LinearSystem};
-use crate::util::print_matrix;
+use crate::dynamics::linear_system::LinearSystem;
+use crate::dynamics::statespace::StateSpaceRepresentation;
+// use crate::util::print_matrix;
 
 
 // TODO: implement the println trait for each and print out the matrices nicely

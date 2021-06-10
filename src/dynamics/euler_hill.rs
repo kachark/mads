@@ -1,6 +1,7 @@
 
 use na::{DMatrix, DVector};
-use crate::dynamics::linear_system::{StateSpaceRepresentation, LinearSystem};
+use crate::dynamics::linear_system::LinearSystem; // TODO: deprecated
+use crate::dynamics::statespace::StateSpaceRepresentation;
 
 
 // TODO: implement the println trait for each and print out the matrices nicely
