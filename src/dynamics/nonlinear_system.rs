@@ -44,7 +44,7 @@ where
 
     fn f(&self, t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
 
-        (self.state_equation)(t, x, u)
+        (self.state_equation)(t, x, u) // syntax for calling a function-typed member's function
 
     }
 
@@ -78,7 +78,7 @@ fn test_NonlinearSystem() {
     let m = 3.0; // mass
 
     // Pendulum equations
-    // Wrap dynamics/controls in appropriately defined closure
+    // Wrap equations of motion / state equations in appropriately defined closure for _model
     let f = |_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>| {
 
         let mut res = DVector::<f32>::zeros(x.len());
@@ -89,7 +89,7 @@ fn test_NonlinearSystem() {
         res
     };
 
-    // Wrap dynamics/controls in appropriately defined closure
+    // Wrap output equation in appropriately defined closure for _model
     let h = |_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>| {
         x.clone()
     };
@@ -100,12 +100,12 @@ fn test_NonlinearSystem() {
     let x0 = DVector::<f32>::from_vec(vec![consts::PI/4.0, -1.0]); // omega, omega_dot
     let t0 = 0.0;
 
-    // println!("{:?}", model.f(t0, &x0, None));
-    // println!("{:?}", model.h(t0, &x0, None));
+    // println!("{:?}", _model.f(t0, &x0, None));
+    // println!("{:?}", _model.h(t0, &x0, None));
 
     // Integrate the dynamics
 
-    // Wrap dynamics/controls in appropriately defined closure
+    // Wrap model in appropriately defined closure for integrator (ie. f(t,x))
     let dynamics = |t: f32, x: &DVector<f32>| {
         _model.f(t, x, None)
     };

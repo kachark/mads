@@ -66,8 +66,7 @@ fn test_ForwardEuler() {
 
     use na::DMatrix;
     use crate::controls::lqr::LinearQuadraticRegulator as LQR;
-    use crate::dynamics::double_integrator::DoubleIntegrator1D;
-    use crate::dynamics::linear_system::*;
+    use crate::dynamics::models::linear::double_integrator::DoubleIntegrator1D;
 
     let model = DoubleIntegrator1D::new();
 
@@ -109,8 +108,7 @@ fn test_MidPointEuler() {
 
     use na::DMatrix;
     use crate::controls::lqr::LinearQuadraticRegulator as LQR;
-    use crate::dynamics::double_integrator::DoubleIntegrator2D;
-    use crate::dynamics::linear_system::*;
+    use crate::dynamics::models::linear::double_integrator::DoubleIntegrator2D;
 
     let model = DoubleIntegrator2D::new();
 

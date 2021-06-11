@@ -2,8 +2,8 @@
 use nalgebra::DVector;
 use specs::{Component, VecStorage};
 
-use crate::dynamics::double_integrator::*;
-use crate::dynamics::euler_hill::*;
+use crate::dynamics::models::linear::double_integrator::*;
+use crate::dynamics::models::linear::euler_hill::*;
 use crate::controls::lqr::LinearQuadraticRegulator;
 
 

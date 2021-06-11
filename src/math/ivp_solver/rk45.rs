@@ -82,8 +82,7 @@ fn test_RungeKutta45() {
 
     use na::DMatrix;
     use crate::controls::lqr::LinearQuadraticRegulator as LQR;
-    use crate::dynamics::double_integrator::*;
-    use crate::dynamics::linear_system::*;
+    use crate::dynamics::models::linear::double_integrator::*;
     use crate::dynamics::statespace::StateSpaceRepresentation;
 
     let model = DoubleIntegrator3D::new();

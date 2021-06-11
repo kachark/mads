@@ -2,8 +2,7 @@
 use nalgebra::{DMatrix, DVector};
 use specs::{Builder, World, WorldExt, RunNow};
 
-use formflight::dynamics::euler_hill::*;
-use formflight::dynamics::double_integrator::*;
+use formflight::dynamics::models::linear::double_integrator::*;
 use formflight::controls::lqr::LinearQuadraticRegulator;
 
 use formflight::ecs::resources::*;
@@ -31,14 +30,6 @@ fn main() {
     let Q = DMatrix::<f32>::identity(6, 6);
     let R = DMatrix::<f32>::identity(3, 3);
 
-
-//     // TODO: Hardcoded
-//     let model = EulerHill3D::new();
-//     let A = model.dynamics.A.clone();
-//     let B = model.dynamics.B.clone();
-//     let Q = DMatrix::<f32>::identity(6, 6);
-//     let R = DMatrix::<f32>::identity(3, 3);
-
     for _num_entities in 0..2 {
 
         // TODO: need a better way to setup the entities - random pose/states (formations)
@@ -52,7 +43,6 @@ fn main() {
     }
 
     let mut dyn_sys = ContinuousDoubleIntegratorLQR3D;
-    // let mut dyn_sys = ContinuousEulerHillLQR;
 
     for _ in  0..(max_time.0 as i32) {
 
