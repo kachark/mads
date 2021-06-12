@@ -46,7 +46,7 @@ pub fn ClohessyWiltshire(t: f32, x: &DVector<f32>) -> DVector<f32> {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct EulerHill3D {
 
     pub dynamics: LinearSystem

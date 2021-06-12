@@ -7,7 +7,7 @@ use crate::dynamics::statespace::StateSpaceRepresentation;
 
 // TODO: implement the println trait for each and print out the matrices nicely
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator1D {
 
     pub dynamics: LinearSystem
@@ -46,7 +46,7 @@ impl StateSpaceRepresentation for DoubleIntegrator1D {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator2D {
 
     pub dynamics: LinearSystem
@@ -104,7 +104,7 @@ impl StateSpaceRepresentation for DoubleIntegrator2D {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator3D {
 
     pub dynamics: LinearSystem

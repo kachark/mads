@@ -1,7 +1,6 @@
 
 use na::DVector;
 use crate::util::range_step;
-use crate::dynamics::statespace::StateSpaceRepresentation;
 
 pub fn ForwardEuler<F>(
     f: F,
@@ -67,6 +66,7 @@ fn test_ForwardEuler() {
     use na::DMatrix;
     use crate::controls::lqr::LinearQuadraticRegulator as LQR;
     use crate::dynamics::models::linear::double_integrator::DoubleIntegrator1D;
+    use crate::dynamics::statespace::StateSpaceRepresentation;
 
     let model = DoubleIntegrator1D::new();
 
@@ -109,6 +109,7 @@ fn test_MidPointEuler() {
     use na::DMatrix;
     use crate::controls::lqr::LinearQuadraticRegulator as LQR;
     use crate::dynamics::models::linear::double_integrator::DoubleIntegrator2D;
+    use crate::dynamics::statespace::StateSpaceRepresentation;
 
     let model = DoubleIntegrator2D::new();
 

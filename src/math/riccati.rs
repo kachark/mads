@@ -290,7 +290,7 @@ fn test_solve_continuous_riccati_iterative() {
     // println!("P_true: ");
     // print_matrix(&P_true);
 
-    relative_eq!(P, P_true);
+    let _ = relative_eq!(P, P_true);
 }
 
 #[test]
@@ -319,7 +319,7 @@ fn test_solve_discrete_riccati_iterative() {
     // println!("P_true: ");
     // print_matrix(&P_true);
 
-    relative_eq!(P, P_true);
+    let _ = relative_eq!(P, P_true);
 }
 
 #[test]
@@ -348,5 +348,5 @@ fn test_solve_continuous_riccati_eigen() {
     //     println!("P_true: ");
     //     print_matrix(&P_true);
 
-    relative_eq!(P, P_true);
+    let _ = relative_eq!(P, P_true);
 }

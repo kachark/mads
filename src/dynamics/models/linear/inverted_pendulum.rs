@@ -7,10 +7,10 @@ use crate::dynamics::statespace::StateSpaceRepresentation;
 /// Small angle approximations and linearized about vertically upward angle
 /// theta = pi
 /// https://ctms.engin.umich.edu/CTMS/index.php?example=InvertedPendulum&section=SystemModeling
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct InvertedPendulum {
 
-    dynamics: LinearSystem
+    pub dynamics: LinearSystem
 
 }
 

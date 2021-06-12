@@ -137,7 +137,7 @@ fn test_hconcat() {
 
     let correct = DMatrix::from_row_slice(2, 3, &[0., 1., 0., 0., 0., 1.]);
 
-    relative_eq!(concatenated.unwrap(), correct);
+    let _ = relative_eq!(concatenated.unwrap(), correct);
 }
 
 #[test]
@@ -154,7 +154,7 @@ fn test_vconcat() {
 
     let correct = DMatrix::from_row_slice(3, 2, &[0., 1., 0., 0., 0., 1.]);
 
-    relative_eq!(concatenated.unwrap(), correct);
+    let _ = relative_eq!(concatenated.unwrap(), correct);
 }
 
 #[test]
@@ -186,7 +186,7 @@ fn test_block() {
     // println!("true: ");
     // print_matrix(&block_true);
 
-    relative_eq!(block, block_true);
+    let _ = relative_eq!(block, block_true);
 }
 
 #[test]

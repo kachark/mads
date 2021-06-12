@@ -13,7 +13,7 @@ impl fmt::Display for ControlError {
 }
 
 /// Continuous Infinite-Horizon Linear Quadratic Regulator
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct LinearQuadraticRegulator {
     A: DMatrix<f32>,
     B: DMatrix<f32>,

@@ -1,21 +1,15 @@
 
-use specs::{ReadStorage, System};
+use legion::*;
 
-use crate::ecs::components::Position;
+use crate::ecs::components::{Position, Velocity};
+use crate::ecs::resources::SimulationTime;
 
-// Define Systems
-pub struct PositionSystem;
+#[system(for_each)]
+pub fn update_position(pos: &mut Position, vel: &Velocity, #[resource] time: &SimulationTime) {
+    pos.x += vel.x * time.0;
+    pos.y += vel.y * time.0;
 
-impl<'a> System<'a> for PositionSystem {
-    type SystemData = ReadStorage<'a, Position>;
-
-    fn run(&mut self, position: Self::SystemData) {
-        use specs::Join;
-
-        for position in position.join() {
-            println!("Hello, {:?}", &position);
-        }
-    }
+    println!("{:?}", pos);
 }
 
 

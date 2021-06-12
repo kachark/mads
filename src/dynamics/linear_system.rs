@@ -1,12 +1,11 @@
 
-use std::fmt;
 use na::{DMatrix, DVector};
 
 use crate::dynamics::statespace::StateSpaceRepresentation;
 
 // TODO: change LinearSystem to LTISystem
 /// Defines a linear system of equations
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct LinearSystem {
     /// A: State/system matrix
     /// B: Input matrix
