@@ -8,6 +8,7 @@ use crate::ecs::resources::*;
 use crate::ecs::components::*;
 
 
+// NOTE: can also do par_for_each to use Rayon parallelization
 #[system(for_each)]
 fn DoubleIntegratorDynamics3D(
     state: &mut FullState,
@@ -17,6 +18,8 @@ fn DoubleIntegratorDynamics3D(
     #[resource] sim_step: &EngineStep,
     #[resource] step: &IntegratorStep)
 {
+
+    println!("{:?}", time.0);
 
     let dt = sim_step.0;
     let h = step.0;
@@ -77,6 +80,8 @@ pub fn DoubleIntegrator3DLQRSystem(
     #[resource] sim_step: &EngineStep,
     #[resource] step: &IntegratorStep)
 {
+    println!("{:?}", time.0);
+
 
     let dt = sim_step.0;
     let h = step.0;
@@ -137,6 +142,8 @@ pub fn LinearizedInvertedPendulumLQRSystem(
     #[resource] sim_step: &EngineStep,
     #[resource] step: &IntegratorStep)
 {
+
+    println!("{:?}", time.0);
 
     let dt = sim_step.0;
     let h = step.0;

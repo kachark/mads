@@ -1,11 +1,11 @@
 
 use nalgebra::DVector;
+use uuid::Uuid;
 
 use crate::dynamics::models::linear::double_integrator::*;
 use crate::dynamics::models::linear::inverted_pendulum::*;
 use crate::dynamics::models::linear::euler_hill::*;
 use crate::controls::lqr::LinearQuadraticRegulator;
-
 
 // Define Components
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -25,6 +25,17 @@ pub struct Velocity {
 #[derive(Clone, Debug, PartialEq)]
 pub struct FullState(pub DVector<f32>);
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct SimID {
+    pub uuid: Uuid,
+    pub name: String
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Targetable(pub bool);
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Agent(pub bool);
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct DoubleIntegratorDynamics2D {
@@ -49,12 +60,6 @@ pub struct LinearizedInvertedPendulumDynamics {
 #[derive(Clone, Debug, PartialEq)]
 pub struct LinearFeedbackController {
     pub name: LinearQuadraticRegulator
-}
-
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct Plotter {
-
 }
 
 
