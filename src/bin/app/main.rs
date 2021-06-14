@@ -10,17 +10,24 @@ use formflight::dynamics::models::linear::double_integrator::*;
 use formflight::dynamics::models::linear::inverted_pendulum::*;
 use formflight::controls::lqr::LinearQuadraticRegulator;
 
-// // NOTE: why use an ECS in the first place?
-// // - structure of arrays -> more efficient memory model for large number of objects
-// // - parallelism + performance
-// // - composition over inheritance -> "data-driven"
-// https://amethyst.rs/posts/legion-ecs-v0.3
 use formflight::ecs::resources::*;
 use formflight::ecs::components::*;
 use formflight::ecs::systems::dynamics_systems::*;
 use formflight::ecs::systems::simple_systems::*;
 
- fn main() {
+// // NOTE: why use an ECS in the first place?
+// // - structure of arrays -> more efficient memory model for large number of objects
+// // - parallelism + performance
+// // - composition over inheritance -> "data-driven"
+// https://amethyst.rs/posts/legion-ecs-v0.3
+
+extern crate plotters;
+
+// use crate::plot_trajectory;
+
+pub mod plot;
+
+fn main() {
 
      let mut world = World::default();
 
@@ -132,6 +139,13 @@ use formflight::ecs::systems::simple_systems::*;
         }
 
      }
+
+     match plot::plot_trajectory() {
+
+         Ok(()) => println!("hi"),
+         Err(_) => println!("plot error")
+
+     };
 
  }
 

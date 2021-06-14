@@ -10,7 +10,7 @@ path = "src/lib.rs"
 
 [[bin]]
 name = "formflight"
-path = "src/bin/main.rs"
+path = "src/bin/app/main.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -21,3 +21,4 @@ lapack = "0.19.0"
 lapack-src = { version = "0.8", features = ["accelerate"] }
 legion = "0.4.0"
 uuid = "0.8"
+plotters = "^0.3.1"
