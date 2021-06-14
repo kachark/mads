@@ -64,7 +64,7 @@ where
 fn test_ForwardEuler() {
 
     use na::DMatrix;
-    use crate::controls::lqr::LinearQuadraticRegulator as LQR;
+    use crate::controls::models::lqr::LinearQuadraticRegulator as LQR;
     use crate::dynamics::models::linear::double_integrator::DoubleIntegrator1D;
     use crate::dynamics::statespace::StateSpaceRepresentation;
 
@@ -107,7 +107,7 @@ fn test_ForwardEuler() {
 fn test_MidPointEuler() {
 
     use na::DMatrix;
-    use crate::controls::lqr::LinearQuadraticRegulator as LQR;
+    use crate::controls::models::lqr::LinearQuadraticRegulator as LQR;
     use crate::dynamics::models::linear::double_integrator::DoubleIntegrator2D;
     use crate::dynamics::statespace::StateSpaceRepresentation;
 

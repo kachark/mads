@@ -81,7 +81,7 @@ where
 fn test_RungeKutta45() {
 
     use na::DMatrix;
-    use crate::controls::lqr::LinearQuadraticRegulator as LQR;
+    use crate::controls::models::lqr::LinearQuadraticRegulator as LQR;
     use crate::dynamics::models::linear::double_integrator::*;
     use crate::dynamics::statespace::StateSpaceRepresentation;
 

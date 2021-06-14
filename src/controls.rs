@@ -1,1 +1,2 @@
-pub mod lqr;
+// Models
+pub mod models;

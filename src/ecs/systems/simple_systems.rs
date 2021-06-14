@@ -32,3 +32,10 @@ pub fn print_id(id: &SimID) {
     println!("{:?}", id);
 
 }
+
+#[system(for_each)]
+pub fn print_state(state: &FullState) {
+
+    println!("{:?}", state);
+
+}
