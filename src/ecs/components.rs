@@ -38,27 +38,7 @@ pub struct Targetable(pub bool);
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Agent(pub bool);
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct DoubleIntegratorDynamics2D {
-    pub name: DoubleIntegrator2D
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DoubleIntegratorDynamics3D {
-    pub name: DoubleIntegrator3D
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct EulerHillDynamics {
-    pub name: EulerHill3D
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LinearizedInvertedPendulumDynamics {
-    pub name: InvertedPendulum
-}
-
-// TODO: test if we can have a component generic over dynamics models
+// NOTE: generic component for dynamics models
 #[derive(Clone, Debug, PartialEq)]
 pub struct DynamicsModel<T>
 where

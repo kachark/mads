@@ -108,7 +108,7 @@ pub fn print_matrix(matrix: &DMatrix<f32>) {
     }
 }
 
-/// Returns a Vector of values corresponding to [start : step : end]
+/// Returns a Vector of values corresponding to [start : end : step]
 pub fn range_step(start: f32, end: f32, step: f32) -> Vec<f32> {
     // TODO: assert non-negative, step is a factor of end or something like that
 

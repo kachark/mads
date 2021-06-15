@@ -12,15 +12,10 @@ pub fn update_position(pos: &mut Position, vel: &Velocity, #[resource] time: &Si
     println!("{:?}", pos);
 }
 
-// #[system(for_each)]
-// pub fn assignment(
-
 #[system(for_each)]
-pub fn print_errorstate(agent: &Agent, state1: &FullState, #[resource] targetable_set: &TargetableSet) {
+pub fn print_errorstate(_agent: &Agent, state1: &FullState, #[resource] targetable_set: &TargetableSet) {
 
-    // TODO: need each entity to see the list of available targets - make this a resource!
-
-    for (id, state2) in targetable_set.0.iter() {
+    for (_id, state2) in targetable_set.0.iter() {
         println!("ERROR STATE: {:?}", &state1.0  - &state2.0);
     }
 
@@ -37,5 +32,13 @@ pub fn print_id(id: &SimID) {
 pub fn print_state(state: &FullState) {
 
     println!("{:?}", state);
+
+}
+
+#[system]
+pub fn increment_time(#[resource] time: &mut SimulationTime, #[resource] step: &EngineStep) {
+
+    println!("{:?}", time.0);
+    time.0 += step.0;
 
 }

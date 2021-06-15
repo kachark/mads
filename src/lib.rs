@@ -23,7 +23,7 @@ mod tests {
     fn test_dynamics() {
 
         use super::math::ivp_solver::euler::MidPointEuler;
-        use super::controls::lqr::LinearQuadraticRegulator as LQR;
+        use super::controls::models::lqr::LinearQuadraticRegulator as LQR;
         use super::dynamics::models::linear::double_integrator::DoubleIntegrator2D;
         use super::dynamics::statespace::StateSpaceRepresentation;
         use super::na::{DMatrix, DVector};
