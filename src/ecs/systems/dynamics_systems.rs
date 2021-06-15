@@ -5,6 +5,9 @@ use legion::storage::Component;
 
 use crate::dynamics::statespace::StateSpaceRepresentation;
 use crate::math::ivp_solver::rk45::RungeKutta45;
+use crate::math::ivp_solver::euler::ForwardEuler;
+use crate::math::ivp_solver::euler::MidPointEuler;
+use crate::math::integrators::IntegratorType;
 use crate::ecs::resources::*;
 use crate::ecs::components::*;
 
@@ -16,7 +19,9 @@ pub fn dynamics_lqr_solver<T>(
     controller: &LQRController,
     #[resource] time: &SimulationTime,
     #[resource] sim_step: &EngineStep,
-    #[resource] step: &IntegratorStep)
+    #[resource] integrator: &Integrator,
+    #[resource] step: &IntegratorStep
+)
 where
     T: Component + StateSpaceRepresentation // Need to include Component trait from Legion
 {
@@ -50,7 +55,11 @@ where
     };
 
     // Integrate dynamics
-    let (_t_history, traj) = RungeKutta45(f, time.0, x_prev, tf, step, rtol);
+    let (_t_history, traj) = match integrator.0 {
+        IntegratorType::ForwardEuler => ForwardEuler(f, time.0, x_prev, tf, step),
+        IntegratorType::MidpointEuler => MidPointEuler(f, time.0, x_prev, tf, step),
+        IntegratorType::RK45 => RungeKutta45(f, time.0, x_prev, tf, step, rtol)
+    };
 
     // Update entity FullState component
     state.0 = traj[traj.len()-1].clone();

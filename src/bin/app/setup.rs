@@ -86,7 +86,7 @@ fn get_times(params: &HashMap<String, EngineParameter>) -> Vec<f32> {
 /// Define systems to be run per loop iteration and return a Schedule to execute
 pub fn setup_systems() -> legion::Schedule {
 
-    let mut schedule = Schedule::builder()
+    let schedule = Schedule::builder()
         .add_system(increment_time_system())
         .add_system(print_id_system())
         // .add_system(print_errorstate_system()) // TODO: make this generic over two FullStates
