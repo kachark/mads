@@ -19,32 +19,25 @@ use formflight::ecs::systems::simple_systems::*;
 use crate::configuration::*;
 
 /// Define World, Resources, and Components
-pub fn setup(params: &HashMap<String, EngineParameter>) -> (legion::World, legion::Resources, Vec<f32>) {
+pub fn setup(
+    engine_params: &HashMap<String, EngineParameter>,
+    sim_params: &HashMap<String, SimulationParameter>
+) -> (legion::World, legion::Resources, Vec<f32>)
+{
 
     // Declare World and Resources
     let mut world = World::default();
     let mut resources = Resources::default();
 
     // Generate Engine time values
-    let times = get_times(params);
+    let times = get_times(engine_params);
 
-    // TODO: setup_engine_resources(params: HashMap-EngineParams)
-    // setup_simulation_resources(params: HashMap-SimulationParams)
-    // setup_scenario_resources(params: HashMap-ScenarioParams)
     // Populate resources
-    //
-    // TODO: scenario and simulation parameters
     let num_agents = NumAgents(1);
     let mut targetable_set = TargetableSet(HashMap::new());
-    resources.insert(IntegratorStep(0.1));
+    add_engine_resources(&mut resources, engine_params);
+    add_simulation_resources(&mut resources, sim_params);
 
-    for (_, parameter) in params.iter() {
-        match parameter {
-            EngineParameter::SimulationTime(value) => resources.insert(SimulationTime(*value)),
-            EngineParameter::MaxSimulationTime(value) => resources.insert(MaxSimulationTime(*value)),
-            EngineParameter::EngineStep(value) => resources.insert(EngineStep(*value)),
-        }
-    }
 
     // TODO: setup_agents()
     // NOTE: define components for each entity
@@ -141,6 +134,32 @@ pub fn setup(params: &HashMap<String, EngineParameter>) -> (legion::World, legio
     //     the difference for the operation, then record the new full state
 
     (world, resources, times)
+
+}
+
+/// Inserts Resources to ECS derived from EngineParameters
+fn add_engine_resources(resources: &mut legion::Resources, params: &HashMap<String, EngineParameter>) {
+
+    for (_, parameter) in params.iter() {
+        match parameter {
+            EngineParameter::SimulationTime(value) => resources.insert(SimulationTime(*value)),
+            EngineParameter::MaxSimulationTime(value) => resources.insert(MaxSimulationTime(*value)),
+            EngineParameter::EngineStep(value) => resources.insert(EngineStep(*value)),
+        }
+    }
+
+}
+
+
+/// Inserts Resources to ECS derived from SimulationParameters
+fn add_simulation_resources(resources: &mut legion::Resources, params: &HashMap<String, SimulationParameter>) {
+
+    for (_, parameter) in params.iter() {
+        match parameter {
+            SimulationParameter::IntegratorStep(value) => resources.insert(IntegratorStep(*value)),
+            SimulationParameter::Integrator(value) => resources.insert(Integrator(*value))
+        }
+    }
 
 }
 

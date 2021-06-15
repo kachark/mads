@@ -88,7 +88,7 @@ pub fn solve_discrete_riccati_iterative(
     Ok(P)
 }
 
-/// solve algebraic riccati equation using Hamiltonian eigenvalue decomposition
+/// Solve algebraic riccati equation using Hamiltonian eigenvalue decomposition
 /// Reference: "A Schur Method for Solving Algebraic Riccati Equations" - Alan J. Laub
 pub fn solve_continuous_riccati_eigen(
     A: &DMatrix<f32>,

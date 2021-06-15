@@ -1,11 +1,5 @@
 
-pub enum IntegratorType {
-
-    ForwardEuler,
-    MidpointEuler,
-    RK45
-
-}
+use formflight::math::integrators::IntegratorType;
 
 pub enum EngineParameter {
 
@@ -17,7 +11,7 @@ pub enum EngineParameter {
 
 pub enum SimulationParameter {
 
-    IntegratorStep,
+    IntegratorStep(f32),
     Integrator(IntegratorType)
 
 }

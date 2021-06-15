@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::ecs::components::*;
+use crate::math::integrators::IntegratorType;
 
 // Define Resources for Specs Entity-Component-System
 
@@ -25,6 +26,10 @@ pub struct EngineStep(pub f32);
 /// Integrator step size (ie. dynamics integrations)
 #[derive(Default)]
 pub struct IntegratorStep(pub f32);
+
+/// Integrator type to be used in simulation
+#[derive(Default)]
+pub struct Integrator(pub IntegratorType);
 
 /// Tracks the targetable set of entities
 #[derive(Default)]
