@@ -2,9 +2,6 @@
 use nalgebra::DVector;
 use uuid::Uuid;
 
-use crate::dynamics::models::linear::double_integrator::*;
-use crate::dynamics::models::linear::inverted_pendulum::*;
-use crate::dynamics::models::linear::euler_hill::*;
 use crate::controls::models::lqr::LinearQuadraticRegulator;
 use crate::dynamics::statespace::StateSpaceRepresentation;
 
@@ -34,9 +31,6 @@ pub struct SimID {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Targetable(pub bool);
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Agent(pub bool);
 
 // NOTE: generic component for dynamics models
 #[derive(Clone, Debug, PartialEq)]

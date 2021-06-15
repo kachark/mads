@@ -11,13 +11,15 @@ use std::collections::HashMap;
 use legion::*;
 use formflight::ecs::components::*; // TOOD: remove eventually
 use formflight::ecs::resources::*;
-use formflight::util::range_step;
 use formflight::math::integrators::IntegratorType;
 
 extern crate plotters;
 
 pub mod configuration;
 pub mod setup;
+pub mod tracking_scenario;
+pub mod scenario_resources;
+pub mod scenario_components;
 pub mod plot;
 
 use crate::configuration::{EngineParameter, SimulationParameter, ScenarioParameter};
@@ -33,6 +35,10 @@ fn main() {
     let integrator = SimulationParameter::Integrator(IntegratorType::RK45);
     let integrator_step = SimulationParameter::IntegratorStep(0.1);
 
+    // Scenario parameters
+    let num_agents = ScenarioParameter::NumAgents(1);
+    let num_targets = ScenarioParameter::NumTargets(1);
+
     let mut engine_params = HashMap::new();
     engine_params.entry("SimulationTime".to_string()).or_insert(start_time);
     engine_params.entry("MaxSimulationTime".to_string()).or_insert(maxtime);
@@ -42,8 +48,13 @@ fn main() {
     sim_params.entry("Integrator".to_string()).or_insert(integrator);
     sim_params.entry("IntegratorStep".to_string()).or_insert(integrator_step);
 
+    let mut scene_params = HashMap::new();
+    scene_params.entry("NumAgents".to_string()).or_insert(num_agents);
+    scene_params.entry("NumTargets".to_string()).or_insert(num_targets);
+
     // Get World, Resources, and engine time values
     let (mut world, mut resources, times) = setup::setup(&engine_params, &sim_params);
+    tracking_scenario::setup_scenario(&mut world, &mut resources, &scene_params);
 
     // Schedule systems for exectution
     let mut schedule = setup::setup_systems();
@@ -53,6 +64,7 @@ fn main() {
 
         schedule.execute(&mut world, &mut resources);
 
+        // TODO: update TargetableSet - update_targetable_set()
         // query for 'Targetable' components
         let mut targetable_set_atomic = resources.get_mut::<TargetableSet>().unwrap();
         let mut query = <(&SimID, &FullState, &mut Targetable)>::query();

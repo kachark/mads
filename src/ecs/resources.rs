@@ -5,15 +5,11 @@ use uuid::Uuid;
 use crate::ecs::components::*;
 use crate::math::integrators::IntegratorType;
 
-// Define Resources for Specs Entity-Component-System
+// Define Engine resources for Legion Entity-Component-System
 
 /// Current simulation time
 #[derive(Default)]
 pub struct SimulationTime(pub f32);
-
-/// Number of Agents
-#[derive(Default)]
-pub struct NumAgents(pub i32);
 
 /// Max simulation time
 #[derive(Default)]
@@ -31,6 +27,6 @@ pub struct IntegratorStep(pub f32);
 #[derive(Default)]
 pub struct Integrator(pub IntegratorType);
 
-/// Tracks the targetable set of entities
+/// Tracks a set of entities defined by Uuid
 #[derive(Default)]
 pub struct TargetableSet(pub HashMap::<Uuid, FullState>);

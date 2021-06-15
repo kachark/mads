@@ -16,6 +16,7 @@ pub enum SimulationParameter {
 
 }
 
+// TODO: move to scenario.rs
 pub enum ScenarioParameter {
 
     NumAgents(i32),
