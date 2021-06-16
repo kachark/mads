@@ -6,14 +6,8 @@
 // // - composition over inheritance -> "data-driven"
 // https://amethyst.rs/posts/legion-ecs-v0.3
 
-use std::collections::HashMap;
-
-use legion::*;
-use formflight::ecs::components::*; // TOOD: remove eventually
-use formflight::ecs::resources::*;
-use formflight::math::integrators::IntegratorType;
-
 extern crate plotters;
+extern crate polars;
 
 pub mod configuration;
 pub mod setup;
@@ -22,6 +16,15 @@ pub mod scenario_resources;
 pub mod scenario_components;
 pub mod plot;
 
+use std::collections::HashMap;
+use legion::*;
+use nalgebra::DVector;
+use polars::prelude::{DataFrame, Field, Schema, Series, DataType};
+use formflight::ecs::components::*; // TOOD: remove eventually
+use formflight::ecs::resources::*;
+use formflight::math::integrators::IntegratorType;
+
+use crate::scenario_components::Agent;
 use crate::configuration::{EngineParameter, SimulationParameter, ScenarioParameter};
 
 fn main() {
@@ -63,27 +66,8 @@ fn main() {
     for _ in times {
 
         schedule.execute(&mut world, &mut resources);
-
-        // TODO: update TargetableSet - update_targetable_set()
-        // query for 'Targetable' components
-        let mut targetable_set_atomic = resources.get_mut::<TargetableSet>().unwrap();
-        let mut query = <(&SimID, &FullState, &mut Targetable)>::query();
-        for mut chunk in query.iter_chunks_mut(&mut world) {
-            // we can access information about the archetype (shape/component layout) of the entities
-            println!(
-                "the entities in the chunk have {:?} components",
-                chunk.archetype().layout().component_types(),
-            );
-
-            // we can iterate through a tuple of component references per entity
-            for (id, state, target) in chunk {
-                if target.0 == true {
-                    continue
-                } else {
-                    targetable_set_atomic.0.entry(id.uuid).or_insert(state.clone());
-                }
-            }
-        }
+        update_targetable_set(&mut world, &mut resources);
+        // update_storage(&mut world, &mut test_storage);
 
     }
 
@@ -94,5 +78,72 @@ fn main() {
 
     };
 
+    let result = resources.get::<SimulationResult>().unwrap();
+    for (uuid, trajectory) in result.data.iter() {
+        println!("Entity: {:?}", uuid);
+        for state in trajectory {
+            println!("{:?}", state);
+        }
+    }
+
  }
 
+fn update_targetable_set(world: &mut World, resources: &mut Resources) {
+
+    // TODO: update TargetableSet - update_targetable_set() - scenario specific
+    // query for 'Targetable' components
+    let mut targetable_set_atomic = resources.get_mut::<TargetableSet>().unwrap();
+    let mut query = <(&SimID, &FullState, &mut Targetable)>::query();
+    for mut chunk in query.iter_chunks_mut(world) {
+        // we can access information about the archetype (shape/component layout) of the entities
+        println!(
+            "the entities in the chunk have {:?} components",
+            chunk.archetype().layout().component_types(),
+        );
+
+        // we can iterate through a tuple of component references per entity
+        for (id, state, targetable) in chunk {
+            if targetable.0 == true {
+                continue
+            } else {
+                targetable_set_atomic.0.entry(id.uuid).or_insert(state.clone());
+            }
+        }
+    }
+
+}
+
+// NOTE: TEST for double integrator
+fn get_schema() -> Schema {
+    Schema::new(vec![
+        Field::new("Time", DataType::Float32),
+        Field::new("x", DataType::Float32),
+        Field::new("y", DataType::Float32),
+        Field::new("z", DataType::Float32),
+        Field::new("vx", DataType::Float32),
+        Field::new("vy", DataType::Float32),
+        Field::new("vz", DataType::Float32)
+    ])
+}
+
+// fn update_storage(world: &mut World, storage: &mut Vec<DVector<f32>>) {
+
+//     // TODO: 
+//     let mut query2 = <(&SimID, &FullState, &Agent)>::query();
+//     for mut chunk in query2.iter_chunks_mut(world) {
+//         // we can access information about the archetype (shape/component layout) of the entities
+//         println!(
+//             "the entities in the chunk have {:?} components",
+//             chunk.archetype().layout().component_types(),
+//         );
+
+//         // we can iterate through a tuple of component references per entity
+//         for (id, state, agent) in chunk {
+//             if agent.0 == true {
+//                 // store deepcopy of fullstate
+//                 storage.push(state.0.clone());
+//             }
+//         }
+//     }
+
+// }

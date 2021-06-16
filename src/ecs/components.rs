@@ -20,19 +20,24 @@ pub struct Velocity {
     pub z: f32
 }
 
+/// Assigns a Dynamic Vector (see nalgebra) to an Entity
 #[derive(Clone, Debug, PartialEq)]
 pub struct FullState(pub DVector<f32>);
 
+/// Assigns a unique identifier and name to an Entity
 #[derive(Clone, Debug, PartialEq)]
 pub struct SimID {
     pub uuid: Uuid,
     pub name: String
 }
 
+/// Flags an Entity as Targetable
+/// Targetable entities are tracked within the TargetableSet
+/// resource
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Targetable(pub bool);
 
-// NOTE: generic component for dynamics models
+/// Generic Component for a Dynamics model
 #[derive(Clone, Debug, PartialEq)]
 pub struct DynamicsModel<T>
 where
@@ -41,6 +46,7 @@ where
     pub model: T
 }
 
+/// Component representing a Linear-Quadratic Regulator
 #[derive(Clone, Debug, PartialEq)]
 pub struct LQRController {
     pub model: LinearQuadraticRegulator

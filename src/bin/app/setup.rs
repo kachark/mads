@@ -24,6 +24,10 @@ pub fn setup(
     let world = World::default();
     let mut resources = Resources::default();
 
+    // NOTE: TEST
+    // TODO: need this to be initialized with the given simulation time
+    resources.insert(SimulationTimeHistory{ data: vec![0.0] });
+
     // Generate Engine time values
     let times = get_times(engine_params);
 
@@ -87,13 +91,14 @@ fn get_times(params: &HashMap<String, EngineParameter>) -> Vec<f32> {
 pub fn setup_systems() -> legion::Schedule {
 
     let schedule = Schedule::builder()
-        .add_system(increment_time_system())
-        .add_system(print_id_system())
+        // .add_system(print_id_system())
         // .add_system(print_errorstate_system()) // TODO: make this generic over two FullStates
-        .add_system(print_state_system())
-        .add_system(update_position_system()) // implicitly adds 'system' to the end
+        // .add_system(print_state_system())
+        // .add_system(update_position_system()) // implicitly adds 'system' to the end
         .add_system(dynamics_lqr_solver_system::<DoubleIntegrator2D>())
         .add_system(dynamics_lqr_solver_system::<DoubleIntegrator3D>())
+        .add_system(update_result_system())
+        .add_system(increment_time_system())
         .build();
 
     schedule

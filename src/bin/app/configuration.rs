@@ -16,6 +16,13 @@ pub enum SimulationParameter {
 
 }
 
+// pub enum SimulationOutputs {
+
+//     SimulationTimeHistory,
+//     SimulationResult
+
+// }
+
 // TODO: move to scenario.rs
 pub enum ScenarioParameter {
 

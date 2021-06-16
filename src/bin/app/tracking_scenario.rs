@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use nalgebra::{DMatrix, DVector};
 use legion::{World, Resources};
 use uuid::Uuid;
+use polars::prelude::*;
 
 use formflight::ecs::components::*;
 use formflight::ecs::resources::*;
@@ -24,6 +25,7 @@ pub fn setup_scenario(
     let mut num_agents = NumAgents(1);
     let mut num_targets = NumTargets(1);
     let mut targetable_set = TargetableSet(HashMap::new());
+    let mut storage = SimulationResult{ data: HashMap::new() };
 
     for (_, parameter) in params.iter() {
         match parameter {
@@ -72,33 +74,47 @@ pub fn setup_scenario(
     for _ in 0..num_agents.0 {
        let id = Uuid::new_v4();
        let name = "test_name".to_string();
+       let state = DVector::<f32>::from_vec(vec![0.0, 5.0, 10.0, 11.0, 2., 3.]);
+
+       // initialize the SimulationResult storage
+       storage.data.entry(id).or_insert(vec![state.clone()]);
+
        world.extend(vec![
-           (FullState { 0: DVector::<f32>::from_vec(vec![0.0, 5.0, 10.0, 11.0, 2., 3.]) },
+           (FullState { 0: state },
                DynamicsModel { model: DoubleIntegrator3D::new() },
                LQRController { model: LinearQuadraticRegulator::new(A1.clone(), B1.clone(), Q1.clone(), R1.clone()) },
                SimID { uuid: id, name: name },
-               Agent { 0: true })
+               Agent { 0: true } )
        ]);
 
        // NOTE: generic dynamics component so we don't have to make many dynamics components per
        // model
        let id2 = Uuid::new_v4();
+       let state2 = DVector::<f32>::from_vec(vec![0.0, 0.0, 1.0, 1.0]);
+
+       storage.data.entry(id2).or_insert(vec![state2.clone()]);
+
        world.extend(vec![
-           (FullState { 0: DVector::<f32>::from_vec(vec![0.0, 0.0, 1.0, 1.0]) },
+           (FullState { 0: state2 },
                DynamicsModel { model: DoubleIntegrator2D::new() },
                LQRController { model: LinearQuadraticRegulator::new(A3.clone(), B3.clone(), Q3.clone(), R3.clone()) },
                SimID { uuid: id2, name: "generic_component".to_string() },
-               Agent { 0: true })
+               Agent { 0: true } )
        ]);
 
        let id3 = Uuid::new_v4();
+       let state3 = DVector::<f32>::from_vec(vec![5.0, 5.0, 5.0, 5.0]);
+
+       storage.data.entry(id3).or_insert(vec![state3.clone()]);
+
        world.extend(vec![
-           (FullState { 0: DVector::<f32>::from_vec(vec![5.0, 5.0, 5.0, 5.0]) },
+           (FullState { 0: state3 },
                DynamicsModel { model: DoubleIntegrator2D::new() },
                LQRController { model: LinearQuadraticRegulator::new(A3.clone(), B3.clone(), Q3.clone(), R3.clone()) },
                SimID { uuid: id3, name: "generic_component_2".to_string() },
-               Agent { 0: true })
+               Agent { 0: true } )
        ]);
+
 
     }
 
@@ -107,10 +123,14 @@ pub fn setup_scenario(
        let id = Uuid::new_v4();
        let name = "target_1".to_string();
        let state = FullState { 0: DVector::<f32>::from_vec(vec![0.0, 5.0, 10.0, 11.0, 2., 3.]) };
+
+       storage.data.entry(id).or_insert(vec![state.0.clone()]);
+
        targetable_set.0.entry(id).or_insert(state.clone());
        world.extend(vec![
            (state,
                SimID { uuid: id, name: name },
+               Target { 0: true },
                Targetable { 0: true })
        ]);
     }
@@ -119,6 +139,10 @@ pub fn setup_scenario(
     resources.insert(num_agents);
     resources.insert(num_targets);
     resources.insert(TargetableSet(targetable_set.0.clone()));
+
+
+    // NOTE: TEST also have to insert this afterwards
+    resources.insert(storage);
 
 }
 
