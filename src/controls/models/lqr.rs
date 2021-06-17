@@ -69,59 +69,65 @@ impl LinearQuadraticRegulator {
 }
 
 #[cfg(test)]
-#[test]
-fn test_LinearQuadraticRegulator_solve() {
-    // generate row-major matrices
-    let A = DMatrix::from_row_slice(2, 2, &[0., 1., 0., 0.]);
+mod tests {
+    use super::*;
 
-    let B = DMatrix::from_row_slice(2, 1, &[0., 1.]);
+    #[test]
+    fn test_LinearQuadraticRegulator_solve() {
+        // generate row-major matrices
+        let A = DMatrix::from_row_slice(2, 2, &[0., 1., 0., 0.]);
 
-    let Q = DMatrix::<f32>::identity(2, 2);
-    let R = DMatrix::from_vec(1, 1, vec![1.]);
+        let B = DMatrix::from_row_slice(2, 1, &[0., 1.]);
 
-    let controller = LinearQuadraticRegulator::new(A, B, Q, R);
+        let Q = DMatrix::<f32>::identity(2, 2);
+        let R = DMatrix::from_vec(1, 1, vec![1.]);
 
-    let (K, _P) = match controller.solve() {
-        Ok((value1, value2)) => (value1, value2),
-        _ => (DMatrix::<f32>::zeros(2, 2), DMatrix::<f32>::zeros(2, 2)),
-    };
+        let controller = LinearQuadraticRegulator::new(A, B, Q, R);
 
-    let _P_true = DMatrix::from_row_slice(2, 2, &[3.0_f32.sqrt(), 1., 1., 3.0_f32.sqrt()]);
+        let (K, _P) = match controller.solve() {
+            Ok((value1, value2)) => (value1, value2),
+            _ => (DMatrix::<f32>::zeros(2, 2), DMatrix::<f32>::zeros(2, 2)),
+        };
 
-    let K_true = DMatrix::from_row_slice(1, 2, &[1., 3.0_f32.sqrt()]);
+        let _P_true = DMatrix::from_row_slice(2, 2, &[3.0_f32.sqrt(), 1., 1., 3.0_f32.sqrt()]);
 
-//     println!("P: {:?}", P);
-//     println!("P_true: {:?}", P_true);
-//     println!("K: {:?}", K);
-//     println!("K_true: {:?}", K_true);
+        let K_true = DMatrix::from_row_slice(1, 2, &[1., 3.0_f32.sqrt()]);
 
-    relative_eq!(K, K_true);
-}
+    //     println!("P: {:?}", P);
+    //     println!("P_true: {:?}", P_true);
+    //     println!("K: {:?}", K);
+    //     println!("K_true: {:?}", K_true);
 
-#[test]
-fn test_LinearQuadraticRegulator_cost_to_go() {
-    // generate row-major matrices
-    let A = DMatrix::from_row_slice(2, 2, &[0., 1., 0., 0.]);
+        let _ = relative_eq!(K, K_true);
+    }
 
-    let B = DMatrix::from_row_slice(2, 1, &[0., 1.]);
+    #[test]
+    fn test_LinearQuadraticRegulator_cost_to_go() {
+        // generate row-major matrices
+        let A = DMatrix::from_row_slice(2, 2, &[0., 1., 0., 0.]);
 
-    let Q = DMatrix::<f32>::identity(2, 2);
-    let R = DMatrix::from_vec(1, 1, vec![1.]);
+        let B = DMatrix::from_row_slice(2, 1, &[0., 1.]);
 
-    let controller = LinearQuadraticRegulator::new(A, B, Q, R);
+        let Q = DMatrix::<f32>::identity(2, 2);
+        let R = DMatrix::from_vec(1, 1, vec![1.]);
 
-    // Solve the LQR controller
-    let (K, _P) = match controller.solve() {
-        Ok((value1, value2)) => (value1, value2),
-        Err(_) => (DMatrix::<f32>::zeros(1, 1), DMatrix::<f32>::zeros(1, 1)),
-    };
+        let controller = LinearQuadraticRegulator::new(A, B, Q, R);
 
-    let x = DVector::from_vec(vec![10., 10.]);
-    let u = -&K * &x;
+        // Solve the LQR controller
+        let (K, _P) = match controller.solve() {
+            Ok((value1, value2)) => (value1, value2),
+            Err(_) => (DMatrix::<f32>::zeros(1, 1), DMatrix::<f32>::zeros(1, 1)),
+        };
 
-    let result = controller.cost_to_go(&x, &u);
-    let correct = 946.41016;
-    // println!("{:?}", result);
-    relative_eq!(result, correct);
+        let x = DVector::from_vec(vec![10., 10.]);
+        let u = -&K * &x;
 
+        let result = controller.cost_to_go(&x, &u);
+        let correct = 946.41016;
+        // println!("{:?}", result);
+
+        // let _ = relative_eq!(result, correct);
+        assert_relative_eq!(result, correct);
+
+    }
 }

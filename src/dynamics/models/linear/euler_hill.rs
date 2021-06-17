@@ -132,38 +132,31 @@ impl StateSpaceRepresentation for EulerHill3D {
 
 
 #[cfg(test)]
-#[test]
-fn test_ClohessyWiltshire() {
+mod tests {
+    use super::*;
 
-    use crate::math::ivp_solver::rk45::RungeKutta45;
+    #[test]
+    fn test_ClohessyWiltshire() {
 
-    let model = ClohessyWiltshire;
+        let x = DVector::from_vec(vec![0., 0., 0., 0.1, 0., 0.]);
 
-    let x = DVector::from_vec(vec![0., 0., 0., 0.1, 0., 0.]);
+        let t0 = 0.0;
+        let dt = 20.0;
+        let mut t = t0;
+        let mut traj = Vec::new();
+        for i in 0..10000 {
 
-    let t0 = 0.0;
-    let tf = 100.0;
-    let n = 100.0;
-    let step = (tf - t0) / n;
-    let rtol = 1E-2;
+            let test = ClohessyWiltshire(t, &x);
 
-    // let (_t, y) = RungeKutta45(model, t0, x, tf, step, rtol);
-    let dt = 20.0;
-    let mut t = t0;
-    let mut traj = Vec::new();
-    for i in 0..10000 {
+            traj.push(test);
+            t = dt*i as f32;
 
-        let test = ClohessyWiltshire(t, &x);
+        }
 
-        traj.push(test);
-        t = dt*i as f32;
+        // for ele in y.iter() {
+        for ele in traj.iter() {
+            println!("{:?}", ele.data);
+        }
 
     }
-
-    // for ele in y.iter() {
-    for ele in traj.iter() {
-        println!("{:?}", ele.data);
-    }
-
 }
-

@@ -167,38 +167,42 @@ impl StateSpaceRepresentation for DoubleIntegrator3D {
 
 
 #[cfg(test)]
-#[test]
-fn test_DoubleIntegrator1D_f() {
+mod tests {
+    use super::*;
 
-    let model = DoubleIntegrator1D::new();
-    let x0 = DVector::from_vec(vec![10., 10.]);
+    #[test]
+    fn test_DoubleIntegrator1D_f() {
 
-    let xdot = model.f(0f32, &x0, None);
+        let model = DoubleIntegrator1D::new();
+        let x0 = DVector::from_vec(vec![10., 10.]);
 
-    println!("{:?}", xdot);
+        let xdot = model.f(0f32, &x0, None);
 
-}
+        println!("{:?}", xdot);
 
-#[test]
-fn test_DoubleIntegrator2D_f() {
+    }
 
-    let model = DoubleIntegrator2D::new();
-    let x0 = DVector::from_vec(vec![10., 10., 10., -10.]);
+    #[test]
+    fn test_DoubleIntegrator2D_f() {
 
-    let xdot = model.f(0f32, &x0, None);
+        let model = DoubleIntegrator2D::new();
+        let x0 = DVector::from_vec(vec![10., 10., 10., -10.]);
 
-    println!("{:?}", xdot);
+        let xdot = model.f(0f32, &x0, None);
 
-}
+        println!("{:?}", xdot);
 
-#[test]
-fn test_DoubleIntegrator3D_f() {
+    }
 
-    let model = DoubleIntegrator3D::new();
-    let x0 = DVector::from_vec(vec![10., 10., 10., -10., -30., 0.]);
+    #[test]
+    fn test_DoubleIntegrator3D_f() {
 
-    let xdot = model.f(0f32, &x0, None);
+        let model = DoubleIntegrator3D::new();
+        let x0 = DVector::from_vec(vec![10., 10., 10., -10., -30., 0.]);
 
-    println!("{:?}", xdot);
+        let xdot = model.f(0f32, &x0, None);
 
+        println!("{:?}", xdot);
+
+    }
 }

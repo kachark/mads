@@ -60,13 +60,17 @@ impl StateSpaceRepresentation for InvertedPendulum {
 }
 
 #[cfg(test)]
-#[test]
-fn test_Linearized_InvertedPendulum() {
+mod tests {
+    use super::*;
 
-    let model = InvertedPendulum::new();
-    let x0 = DVector::from_vec(vec![10., 10., 10., 10.]);
+    #[test]
+    fn test_Linearized_InvertedPendulum() {
 
-    let xdot = model.f(0f32, &x0, None);
+        let model = InvertedPendulum::new();
+        let x0 = DVector::from_vec(vec![10., 10., 10., 10.]);
 
-    println!("{:?}", xdot);
+        let xdot = model.f(0f32, &x0, None);
+
+        println!("{:?}", xdot);
+    }
 }

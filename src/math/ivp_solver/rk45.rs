@@ -77,47 +77,51 @@ where
 }
 
 #[cfg(test)]
-#[test]
-fn test_RungeKutta45() {
+mod tests {
+    use super::*;
 
-    use na::DMatrix;
-    use crate::controls::models::lqr::LinearQuadraticRegulator as LQR;
-    use crate::dynamics::models::linear::double_integrator::*;
-    use crate::dynamics::statespace::StateSpaceRepresentation;
+    #[test]
+    fn test_RungeKutta45() {
 
-    let model = DoubleIntegrator3D::new();
+        use na::DMatrix;
+        use crate::controls::models::lqr::LinearQuadraticRegulator as LQR;
+        use crate::dynamics::models::linear::double_integrator::*;
+        use crate::dynamics::statespace::StateSpaceRepresentation;
 
-    let Q = DMatrix::<f32>::identity(6, 6);
-    let R = DMatrix::<f32>::identity(3, 3);
+        let model = DoubleIntegrator3D::new();
 
-    let lqr = LQR::new(
-        model.dynamics.A.clone(),
-        model.dynamics.B.clone(),
-        Q,
-        R,
-    );
+        let Q = DMatrix::<f32>::identity(6, 6);
+        let R = DMatrix::<f32>::identity(3, 3);
 
-    let (K, _P) = match lqr.solve() {
-        Ok((value1, value2)) => (value1, value2),
-        Err(_) => panic!["LQR solve"],
-    };
+        let lqr = LQR::new(
+            model.dynamics.A.clone(),
+            model.dynamics.B.clone(),
+            Q,
+            R,
+        );
 
-    let y0 = DVector::from_vec(vec![10., 10., 10., 10., 10., 10.]);
+        let (K, _P) = match lqr.solve() {
+            Ok((value1, value2)) => (value1, value2),
+            Err(_) => panic!["LQR solve"],
+        };
 
-    // Wrap dynamics/controls in appropriately defined closure
-    let f = |t: f32, x: &DVector<f32>| {
-        let u = -&K * x;
-        model.dynamics.f(t, x, Some(&u))
-    };
+        let y0 = DVector::from_vec(vec![10., 10., 10., 10., 10., 10.]);
 
-    let t0 = 0.0;
-    let tf = 10.0;
-    let n = 1000.0;
-    let step = (tf - t0) / n;
-    let rtol = 1E-5;
-    let (_t, y) = RungeKutta45(f, t0, y0, tf, step, rtol);
+        // Wrap dynamics/controls in appropriately defined closure
+        let f = |t: f32, x: &DVector<f32>| {
+            let u = -&K * x;
+            model.dynamics.f(t, x, Some(&u))
+        };
 
-    for ele in y.iter() {
-        println!("{:?}", ele.data);
+        let t0 = 0.0;
+        let tf = 10.0;
+        let n = 1000.0;
+        let step = (tf - t0) / n;
+        let rtol = 1E-5;
+        let (_t, y) = RungeKutta45(f, t0, y0, tf, step, rtol);
+
+        for ele in y.iter() {
+            println!("{:?}", ele.data);
+        }
     }
 }

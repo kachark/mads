@@ -259,94 +259,98 @@ pub fn solve_continuous_riccati_eigen(
 }
 
 #[cfg(test)]
-#[test]
-fn test_solve_continuous_riccati_iterative() {
+mod tests {
+    use super::*;
 
-    // use crate::util::print_matrix;
+    #[test]
+    fn test_solve_continuous_riccati_iterative() {
 
-    // generate row-major matrices
-    let A = DMatrix::from_row_slice(2, 2, &[0., 1., 0., 0.]);
+        // use crate::util::print_matrix;
 
-    let B = DMatrix::from_row_slice(2, 1, &[0., 1.]);
+        // generate row-major matrices
+        let A = DMatrix::from_row_slice(2, 2, &[0., 1., 0., 0.]);
 
-    let Q = DMatrix::<f32>::identity(2, 2);
-    let R = DMatrix::from_vec(1, 1, vec![1.]);
+        let B = DMatrix::from_row_slice(2, 1, &[0., 1.]);
 
-    let P = match solve_continuous_riccati_iterative(&A, &B, &Q, &R, 0.001, 100000, 1E-5) {
-        Ok(result) => result,
-        Err(_) => DMatrix::<f32>::zeros(2, 2),
-    };
+        let Q = DMatrix::<f32>::identity(2, 2);
+        let R = DMatrix::from_vec(1, 1, vec![1.]);
 
-    let P_true = DMatrix::from_row_slice(
-        2, 2, 
-        &[
-            3.0_f32.sqrt(), 1., 
-            1., 3.0_f32.sqrt()
-        ]
-    );
+        let P = match solve_continuous_riccati_iterative(&A, &B, &Q, &R, 0.001, 100000, 1E-5) {
+            Ok(result) => result,
+            Err(_) => DMatrix::<f32>::zeros(2, 2),
+        };
 
-    // println!("P: ");
-    // print_matrix(&P);
-    // println!("P_true: ");
-    // print_matrix(&P_true);
+        let P_true = DMatrix::from_row_slice(
+            2, 2, 
+            &[
+                3.0_f32.sqrt(), 1., 
+                1., 3.0_f32.sqrt()
+            ]
+        );
 
-    let _ = relative_eq!(P, P_true);
-}
+        // println!("P: ");
+        // print_matrix(&P);
+        // println!("P_true: ");
+        // print_matrix(&P_true);
 
-#[test]
-fn test_solve_discrete_riccati_iterative() {
+        let _ = relative_eq!(P, P_true);
+    }
 
-    // use crate::util::print_matrix;
+    #[test]
+    fn test_solve_discrete_riccati_iterative() {
 
-    // generate row-major matrices
-    let A = DMatrix::from_row_slice(2, 2, &[0., 1., 0., -1.]);
+        // use crate::util::print_matrix;
 
-    let B = DMatrix::from_row_slice(2, 2, &[1., 0., 2., 1.]);
+        // generate row-major matrices
+        let A = DMatrix::from_row_slice(2, 2, &[0., 1., 0., -1.]);
 
-    let Q = DMatrix::from_row_slice(2, 2, &[-4., -4., -4., 7.]);
+        let B = DMatrix::from_row_slice(2, 2, &[1., 0., 2., 1.]);
 
-    let R = DMatrix::from_row_slice(2, 2, &[9., 3., 3., 1.]);
+        let Q = DMatrix::from_row_slice(2, 2, &[-4., -4., -4., 7.]);
 
-    let P = match solve_discrete_riccati_iterative(&A, &B, &Q, &R, 100000, 1E-5) {
-        Ok(result) => result,
-        Err(_) => DMatrix::<f32>::zeros(2, 2),
-    };
+        let R = DMatrix::from_row_slice(2, 2, &[9., 3., 3., 1.]);
 
-    let P_true = DMatrix::from_row_slice(2, 2, &[-4.0, -4.0, -4.0, 7.0]);
+        let P = match solve_discrete_riccati_iterative(&A, &B, &Q, &R, 100000, 1E-5) {
+            Ok(result) => result,
+            Err(_) => DMatrix::<f32>::zeros(2, 2),
+        };
 
-    // println!("P: ");
-    // print_matrix(&P);
-    // println!("P_true: ");
-    // print_matrix(&P_true);
+        let P_true = DMatrix::from_row_slice(2, 2, &[-4.0, -4.0, -4.0, 7.0]);
 
-    let _ = relative_eq!(P, P_true);
-}
+        // println!("P: ");
+        // print_matrix(&P);
+        // println!("P_true: ");
+        // print_matrix(&P_true);
 
-#[test]
-fn test_solve_continuous_riccati_eigen() {
+        let _ = relative_eq!(P, P_true);
+    }
 
-    // use crate::util::print_matrix;
+    #[test]
+    fn test_solve_continuous_riccati_eigen() {
 
-    // generate row-major matrices
-    let A = DMatrix::from_row_slice(2, 2, &[4., 3., -4.5, -3.5]);
+        // use crate::util::print_matrix;
 
-    let B = DMatrix::from_row_slice(2, 1, &[1., -1.]);
+        // generate row-major matrices
+        let A = DMatrix::from_row_slice(2, 2, &[4., 3., -4.5, -3.5]);
 
-    let Q = DMatrix::from_row_slice(2, 2, &[9., 6., 6., 4.]);
-    let R = DMatrix::from_vec(1, 1, vec![1.]);
+        let B = DMatrix::from_row_slice(2, 1, &[1., -1.]);
 
-    let P = match solve_continuous_riccati_eigen(&A, &B, &Q, &R) {
-        Ok(result) => result,
-        Err(_) => DMatrix::<f32>::zeros(2, 2),
-    };
+        let Q = DMatrix::from_row_slice(2, 2, &[9., 6., 6., 4.]);
+        let R = DMatrix::from_vec(1, 1, vec![1.]);
 
-    let P_true =
-        DMatrix::from_row_slice(2, 2, &[21.72792206, 14.48528137, 14.48528137, 9.65685425]);
+        let P = match solve_continuous_riccati_eigen(&A, &B, &Q, &R) {
+            Ok(result) => result,
+            Err(_) => DMatrix::<f32>::zeros(2, 2),
+        };
 
-    //     println!("P: ");
-    //     print_matrix(&P);
-    //     println!("P_true: ");
-    //     print_matrix(&P_true);
+        let P_true =
+            DMatrix::from_row_slice(2, 2, &[21.72792206, 14.48528137, 14.48528137, 9.65685425]);
 
-    let _ = relative_eq!(P, P_true);
+        //     println!("P: ");
+        //     print_matrix(&P);
+        //     println!("P_true: ");
+        //     print_matrix(&P_true);
+
+        let _ = relative_eq!(P, P_true);
+    }
 }

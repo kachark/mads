@@ -123,76 +123,80 @@ pub fn range_step(start: f32, end: f32, step: f32) -> Vec<f32> {
 }
 
 #[cfg(test)]
-#[test]
-fn test_hconcat() {
-    let lmatrix = DMatrix::from_row_slice(2, 2, &[0., 1., 0., 0.]);
+mod tests {
+    use super::*;
 
-    let rmatrix = DMatrix::from_row_slice(2, 1, &[0., 1.]);
+    #[test]
+    fn test_hconcat() {
+        let lmatrix = DMatrix::from_row_slice(2, 2, &[0., 1., 0., 0.]);
 
-    let concatenated = hcombine(&lmatrix, &rmatrix);
+        let rmatrix = DMatrix::from_row_slice(2, 1, &[0., 1.]);
 
-    // print_matrix(&lmatrix);
-    // print_matrix(&rmatrix);
-    // print_matrix(&concatenated.unwrap());
+        let concatenated = hcombine(&lmatrix, &rmatrix);
 
-    let correct = DMatrix::from_row_slice(2, 3, &[0., 1., 0., 0., 0., 1.]);
+        // print_matrix(&lmatrix);
+        // print_matrix(&rmatrix);
+        // print_matrix(&concatenated.unwrap());
 
-    let _ = relative_eq!(concatenated.unwrap(), correct);
-}
+        let correct = DMatrix::from_row_slice(2, 3, &[0., 1., 0., 0., 0., 1.]);
 
-#[test]
-fn test_vconcat() {
-    let umatrix = DMatrix::from_row_slice(2, 2, &[0., 1., 0., 0.]);
+        let _ = relative_eq!(concatenated.unwrap(), correct);
+    }
 
-    let bmatrix = DMatrix::from_row_slice(1, 2, &[0., 1.]);
+    #[test]
+    fn test_vconcat() {
+        let umatrix = DMatrix::from_row_slice(2, 2, &[0., 1., 0., 0.]);
 
-    let concatenated = vcombine(&umatrix, &bmatrix);
+        let bmatrix = DMatrix::from_row_slice(1, 2, &[0., 1.]);
 
-    // print_matrix(&umatrix);
-    // print_matrix(&bmatrix);
-    // print_matrix(&concatenated.unwrap());
+        let concatenated = vcombine(&umatrix, &bmatrix);
 
-    let correct = DMatrix::from_row_slice(3, 2, &[0., 1., 0., 0., 0., 1.]);
+        // print_matrix(&umatrix);
+        // print_matrix(&bmatrix);
+        // print_matrix(&concatenated.unwrap());
 
-    let _ = relative_eq!(concatenated.unwrap(), correct);
-}
+        let correct = DMatrix::from_row_slice(3, 2, &[0., 1., 0., 0., 0., 1.]);
 
-#[test]
-fn test_block() {
-    let matrix = DMatrix::from_row_slice(
-        4,
-        4,
-        &[
-            0., 1., 2., 3.,
-            4., 5., 6., 7.,
-            8., 9., 10., 11.,
-            12., 13., 14., 15.,
-        ],
-    );
+        let _ = relative_eq!(concatenated.unwrap(), correct);
+    }
 
-    let block = block((0, 1), (2, 2), &matrix);
+    #[test]
+    fn test_block() {
+        let matrix = DMatrix::from_row_slice(
+            4,
+            4,
+            &[
+                0., 1., 2., 3.,
+                4., 5., 6., 7.,
+                8., 9., 10., 11.,
+                12., 13., 14., 15.,
+            ],
+        );
 
-    let block_true = DMatrix::from_row_slice(
-        3, 2, 
-        &[
-            1., 2.,
-            5., 6.,
-            9., 10.
-        ]
-    );
+        let block = block((0, 1), (2, 2), &matrix);
 
-    // println!("block: ");
-    // print_matrix(&block);
-    // println!("true: ");
-    // print_matrix(&block_true);
+        let block_true = DMatrix::from_row_slice(
+            3, 2, 
+            &[
+                1., 2.,
+                5., 6.,
+                9., 10.
+            ]
+        );
 
-    let _ = relative_eq!(block, block_true);
-}
+        // println!("block: ");
+        // print_matrix(&block);
+        // println!("true: ");
+        // print_matrix(&block_true);
 
-#[test]
-fn test_range_step() {
-    let range = range_step(0.0, 1.0, 0.1);
+        let _ = relative_eq!(block, block_true);
+    }
 
-    assert_eq!(range.len(), 10);
-    assert_eq!(range.iter().sum::<f32>(), 4.5);
+    #[test]
+    fn test_range_step() {
+        let range = range_step(0.0, 1.0, 0.1);
+
+        assert_eq!(range.len(), 10);
+        assert_eq!(range.iter().sum::<f32>(), 4.5);
+    }
 }

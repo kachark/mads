@@ -65,51 +65,55 @@ impl StateSpaceRepresentation for LinearSystem {
 
 
 #[cfg(test)]
-#[test]
-fn test_LinearSystem_solve() {
-    // import StateSpaceRepresentation trait to access related methods
-    use na::{DMatrix, DVector};
+mod tests {
+    use super::*;
 
-    // generate row-major matrices
-    let A = DMatrix::from_row_slice(2, 2, &[1., 1., 0., 1.]);
+    #[test]
+    fn test_LinearSystem_solve() {
+        // import StateSpaceRepresentation trait to access related methods
+        use na::{DMatrix, DVector};
 
-    let B = DMatrix::from_row_slice(2, 1, &[0., 1.]);
+        // generate row-major matrices
+        let A = DMatrix::from_row_slice(2, 2, &[1., 1., 0., 1.]);
 
-    let C = A.clone();
-    let D = B.clone();
+        let B = DMatrix::from_row_slice(2, 1, &[0., 1.]);
 
-    // move A, B, C, D into double_integrator
-    let double_integrator = LinearSystem::new(A, B, C, D);
+        let C = A.clone();
+        let D = B.clone();
 
-    let x = DVector::from_vec(vec![10., 10.]);
-    let u = DVector::from_vec(vec![10.]);
+        // move A, B, C, D into double_integrator
+        let double_integrator = LinearSystem::new(A, B, C, D);
 
-    let result = double_integrator.f(0f32, &x, Some(&u));
-    // let result = double_integrator.solve(&x, None);
-    // let result = double_integrator.A.dot(&x);
+        let x = DVector::from_vec(vec![10., 10.]);
+        let u = DVector::from_vec(vec![10.]);
 
-    assert_eq!(result, DVector::from_vec(vec![20., 20.]));
-}
+        let result = double_integrator.f(0f32, &x, Some(&u));
+        // let result = double_integrator.solve(&x, None);
+        // let result = double_integrator.A.dot(&x);
 
-#[test]
-fn test_LinearSystem_solve_output() {
-    // import StateSpaceRepresentation trait to access related methods
-    use na::{DMatrix, DVector};
+        assert_eq!(result, DVector::from_vec(vec![20., 20.]));
+    }
 
-    let C = DMatrix::from_row_slice(1, 2, &[1., 0.]);
-    let D = DMatrix::<f32>::zeros(1, 1);
-    let A = C.clone();
-    let B = D.clone();
+    #[test]
+    fn test_LinearSystem_solve_output() {
+        // import StateSpaceRepresentation trait to access related methods
+        use na::{DMatrix, DVector};
 
-    // move A, B, C, D into double_integrator
-    let double_integrator = LinearSystem::new(A, B, C, D);
+        let C = DMatrix::from_row_slice(1, 2, &[1., 0.]);
+        let D = DMatrix::<f32>::zeros(1, 1);
+        let A = C.clone();
+        let B = D.clone();
 
-    let x = DVector::from_vec(vec![10., 10.]);
+        // move A, B, C, D into double_integrator
+        let double_integrator = LinearSystem::new(A, B, C, D);
 
-    let u = DVector::from_vec(vec![10.]);
+        let x = DVector::from_vec(vec![10., 10.]);
 
-    let result = double_integrator.h(0f32, &x, Some(&u));
-    // let result = double_integrator.solve_output(&x, None);
+        let u = DVector::from_vec(vec![10.]);
 
-    assert_eq!(result, DVector::from_vec(vec![10.]));
+        let result = double_integrator.h(0f32, &x, Some(&u));
+        // let result = double_integrator.solve_output(&x, None);
+
+        assert_eq!(result, DVector::from_vec(vec![10.]));
+    }
 }
