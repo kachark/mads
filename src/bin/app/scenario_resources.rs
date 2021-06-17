@@ -5,13 +5,13 @@ use nalgebra::DVector;
 
 /// Number of Agents
 #[derive(Default)]
-pub struct NumAgents(pub i32);
+pub struct NumAgents(pub u32);
 
 /// Number of Targets
 #[derive(Default)]
-pub struct NumTargets(pub i32);
+pub struct NumTargets(pub u32);
 
 /// Number of Obstacles
 #[derive(Default)]
-pub struct NumObstacles(pub i32);
+pub struct NumObstacles(pub u32);
 

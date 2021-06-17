@@ -25,7 +25,7 @@ pub struct Velocity {
 pub struct FullState(pub DVector<f32>);
 
 /// Assigns a unique identifier and name to an Entity
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct SimID {
     pub uuid: Uuid,
     pub name: String

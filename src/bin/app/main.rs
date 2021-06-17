@@ -11,10 +11,12 @@ extern crate polars;
 
 pub mod configuration;
 pub mod setup;
+pub mod plot;
+pub mod distributions;
+// Scenario specific
 pub mod tracking_scenario;
 pub mod scenario_resources;
 pub mod scenario_components;
-pub mod plot;
 
 use std::collections::HashMap;
 use legion::*;
@@ -32,7 +34,7 @@ fn main() {
     // Engine parameters
     let start_time = EngineParameter::SimulationTime(0f32);
     let maxtime = EngineParameter::MaxSimulationTime(10f32);
-    let engine_step = EngineParameter::EngineStep(1f32);
+    let engine_step = EngineParameter::EngineStep(0.1f32);
 
     // Simulation parameters
     let integrator = SimulationParameter::Integrator(IntegratorType::RK45);
@@ -71,13 +73,7 @@ fn main() {
 
     }
 
-    match plot::plot_trajectory() {
-
-        Ok(()) => println!("hi"),
-        Err(_) => println!("plot error")
-
-    };
-
+    let time_history = resources.get::<SimulationTimeHistory>().unwrap();
     let result = resources.get::<SimulationResult>().unwrap();
     for (uuid, trajectory) in result.data.iter() {
         println!("Entity: {:?}", uuid);
@@ -85,6 +81,13 @@ fn main() {
             println!("{:?}", state);
         }
     }
+
+    match plot::plot_trajectory(&time_history, &result) {
+
+        Ok(()) => println!("hi"),
+        Err(_) => println!("plot error")
+
+    };
 
  }
 

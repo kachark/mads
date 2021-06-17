@@ -55,7 +55,7 @@ pub fn increment_time(
 pub fn update_result(id: &SimID, state: &FullState, #[resource] storage: &mut SimulationResult) {
 
     // Access SimulationResult data and match against uuid keys
-    match storage.data.entry(id.uuid) {
+    match storage.data.entry(id.clone()) {
         // No previous entry for uuid: insert new Vector of DVector<f32>
         std::collections::hash_map::Entry::Vacant(e) => {
             e.insert(vec![state.0.clone()]);

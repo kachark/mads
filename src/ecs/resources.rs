@@ -41,5 +41,5 @@ pub struct TargetableSet(pub HashMap::<Uuid, FullState>);
 /// Storage for Simulation outputs
 #[derive(Default, Debug)]
 pub struct SimulationResult {
-    pub data: HashMap<Uuid, Vec<DVector<f32>>>
+    pub data: HashMap<SimID, Vec<DVector<f32>>>
 }
