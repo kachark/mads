@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use nalgebra::{DMatrix, DVector};
 use legion::{World, Resources};
 use uuid::Uuid;
-use polars::prelude::*;
 
 use formflight::ecs::components::*;
 use formflight::ecs::resources::*;
@@ -11,28 +10,21 @@ use formflight::dynamics::models::linear::double_integrator::*;
 use formflight::dynamics::models::linear::inverted_pendulum::*;
 use formflight::controls::models::lqr::LinearQuadraticRegulator;
 
-use crate::configuration::ScenarioParameter;
+use crate::scenario_configuration::ScenarioConfig;
 use crate::scenario_components::{Agent, Target};
 use crate::scenario_resources::{NumAgents, NumTargets};
 
 pub fn setup_scenario(
     world: &mut World,
     resources: &mut Resources,
-    params: &HashMap<String, ScenarioParameter>
+    config: &ScenarioConfig
 )
 {
     // scenario resources
-    let mut num_agents = NumAgents(1);
-    let mut num_targets = NumTargets(1);
+    let mut num_agents = NumAgents(config.num_agents);
+    let mut num_targets = NumTargets(config.num_targets);
     let mut targetable_set = TargetableSet(HashMap::new());
     let mut storage = SimulationResult{ data: HashMap::new() };
-
-    for (_, parameter) in params.iter() {
-        match parameter {
-            ScenarioParameter::NumAgents(value) => num_agents = NumAgents(*value),
-            ScenarioParameter::NumTargets(value) => num_targets = NumTargets(*value)
-        }
-    }
 
     // TODO: setup_agents()
     // NOTE: define components for each entity

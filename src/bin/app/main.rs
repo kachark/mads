@@ -7,80 +7,57 @@
 // https://amethyst.rs/posts/legion-ecs-v0.3
 
 extern crate plotters;
-extern crate polars;
 
-pub mod configuration;
-pub mod setup;
 pub mod plot;
 pub mod distributions;
+pub mod scenario;
 // Scenario specific
 pub mod tracking_scenario;
 pub mod scenario_resources;
 pub mod scenario_components;
+pub mod scenario_configuration;
 
 use std::collections::HashMap;
 use legion::*;
-use nalgebra::DVector;
-use polars::prelude::{DataFrame, Field, Schema, Series, DataType};
+use formflight::setup::{setup, setup_systems};
 use formflight::ecs::components::*; // TOOD: remove eventually
 use formflight::ecs::resources::*;
-use formflight::math::integrators::IntegratorType;
-
-use crate::scenario_components::Agent;
-use crate::configuration::{EngineParameter, SimulationParameter, ScenarioParameter};
+use formflight::configuration::{EngineConfig, SimulationConfig};
+use crate::scenario_configuration::ScenarioConfig;
 
 fn main() {
 
-    // Engine parameters
-    let start_time = EngineParameter::SimulationTime(0f32);
-    let maxtime = EngineParameter::MaxSimulationTime(10f32);
-    let engine_step = EngineParameter::EngineStep(0.1f32);
-
-    // Simulation parameters
-    let integrator = SimulationParameter::Integrator(IntegratorType::RK45);
-    let integrator_step = SimulationParameter::IntegratorStep(0.1);
-
-    // Scenario parameters
-    let num_agents = ScenarioParameter::NumAgents(1);
-    let num_targets = ScenarioParameter::NumTargets(1);
-
-    let mut engine_params = HashMap::new();
-    engine_params.entry("SimulationTime".to_string()).or_insert(start_time);
-    engine_params.entry("MaxSimulationTime".to_string()).or_insert(maxtime);
-    engine_params.entry("EngineStep".to_string()).or_insert(engine_step);
-
-    let mut sim_params = HashMap::new();
-    sim_params.entry("Integrator".to_string()).or_insert(integrator);
-    sim_params.entry("IntegratorStep".to_string()).or_insert(integrator_step);
-
-    let mut scene_params = HashMap::new();
-    scene_params.entry("NumAgents".to_string()).or_insert(num_agents);
-    scene_params.entry("NumTargets".to_string()).or_insert(num_targets);
+    let engine_config = EngineConfig::default();
+    let sim_config = SimulationConfig::default();
+    let scene_config = ScenarioConfig::default();
 
     // Get World, Resources, and engine time values
-    let (mut world, mut resources, times) = setup::setup(&engine_params, &sim_params);
-    tracking_scenario::setup_scenario(&mut world, &mut resources, &scene_params);
+    let (mut world, mut resources, times) = setup(&engine_config, &sim_config);
+    tracking_scenario::setup_scenario(&mut world, &mut resources, &scene_config);
 
     // Schedule systems for exectution
-    let mut schedule = setup::setup_systems();
+    let mut schedule = setup_systems();
 
     // NOTE: simulation loop
     for _ in times {
 
         schedule.execute(&mut world, &mut resources);
         update_targetable_set(&mut world, &mut resources);
-        // update_storage(&mut world, &mut test_storage);
 
     }
 
+    // TODO: safely unwrap resources.get()
     let time_history = resources.get::<SimulationTimeHistory>().unwrap();
     let result = resources.get::<SimulationResult>().unwrap();
     for (uuid, trajectory) in result.data.iter() {
         println!("Entity: {:?}", uuid);
+        println!("length: {:?}", trajectory.len());
         for state in trajectory {
             println!("{:?}", state);
         }
     }
+
+    println!("{:?}", time_history.data.len());
 
     match plot::plot_trajectory(&time_history, &result) {
 
@@ -115,38 +92,3 @@ fn update_targetable_set(world: &mut World, resources: &mut Resources) {
     }
 
 }
-
-// NOTE: TEST for double integrator
-fn get_schema() -> Schema {
-    Schema::new(vec![
-        Field::new("Time", DataType::Float32),
-        Field::new("x", DataType::Float32),
-        Field::new("y", DataType::Float32),
-        Field::new("z", DataType::Float32),
-        Field::new("vx", DataType::Float32),
-        Field::new("vy", DataType::Float32),
-        Field::new("vz", DataType::Float32)
-    ])
-}
-
-// fn update_storage(world: &mut World, storage: &mut Vec<DVector<f32>>) {
-
-//     // TODO: 
-//     let mut query2 = <(&SimID, &FullState, &Agent)>::query();
-//     for mut chunk in query2.iter_chunks_mut(world) {
-//         // we can access information about the archetype (shape/component layout) of the entities
-//         println!(
-//             "the entities in the chunk have {:?} components",
-//             chunk.archetype().layout().component_types(),
-//         );
-
-//         // we can iterate through a tuple of component references per entity
-//         for (id, state, agent) in chunk {
-//             if agent.0 == true {
-//                 // store deepcopy of fullstate
-//                 storage.push(state.0.clone());
-//             }
-//         }
-//     }
-
-// }

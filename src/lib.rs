@@ -11,6 +11,8 @@ pub mod controls;
 pub mod dynamics;
 pub mod math;
 pub mod util;
+pub mod configuration;
+pub mod setup;
 
 // FormFlight Engine
 pub mod ecs;
