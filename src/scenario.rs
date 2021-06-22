@@ -2,11 +2,8 @@
 use std::collections::HashMap;
 use legion::{World, Resources, Schedule};
 
-use crate::ecs::resources::{SimulationResult, SimulationTimeHistory};
+use crate::ecs::resources::SimulationResult;
 use crate::ecs::systems::simple_systems::*;
-
-// NOTE:
-// this struct is a f(SimulationState)
 
 pub trait Scenario {
 
@@ -16,6 +13,7 @@ pub trait Scenario {
 
 }
 
+/// Example Scenario
 pub struct SimpleScenario {
 
     name: String,
@@ -38,6 +36,7 @@ impl Scenario for SimpleScenario {
 
     fn setup(&self, world: &mut World, resources: &mut Resources) {
 
+        // Insert this Resource as a object to store Entity data
         let storage = SimulationResult{ data: HashMap::new() };
         resources.insert(storage);
 

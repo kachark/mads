@@ -14,8 +14,8 @@ use formflight::dynamics::models::linear::double_integrator::*;
 use formflight::dynamics::models::linear::inverted_pendulum::*;
 use formflight::controls::models::lqr::LinearQuadraticRegulator;
 
-use crate::scenario_components::{Agent, Target};
-use crate::scenario_resources::{NumAgents, NumTargets};
+use crate::scenarios::components::{Agent, Target};
+use crate::scenarios::resources::{NumAgents, NumTargets};
 
 pub struct TrackingScenario {
 

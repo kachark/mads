@@ -13,8 +13,7 @@ pub mod math;
 pub mod util;
 
 // FormFlight Engine
-pub mod simulation;
-pub mod state; // TODO: change the name of this
+pub mod simulator;
 pub mod scenario;
 pub mod configuration;
 pub mod setup;
