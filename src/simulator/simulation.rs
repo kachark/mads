@@ -1,6 +1,6 @@
 
 use crate::simulator::state::{EngineState, SimulationState};
-use crate::scenario::Scenario;
+use crate::scene::scenario::Scenario;
 
 pub struct Simulation<T>
 where

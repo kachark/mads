@@ -4,7 +4,7 @@ use nalgebra::{DMatrix, DVector};
 use legion::*;
 use uuid::Uuid;
 
-use formflight::scenario::Scenario;
+use formflight::scene::scenario::Scenario;
 use formflight::ecs::systems::simple_systems::*;
 use formflight::ecs::systems::dynamics_systems::*;
 use formflight::ecs::components::*;
