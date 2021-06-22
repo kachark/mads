@@ -2,7 +2,7 @@
 use legion::{World, Resources};
 use crate::util::range_step;
 use crate::ecs::resources::*;
-use crate::configuration::{EngineConfig, SimulationConfig};
+use crate::simulator::configuration::{EngineConfig, SimulationConfig};
 
 /// Define World, Resources, and Components
 /// Input:

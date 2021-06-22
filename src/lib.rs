@@ -15,7 +15,6 @@ pub mod util;
 // FormFlight Engine
 pub mod simulator;
 pub mod scene;
-pub mod configuration;
 pub mod ecs;
 // pub mod logger;
 

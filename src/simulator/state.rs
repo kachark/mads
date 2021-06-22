@@ -1,5 +1,5 @@
 
-use crate::configuration::{EngineConfig, SimulationConfig};
+use crate::simulator::configuration::{EngineConfig, SimulationConfig};
 use crate::simulator::setup::setup;
 use crate::ecs::systems::simple_systems::*;
 use crate::ecs::resources::SimulationTimeHistory;

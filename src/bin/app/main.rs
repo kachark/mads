@@ -10,15 +10,14 @@ extern crate plotters;
 
 pub mod plot;
 pub mod distributions;
-// Scenario specific
 pub mod scenarios;
 
+use formflight::simulator::configuration::{EngineConfig, SimulationConfig};
 use formflight::simulator::simulation::Simulation;
 use formflight::simulator::state::SimulationState;
 use formflight::ecs::resources::*;
-use formflight::configuration::{EngineConfig, SimulationConfig};
 
-// use formflight::scenario::SimpleScenario;
+// use formflight::scene::scenario::SimpleScenario;
 use crate::scenarios::tracking_scenario::TrackingScenario;
 
 fn main() {
