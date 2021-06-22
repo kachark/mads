@@ -31,7 +31,7 @@ where
     let h = step.0;
 
     // Define initial conditions
-    let x0 = state.0.clone();
+    let x0 = state.data.clone();
 
     // Solve the LQR controller
     let (K, _P) = match controller.model.solve() {
@@ -63,7 +63,7 @@ where
     };
 
     // Update entity FullState component
-    state.0 = traj[traj.len()-1].clone();
+    state.data = traj[traj.len()-1].clone();
 
     // Store result
     for state in traj {

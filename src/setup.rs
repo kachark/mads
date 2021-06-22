@@ -67,6 +67,7 @@ fn get_times(config: &EngineConfig) -> Vec<f32> {
 }
 
 
+// NOTE: scenario specific
 /// Define systems to be run per loop iteration and return a Schedule to execute
 pub fn setup_systems() -> legion::Schedule {
 

@@ -17,7 +17,11 @@ pub fn update_position(pos: &mut Position, vel: &Velocity, #[resource] time: &Si
 // pub fn print_errorstate(_agent: &Agent, state1: &FullState, #[resource] targetable_set: &TargetableSet) {
 
 //     for (_id, state2) in targetable_set.0.iter() {
-//         println!("ERROR STATE: {:?}", &state1.0  - &state2.0);
+//         if state1.data.len() != state2.data.len() {
+//             continue;
+//         } else {
+//             println!("ERROR STATE: {:?}", &state1.data  - &state2.data);
+//         }
 //     }
 
 // }
@@ -58,11 +62,11 @@ pub fn update_result(id: &SimID, state: &FullState, #[resource] storage: &mut Si
     match storage.data.entry(id.clone()) {
         // No previous entry for uuid: insert new Vector of DVector<f32>
         std::collections::hash_map::Entry::Vacant(e) => {
-            e.insert(vec![state.0.clone()]);
+            e.insert(vec![state.data.clone()]);
         },
         // Previous entry for uuid: push DVector<f32> to existing Vector
         std::collections::hash_map::Entry::Occupied(mut e) => {
-            e.get_mut().push(state.0.clone());
+            e.get_mut().push(state.data.clone());
         }
     }
 

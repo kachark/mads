@@ -9,6 +9,7 @@ use formflight::ecs::systems::simple_systems::*;
 use formflight::ecs::systems::dynamics_systems::*;
 use formflight::ecs::components::*;
 use formflight::ecs::resources::*;
+use formflight::dynamics::statespace::{State, StateSpace};
 use formflight::dynamics::models::linear::double_integrator::*;
 use formflight::dynamics::models::linear::inverted_pendulum::*;
 use formflight::controls::models::lqr::LinearQuadraticRegulator;
@@ -43,6 +44,7 @@ impl TrackingScenario {
 
     }
 
+    /// Keeps track of Entities that have a Trackable component
     fn update_targetable_set(&self, world: &mut World, resources: &mut Resources) {
 
         // query for 'Targetable' components
@@ -71,6 +73,7 @@ impl TrackingScenario {
 
 impl Scenario for TrackingScenario {
 
+    /// Generate Resources for the scenario and insert into Simulator Resource pool
     fn setup(&self,
         world: &mut World,
         resources: &mut Resources,
@@ -105,85 +108,100 @@ impl Scenario for TrackingScenario {
         let Q3 = DMatrix::<f32>::identity(4, 4);
         let R3 = DMatrix::<f32>::identity(2, 2);
 
-        // // can actually put this into it's own system - setup system
-        // let entities: &[Entity] = world.extend(vec![
-        //     (Position { x: 0.0, y: 0.0, z: 0.0 }, Velocity { x: 0.0, y: 0.0, z: 0.0 }),
-        //     (Position { x: 1.0, y: 1.0, z: 1.0 }, Velocity { x: 0.0, y: 0.0, z: 0.0 }),
-        //     (Position { x: 2.0, y: 2.0, z: 2.0 }, Velocity { x: 0.0, y: 0.0, z: 0.0 }),
-        // ]);
-
-        // world.extend(vec![
-        //     (FullState { 0: DVector::<f32>::from_vec(vec![0.0, 5.0, 2., 3.]) },
-        //        LinearizedInvertedPendulumDynamics { name: InvertedPendulum::new() },
-        //        LinearFeedbackController { name: LinearQuadraticRegulator::new(A2.clone(), B2.clone(), Q2.clone(), R2.clone()) }); 5
-        // ]);
-
         // NOTE: we can easily do heterogeneous swarms!!!
         for _ in 0..num_agents.0 {
-        let id = Uuid::new_v4();
-        let name = "test_name".to_string();
-        let sim_id = SimID { uuid: id, name };
-        let state = DVector::<f32>::from_vec(vec![0.0, 5.0, 10.0, 11.0, 2., 3.]);
+            let id = Uuid::new_v4();
+            let name = "test_name".to_string();
+            let sim_id = SimID { uuid: id, name };
+            let state = DVector::<f32>::from_vec(vec![0.0, 5.0, 10.0, 11.0, 2., 3.]);
+            let statespace = StateSpace{
+                position: State::Position{x: 0, y: 1, z: Some(2)},
+                velocity: State::Velocity{x: 3, y: 4, z: Some(5)},
+                attitude: State::Empty,
+                angular_velocity: State::Empty
+            };
 
-        // initialize the SimulationResult storage
-        storage.data.entry(sim_id.clone()).or_insert(vec![state.clone()]);
+            // initialize the SimulationResult storage
+            storage.data.entry(sim_id.clone()).or_insert(vec![state.clone()]);
 
-        world.extend(vec![
-            (FullState { 0: state },
-                DynamicsModel { model: DoubleIntegrator3D::new() },
-                LQRController { model: LinearQuadraticRegulator::new(A1.clone(), B1.clone(), Q1.clone(), R1.clone()) },
-                sim_id,
-                Agent { 0: true } )
-        ]);
+            world.extend(vec![
+                (FullState { data: state, statespace },
+                    DynamicsModel { model: DoubleIntegrator3D::new() },
+                    LQRController { model: LinearQuadraticRegulator::new(A1.clone(), B1.clone(), Q1.clone(), R1.clone()) },
+                    sim_id,
+                    Agent { 0: true } )
+            ]);
 
-        // NOTE: generic dynamics component so we don't have to make many dynamics components per
-        // model
-        let id2 = Uuid::new_v4();
-        let sim_id2 = SimID { uuid: id2, name: "generic_component".to_string() };
-        let state2 = DVector::<f32>::from_vec(vec![0.0, 0.0, 1.0, 1.0]);
+            // NOTE: generic dynamics component so we don't have to make many dynamics components per
+            // model
+            let id2 = Uuid::new_v4();
+            let sim_id2 = SimID { uuid: id2, name: "generic_component".to_string() };
+            let state2 = DVector::<f32>::from_vec(vec![0.0, 0.0, 1.0, 1.0]);
+            let statespace2 = StateSpace{
+                position: State::Position{x: 0, y: 1, z: None},
+                velocity: State::Velocity{x: 2, y: 3, z: None},
+                attitude: State::Empty,
+                angular_velocity: State::Empty
+            };
 
-        storage.data.entry(sim_id2.clone()).or_insert(vec![state2.clone()]);
+            storage.data.entry(sim_id2.clone()).or_insert(vec![state2.clone()]);
 
-        world.extend(vec![
-            (FullState { 0: state2 },
-                DynamicsModel { model: DoubleIntegrator2D::new() },
-                LQRController { model: LinearQuadraticRegulator::new(A3.clone(), B3.clone(), Q3.clone(), R3.clone()) },
-                sim_id2,
-                Agent { 0: true } )
-        ]);
+            world.extend(vec![
+                (FullState { data: state2, statespace: statespace2 },
+                    DynamicsModel { model: DoubleIntegrator2D::new() },
+                    LQRController { model: LinearQuadraticRegulator::new(A3.clone(), B3.clone(), Q3.clone(), R3.clone()) },
+                    sim_id2,
+                    Agent { 0: true } )
+            ]);
 
-        let id3 = Uuid::new_v4();
-        let sim_id3 = SimID { uuid: id3, name: "generic_component_2".to_string() };
-        let state3 = DVector::<f32>::from_vec(vec![5.0, 5.0, 5.0, 5.0]);
+            let id3 = Uuid::new_v4();
+            let sim_id3 = SimID { uuid: id3, name: "generic_component_2".to_string() };
+            let state3 = DVector::<f32>::from_vec(vec![5.0, 5.0, 5.0, 5.0]);
+            let statespace3 = StateSpace{
+                position: State::Position{x: 0, y: 1, z: None},
+                velocity: State::Velocity{x: 2, y: 3, z: None},
+                attitude: State::Empty,
+                angular_velocity: State::Empty
+            };
 
-        storage.data.entry(sim_id3.clone()).or_insert(vec![state3.clone()]);
+            storage.data.entry(sim_id3.clone()).or_insert(vec![state3.clone()]);
 
-        world.extend(vec![
-            (FullState { 0: state3 },
-                DynamicsModel { model: DoubleIntegrator2D::new() },
-                LQRController { model: LinearQuadraticRegulator::new(A3.clone(), B3.clone(), Q3.clone(), R3.clone()) },
-                sim_id3,
-                Agent { 0: true } )
-        ]);
+            world.extend(vec![
+                (FullState { data: state3, statespace: statespace3 },
+                    DynamicsModel { model: DoubleIntegrator2D::new() },
+                    LQRController { model: LinearQuadraticRegulator::new(A3.clone(), B3.clone(), Q3.clone(), R3.clone()) },
+                    sim_id3,
+                    Agent { 0: true } )
+            ]);
 
 
         }
 
         // TODO: setup_targets()
         for _ in 0..num_targets.0 {
-        let id = Uuid::new_v4();
-        let name = "target_1".to_string();
-        let sim_id = SimID { uuid: id, name };
-        let state = FullState { 0: DVector::<f32>::from_vec(vec![0.0, 5.0, 10.0, 11.0, 2., 3.]) };
+            let id = Uuid::new_v4();
+            let name = "target_1".to_string();
+            let sim_id = SimID { uuid: id, name };
+            let statespace = StateSpace{
+                position: State::Position{x: 0, y: 1, z: None},
+                velocity: State::Velocity{x: 2, y: 3, z: None},
+                attitude: State::Empty,
+                angular_velocity: State::Empty
+            };
 
-        storage.data.entry(sim_id).or_insert(vec![state.0.clone()]);
+            let state = FullState { 
+                data: DVector::<f32>::from_vec(vec![0.0, 5.0, 10.0, 11.0, 2., 3.]),
+                statespace
+            };
 
-        targetable_set.0.entry(id).or_insert(state.clone());
-        world.extend(vec![
-            (state,
-                Target { 0: true },
-                Targetable { 0: true })
-        ]);
+            storage.data.entry(sim_id).or_insert(vec![state.data.clone()]);
+
+            targetable_set.0.entry(id).or_insert(state.clone());
+            world.extend(vec![
+                (state,
+                    Target { 0: true },
+                    Targetable { 0: true })
+            ]);
         }
 
         // NOTE: have to insert targetable_set afterwards since it's used in setup
@@ -214,8 +232,10 @@ impl Scenario for TrackingScenario {
 
     }
 
+    /// Update and perform necessary logic specific to the scenario
     fn update(&mut self, world: &mut World, resources: &mut Resources) {
 
+        // Updates entities flagged as Targetable
         self.update_targetable_set(world, resources);
 
     }

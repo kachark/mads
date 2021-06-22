@@ -11,31 +11,31 @@ extern crate plotters;
 pub mod plot;
 pub mod distributions;
 // Scenario specific
-// pub mod tracking_scenario;
 pub mod scenario_resources;
 pub mod scenario_components;
 pub mod scenario_configuration;
 
-use legion::*;
 use formflight::simulation::Simulation;
 use formflight::state::SimulationState;
-use formflight::ecs::components::*; // TOOD: remove eventually
 use formflight::ecs::resources::*;
 use formflight::configuration::{EngineConfig, SimulationConfig};
-use crate::scenario_configuration::TrackingScenario;
+// use formflight::scenario::SimpleScenario;
+use crate::scenario_configuration::TrackingScenario; // TODO: put this in its own Scenarios directory
 
 fn main() {
 
     // Configure simulation, engine, and scenario
     let engine_config = EngineConfig::default();
     let sim_config = SimulationConfig::default();
-    let scenario = TrackingScenario::default();
-
     let sim_state = SimulationState::new(engine_config, sim_config);
+    let scenario = TrackingScenario::default();
+    // let scenario = SimpleScenario::new();
+
     let mut simulation = Simulation::new(sim_state, scenario);
     simulation.build();
     simulation.run();
 
+    // NOTE: post processing
     // TODO: safely unwrap resources.get()
     let time_history = simulation.state.resources.get::<SimulationTimeHistory>().unwrap();
     let result = simulation.state.resources.get::<SimulationResult>().unwrap();

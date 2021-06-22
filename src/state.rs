@@ -5,7 +5,7 @@ use crate::ecs::systems::simple_systems::*;
 use crate::ecs::resources::SimulationTimeHistory;
 use legion::{World, Resources, Schedule};
 
-#[derive(PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum EngineState {
 
     Active,
@@ -83,8 +83,9 @@ impl SimulationState
     fn check_done(&mut self) -> EngineState {
 
         let elapsed_times = self.resources.get::<SimulationTimeHistory>().unwrap();
-        let iterations = elapsed_times.data.len();
-        if elapsed_times.data[iterations-1] >= self.engine_config.max_simulation_time {
+        let k = elapsed_times.data.len();
+
+        if elapsed_times.data[k-1] >= self.engine_config.max_simulation_time {
 
             EngineState::Inactive
 

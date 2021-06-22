@@ -3,7 +3,7 @@ use nalgebra::DVector;
 use uuid::Uuid;
 
 use crate::controls::models::lqr::LinearQuadraticRegulator;
-use crate::dynamics::statespace::StateSpaceRepresentation;
+use crate::dynamics::statespace::{StateSpace, StateSpaceRepresentation};
 
 // Define Components
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -22,7 +22,10 @@ pub struct Velocity {
 
 /// Assigns a Dynamic Vector (see nalgebra) to an Entity
 #[derive(Clone, Debug, PartialEq)]
-pub struct FullState(pub DVector<f32>);
+pub struct FullState {
+    pub data: DVector<f32>,
+    pub statespace: StateSpace
+}
 
 /// Assigns a unique identifier and name to an Entity
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
