@@ -6,9 +6,9 @@ use crate::dynamics::statespace::StateSpaceRepresentation;
 // https://stackoverflow.com/questions/27831944/how-do-i-store-a-closure-in-a-struct-in-rust
 // https://doc.rust-lang.org/reference/types/closure.html
 // NOTE: why generic over 2 function signatures?
-// allows you to define a closure as inputs for both state_equation AND output_equation.
-// This is because a closure type is unique and therefore could never satisfy a constraint
-// on this struct of a single function type being defining two members
+// - allows you to define a closure as inputs for both state_equation AND output_equation.
+// - This is because a closure type is unique and therefore could never satisfy constraining
+// two struct fields simultaneously
 pub struct NonlinearSystem<F, H>
 where
     F: Fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
@@ -44,7 +44,7 @@ where
 
     fn f(&self, t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
 
-        (self.state_equation)(t, x, u) // syntax for calling a function-typed member's function
+        (self.state_equation)(t, x, u) // syntax for calling the function of a function-typed field
 
     }
 
