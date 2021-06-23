@@ -35,11 +35,11 @@ pub struct IntegratorStep(pub f32);
 pub struct Integrator(pub IntegratorType);
 
 /// Tracks a set of entities defined by Uuid
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct TargetableSet(pub HashMap::<Uuid, FullState>);
 
 /// Storage for Simulation outputs
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct SimulationResult {
     pub data: HashMap<SimID, Vec<DVector<f32>>>
 }

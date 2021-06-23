@@ -1,6 +1,15 @@
 
 use std::f32::consts::PI as pi;
 
+pub enum Distribution {
+
+    Circle2D,
+    Circle3D,
+    Sphere
+
+}
+
+
 /// Computes the x,y position on a circle for a given number of points
 ///  r: radius of circle
 pub fn circle_2d(radius: f32, num_samples: u32) -> Vec<(f32, f32)> {

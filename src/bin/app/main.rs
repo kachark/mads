@@ -37,6 +37,7 @@ fn main() {
     // TODO: safely unwrap resources.get()
     let time_history = simulation.state.resources.get::<SimulationTimeHistory>().unwrap();
     let result = simulation.state.resources.get::<SimulationResult>().unwrap();
+    // let targetable_set_atomic = simulation.state.resources.get_mut::<TargetableSet>().unwrap();
     for (uuid, trajectory) in result.data.iter() {
         println!("Entity: {:?}", uuid);
         println!("length: {:?}", trajectory.len());
@@ -51,6 +52,8 @@ fn main() {
         println!("{:?}", t);
 
     }
+
+    // println!("{:?}", targetable_set_atomic);
 
     match plot::plot_trajectory(&time_history, &result) {
 
