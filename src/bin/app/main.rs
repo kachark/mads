@@ -55,7 +55,7 @@ fn main() {
 
     // println!("{:?}", targetable_set_atomic);
 
-    match plot::plot_trajectory(&time_history, &result) {
+    match plot::plot_trajectory_3d(&time_history, &result) {
 
         Ok(()) => println!("hi"),
         Err(_) => println!("plot error")

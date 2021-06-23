@@ -2,6 +2,58 @@
 use plotters::prelude::*;
 use formflight::ecs::resources::{SimulationTimeHistory, SimulationResult};
 
+
+pub fn plot_trajectory_3d(
+    times: &SimulationTimeHistory,
+    data: &SimulationResult
+) -> Result<(), Box<dyn std::error::Error>>
+{
+    let root = BitMapBackend::new("images/trajectory.png", (640, 480)).into_drawing_area();
+    root.fill(&WHITE)?;
+
+    let mut chart = ChartBuilder::on(&root)
+        .caption("Trajectory", ("sans-serif", 50).into_font())
+        .margin(5)
+        .x_label_area_size(30)
+        .y_label_area_size(30)
+        .build_cartesian_3d(-10f32..10f32, -10f32..10f32, -10f32..10f32)?;
+
+    chart.with_projection(|mut pb| {
+        pb.yaw = 0.5;
+        pb.scale = 0.9;
+        pb.into_matrix()
+    });
+
+    chart.configure_axes().draw()?;
+
+    for (id, trajectory) in data.data.iter() {
+
+        let name = &id.name;
+
+        // recover position in XYZ
+        let xyz_traj: Vec<(f32, f32, f32)> = trajectory.iter()
+            .map(|state| (state[0], state[1], state[2]))
+            .collect();
+
+        // Draw
+        chart
+            .draw_series(LineSeries::new(xyz_traj, &RED))?
+            .label(name)
+            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
+
+    }
+
+    chart
+        .configure_series_labels()
+        .background_style(&WHITE.mix(0.8))
+        .border_style(&BLACK)
+        .draw()?;
+
+    Ok(())
+}
+
+
+
 pub fn plot_trajectory(
     times: &SimulationTimeHistory,
     data: &SimulationResult
@@ -32,9 +84,9 @@ pub fn plot_trajectory(
 //             .map(|(t, x)| (*t, x[0]))
 //             .collect();
 
-        // recover position and velocity in X
+        // recover position in X and Y
         let xy_traj: Vec<(f32, f32)> = trajectory.iter()
-            .map(|state| (state[0], state[3]))
+            .map(|state| (state[0], state[1]))
             .collect();
 
         // Draw
