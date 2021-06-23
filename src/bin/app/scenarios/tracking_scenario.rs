@@ -95,10 +95,10 @@ impl TrackingScenario {
 
         // For now just use a double integrator and LQR
         let double_integrator = DoubleIntegrator3D::new();
-        let A1 = double_integrator.dynamics.A.clone();
-        let B1 = double_integrator.dynamics.B.clone();
-        let Q1 = DMatrix::<f32>::identity(6, 6);
-        let R1 = DMatrix::<f32>::identity(3, 3);
+        let A = double_integrator.dynamics.A.clone();
+        let B = double_integrator.dynamics.B.clone();
+        let Q = DMatrix::<f32>::identity(6, 6);
+        let R = DMatrix::<f32>::identity(3, 3);
 
         // Define agent entities
         let agents: Vec<(FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID, Agent)> = (0..self.num_agents).into_iter()
@@ -117,7 +117,7 @@ impl TrackingScenario {
                 };
                 let fullstate = FullState { data: state, statespace };
                 let dynamics = DynamicsModel { model: DoubleIntegrator3D::new() };
-                let controller = LQRController { model: LinearQuadraticRegulator::new(A1.clone(), B1.clone(), Q1.clone(), R1.clone()) };
+                let controller = LQRController { model: LinearQuadraticRegulator::new(A.clone(), B.clone(), Q.clone(), R.clone()) };
                 let agent_flag = Agent { 0: true };
 
                 (fullstate, dynamics, controller, sim_id, agent_flag)
@@ -148,10 +148,10 @@ impl TrackingScenario {
 
         // For now just use a double integrator and LQR
         let double_integrator = DoubleIntegrator3D::new();
-        let A1 = double_integrator.dynamics.A.clone();
-        let B1 = double_integrator.dynamics.B.clone();
-        let Q1 = DMatrix::<f32>::identity(6, 6);
-        let R1 = DMatrix::<f32>::identity(3, 3);
+        let A = double_integrator.dynamics.A.clone();
+        let B = double_integrator.dynamics.B.clone();
+        let Q = DMatrix::<f32>::identity(6, 6);
+        let R = DMatrix::<f32>::identity(3, 3);
 
         // Define target entities
         let targets: Vec<(FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID, Target)>
@@ -171,7 +171,7 @@ impl TrackingScenario {
                 };
                 let fullstate = FullState { data: state, statespace };
                 let dynamics = DynamicsModel { model: DoubleIntegrator3D::new() };
-                let controller = LQRController { model: LinearQuadraticRegulator::new(A1.clone(), B1.clone(), Q1.clone(), R1.clone()) };
+                let controller = LQRController { model: LinearQuadraticRegulator::new(A.clone(), B.clone(), Q.clone(), R.clone()) };
                 let target_flag = Target { 0: true };
 
                 (fullstate, dynamics, controller, sim_id, target_flag)
