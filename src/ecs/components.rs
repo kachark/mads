@@ -4,6 +4,7 @@ use uuid::Uuid;
 
 use crate::controls::models::lqr::LinearQuadraticRegulator;
 use crate::dynamics::statespace::{StateSpace, StateSpaceRepresentation};
+use crate::math::coordinate_frame::CartesianFrame;
 
 // Define Components
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -18,6 +19,12 @@ pub struct Velocity {
     pub x: f32,
     pub y: f32,
     pub z: f32
+}
+
+/// Define coordinates frame for an entity
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct CartesianCoordinates {
+    pub frame: CartesianFrame
 }
 
 /// Assigns a Dynamic Vector (see nalgebra) to an Entity

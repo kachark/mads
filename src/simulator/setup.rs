@@ -1,7 +1,10 @@
 
 use legion::{World, Resources};
+use uuid::Uuid;
 use crate::util::range_step;
 use crate::ecs::resources::*;
+use crate::ecs::components::{CartesianCoordinates, SimID};
+use crate::math::coordinate_frame::CartesianFrame;
 use crate::simulator::configuration::{EngineConfig, SimulationConfig};
 
 /// Define World, Resources, and Components
@@ -19,11 +22,14 @@ pub fn setup(
 {
 
     // Declare World and Resources
-    let world = World::default();
+    let mut world = World::default();
     let mut resources = Resources::default();
 
     // Generate Engine time values
     let times = get_times(engine_params);
+
+    // Core simulation Entities
+    add_simulation_entities(&mut world);
 
     // Populate resources
     add_engine_resources(&mut resources, engine_params);
@@ -43,6 +49,17 @@ fn add_engine_resources(resources: &mut legion::Resources, config: &EngineConfig
 
 }
 
+/// Inserts core Entities for simulation
+fn add_simulation_entities(world: &mut legion::World) {
+
+    // Add entity for origin
+    let inertial_frame = CartesianCoordinates {
+        frame: CartesianFrame::default()
+    };
+    let sim_id = SimID { uuid: Uuid::new_v4(), name: "O".to_string() };
+    world.extend(vec![(inertial_frame, sim_id)]);
+
+}
 
 /// Inserts Resources to ECS derived from a SimulationConfig
 fn add_simulation_resources(resources: &mut legion::Resources, config: &SimulationConfig) {
