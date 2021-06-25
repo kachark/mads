@@ -1,6 +1,7 @@
 
 use crate::math::integrators::IntegratorType;
 
+/// Configuration for the Simulator loop and engine
 pub struct EngineConfig {
 
     pub simulation_time: f32,
@@ -33,7 +34,7 @@ impl EngineConfig {
 
 }
 
-
+/// Configuration for the Simulation and dynamics solvers
 pub struct SimulationConfig {
 
     pub integrator: IntegratorType,

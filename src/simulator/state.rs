@@ -63,6 +63,7 @@ impl SimulationState
 
     }
 
+    /// Execute ECS systems and update Simulation state (World, Resources, etc.)
     pub fn update(&mut self) {
 
         // Check for simulator exit condition and update status accordingly
@@ -80,6 +81,7 @@ impl SimulationState
 
     }
 
+    /// Checks for simulation exit condition (time)
     fn check_done(&mut self) -> EngineState {
 
         let elapsed_times = self.resources.get::<SimulationTimeHistory>().unwrap();

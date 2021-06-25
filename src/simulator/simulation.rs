@@ -24,9 +24,10 @@ where
 
     }
 
+    /// Builds Simulation using Simulation state ECS World and Resources
     pub fn build(&mut self) {
 
-        // Add resources simulation state and prepare scenario internal state
+        // Add resources to simulation state and prepare scenario internal state
         self.scenario.setup(&mut self.state.world, &mut self.state.resources);
 
         // Define simulation state schedule
@@ -34,6 +35,7 @@ where
 
     }
 
+    /// Simulation loop
     pub fn run(&mut self) {
 
         self.state.status = EngineState::Active;

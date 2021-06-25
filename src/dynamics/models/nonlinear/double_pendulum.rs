@@ -3,42 +3,50 @@ use na::{DMatrix, DVector};
 use crate::dynamics::nonlinear_system::NonlinearSystem;
 use crate::dynamics::statespace::StateSpaceRepresentation;
 
-fn equations_of_motion(_t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
+fn equations_of_motion(_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>) -> DVector<f32> {
 
-    // Cart inverted pendulum model params
-    // https://link.springer.com/article/10.1007/s11633-014-0818-1
+    // Double pendulum model params
+    // https://web.mit.edu/jorloff/www/chaosTalk/double-pendulum/double-pendulum-en.html
     let g = 9.81; // gravity
-    let l = 5.0; // length of pendulum
-    let k = 0.7; // coeff. of friction
-    let m = 3.0; // mass
-    let M = 6.0; // mass of cart
+    let l1 = 1.0; // length of rod 1
+    let l2 = 1.0; // length of rod 2
+    let m1 = 2.0; // mass at end of rod 1
+    let m2 = 2.0; // mass at end of rod 2
 
     // Pendulum equations
     let mut res = DVector::<f32>::zeros(x.len());
 
-    let x1 = x[0]; // theta
-    let x2 = x[1]; // theta_dot
-    let _x3 = x[2]; // x
-    let x4 = x[3]; // x_dot
+    let x1 = x[0]; // theta rod 1
+    let x2 = x[1]; // omega rod 1
+    let x3 = x[2]; // theta rod 2
+    let x4 = x[3]; // omega rod 2
 
-    match u {
 
-        Some(u) => {
-            let u = u[0];
-            res[0] = x2;
-            res[1] = (u*x1.cos() - (M+m)*g*x1.sin() + m*l*(x1.cos() * x1.sin())*x2.powf(2.0)) / 
-                ( m*l*x1.cos().powf(2.0) - (M+m)*l );
-            res[2] = x4;
-            res[3] = (u + m*l*(x1.sin())*x2.powf(2.0) - m*g*x1.cos()*x1.sin()) / 
-                ( M + m - m*x1.cos().powf(2.0) );
-        },
+    res[0] = x2;
 
-        None => println!("no control input provided")
+    let num1 = -g * (2.0*m1 + m2) * x1.sin()
+        - m2 * g * (x1 - (2.0*x3)).sin()
+        - 2.0
+            * (x1-x3).sin()
+            * m2
+            * (x4.powf(2.)*l2
+               + x2.powf(2.)*l1*(x1-x3).cos());
 
-    };
+    let den1 = l1*( 2.0*m1 + m2 - m2*(2.0*x1 - 2.0*x3).cos());
+    res[1] = num1 / den1;
+
+    res[2] = x4;
+
+    let num2 = 2.0
+        * (x1-x3).sin()
+        * (x2.powf(2.)*l1*(m1+m2)
+           + g * (m1+m2)*x1.cos()
+           + x4.powf(2.)*l2*m2*(x1-x3).cos());
+    let den2 = l2*( 2.0*m1 + m2 - m2*(2.0*x1 - 2.0*x3).cos());
+
+    res[3] = num2 / den2;
 
     res
-
 
 }
 
@@ -52,14 +60,14 @@ fn output_equations(_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>) -> DVe
 
 }
 
-pub struct InvertedPendulum {
+pub struct DoublePendulum {
 
     dynamics: NonlinearSystem::< fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
                 fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32> >,
 
 }
 
-impl InvertedPendulum {
+impl DoublePendulum {
 
     pub fn new() -> Self {
 
@@ -76,7 +84,7 @@ impl InvertedPendulum {
 
 }
 
-impl StateSpaceRepresentation for InvertedPendulum {
+impl StateSpaceRepresentation for DoublePendulum {
 
     fn f(&self, t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
 
@@ -98,25 +106,24 @@ mod tests {
     use std::f32::consts::FRAC_PI_4;
 
     #[test]
-    fn test_InvertedPendulum() {
+    fn test_DoublePendulum() {
 
-        let pendulum = InvertedPendulum::new();
+        let pendulum = DoublePendulum::new();
 
         // initial conditions
-        let x0 = DVector::<f32>::from_vec(vec![FRAC_PI_4, -1.0, 0.0, 0.0]); // omega, omega_dot
+        // theta1, omega1, theta2, omega2
+        let x0 = DVector::<f32>::from_vec(vec![FRAC_PI_4, 0.0, -FRAC_PI_4, 0.0]);
         let t0 = 0.0;
 
         // Integrate the dynamics
 
         // Wrap model in appropriately defined closure for integrator (ie. f(t,x))
         let dynamics = |t: f32, x: &DVector<f32>| {
-            // Some constant control input
-            let u = DVector::<f32>::from_vec(vec![0.0]);
-            pendulum.f(t, x, Some(&u))
+            pendulum.f(t, x, None)
         };
 
         let tf = 10.0;
-        let n = 100.0;
+        let n = 1000.0;
         let step = (tf - t0) / n;
         let rtol = 1E-3;
         let (_t, y) = RungeKutta45(dynamics, t0, x0, tf, step, rtol);

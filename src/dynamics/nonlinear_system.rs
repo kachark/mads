@@ -9,6 +9,7 @@ use crate::dynamics::statespace::StateSpaceRepresentation;
 // - allows you to define a closure as inputs for both state_equation AND output_equation.
 // - This is because a closure type is unique and therefore could never satisfy constraining
 // two struct fields simultaneously
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct NonlinearSystem<F, H>
 where
     F: Fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
@@ -69,8 +70,8 @@ mod tests {
         use crate::math::ivp_solver::rk45::RungeKutta45;
 
         // Declare a NonlinearSystem and indicate the function signature that it is generic over
-        let _model: NonlinearSystem::< fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
-                                    fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>>;
+        // let _model: NonlinearSystem::< fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
+        //                             fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>>;
 
 
         // Pendulum model params
