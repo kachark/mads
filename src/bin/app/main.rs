@@ -18,7 +18,8 @@ use formflight::simulator::state::SimulationState;
 use formflight::ecs::resources::*;
 
 // use formflight::scene::scenario::SimpleScenario;
-use crate::scenarios::tracking_scenario::TrackingScenario;
+// use crate::scenarios::tracking_scenario::TrackingScenario;
+use crate::scenarios::nonlinear_scenario::NonlinearScenario;
 
 fn main() {
 
@@ -26,7 +27,8 @@ fn main() {
     let engine_config = EngineConfig::default();
     let sim_config = SimulationConfig::default();
     let sim_state = SimulationState::new(engine_config, sim_config);
-    let scenario = TrackingScenario::default();
+    // let scenario = TrackingScenario::default();
+    let scenario = NonlinearScenario::default();
     // let scenario = SimpleScenario::new();
 
     let mut simulation = Simulation::new(sim_state, scenario);
