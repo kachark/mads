@@ -67,6 +67,7 @@ mod tests {
     fn test_Linearized_InvertedPendulum() {
 
         let model = InvertedPendulum::new();
+        // x, x_dot, phi, phi_dot (phi is some small deviation from equilibrium)
         let x0 = DVector::from_vec(vec![10., 10., 10., 10.]);
 
         let xdot = model.f(0f32, &x0, None);

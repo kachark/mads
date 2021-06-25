@@ -9,7 +9,7 @@ fn equations_of_motion(_t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> D
     // https://link.springer.com/article/10.1007/s11633-014-0818-1
     let g = 9.81; // gravity
     let l = 5.0; // length of pendulum
-    let k = 0.7; // coeff. of friction
+    // let k = 0.7; // coeff. of friction
     let m = 3.0; // mass
     let M = 6.0; // mass of cart
 

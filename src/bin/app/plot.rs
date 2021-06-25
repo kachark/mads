@@ -79,19 +79,19 @@ pub fn plot_trajectory(
         let name = &id.name;
 
 //         // recover position and generate couple with timeseries
-//         let pos_traj: Vec<(f32, f32)> = times.data.iter()
-//             .zip(trajectory.iter())
-//             .map(|(t, x)| (*t, x[0]))
-//             .collect();
-
-        // recover position in X and Y
-        let xy_traj: Vec<(f32, f32)> = trajectory.iter()
-            .map(|state| (state[0], state[1]))
+        let pos_traj: Vec<(f32, f32)> = times.data.iter()
+            .zip(trajectory.iter())
+            .map(|(t, x)| (*t, x[0]))
             .collect();
+
+        // // recover position in X and Y
+        // let xy_traj: Vec<(f32, f32)> = trajectory.iter()
+        //     .map(|state| (state[0], state[1]))
+        //     .collect();
 
         // Draw
         chart
-            .draw_series(LineSeries::new(xy_traj, &RED))?
+            .draw_series(LineSeries::new(pos_traj, &RED))?
             .label(name)
             .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
 
