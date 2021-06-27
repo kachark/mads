@@ -8,7 +8,7 @@ pub fn plot_trajectory_3d(
     data: &SimulationResult
 ) -> Result<(), Box<dyn std::error::Error>>
 {
-    let root = BitMapBackend::new("images/trajectory.png", (640, 480)).into_drawing_area();
+    let root = BitMapBackend::new("images/trajectory3d.png", (640, 480)).into_drawing_area();
     root.fill(&WHITE)?;
 
     let mut chart = ChartBuilder::on(&root)

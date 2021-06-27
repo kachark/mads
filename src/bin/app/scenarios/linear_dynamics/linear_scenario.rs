@@ -50,13 +50,15 @@ impl LinearScenario {
         let Q = DMatrix::<f32>::identity(4, 4);
         let R = DMatrix::<f32>::identity(1, 1);
 
-        // Define agent entities
+        // Define Components for "Agent" Entity
         let agents: Vec<(FullState, DynamicsModel::<InvertedPendulum>, LQRController, SimID)> = (0..self.num_agents).into_iter()
             .map(| i | -> (FullState, DynamicsModel::<InvertedPendulum>, LQRController, SimID) {
 
                 let name = "Agent".to_string() + &i.to_string();
                 let id = Uuid::new_v4();
                 let sim_id = SimID { uuid: id, name };
+
+                // Initial conditions
                 let state = DVector::<f32>::from_vec(vec![2.0, -3.0, 5.0, 1.0]);
                 let statespace = StateSpace{
                     position: State::Empty,
@@ -65,7 +67,11 @@ impl LinearScenario {
                     angular_velocity: State::Empty
                 };
                 let fullstate = FullState { data: state, statespace };
+
+                // Define dynamics model component
                 let dynamics = DynamicsModel { model: InvertedPendulum::new() };
+
+                // Define controller component
                 let controller = LQRController { model: LinearQuadraticRegulator::new(A.clone(), B.clone(), Q.clone(), R.clone()) };
 
                 (fullstate, dynamics, controller, sim_id)
@@ -113,8 +119,8 @@ impl Scenario for LinearScenario {
 
     }
 
-    /// Update and perform necessary logic specific to the scenario
-    fn update(&mut self, world: &mut World, resources: &mut Resources) {
+    /// Update and perform logic specific to the scenario
+    fn update(&mut self, _world: &mut World, _resources: &mut Resources) {
 
         ()
 

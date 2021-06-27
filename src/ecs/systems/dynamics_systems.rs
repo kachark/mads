@@ -72,11 +72,12 @@ where
 
     }
 
-    for x in trajectory {
+    // DEBUG: show integrated dynamics
+    // for x in trajectory {
 
-        println!("{:?}", &x.data);
+    //     println!("{:?}", &x.data);
 
-    }
+    // }
 
 }
 
@@ -134,6 +135,7 @@ where
 
     }
 
+    // DEBUG: show integrated dynamics
     for x in trajectory {
 
         println!("{:?}", &x.data);

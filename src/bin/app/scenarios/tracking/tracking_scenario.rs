@@ -14,7 +14,8 @@ use formflight::dynamics::models::linear::double_integrator::*;
 use formflight::controls::models::lqr::LinearQuadraticRegulator;
 
 use crate::scenarios::tracking::components::{Agent, Target};
-use crate::scenarios::tracking::resources::{NumAgents, NumTargets};
+use crate::scenarios::tracking::resources::{NumAgents, NumTargets, Assignments};
+use crate::scenarios::tracking::error_system::*;
 use crate::distributions::*;
 
 pub struct TrackingScenario {
@@ -56,31 +57,6 @@ impl TrackingScenario {
 
     }
 
-    /// Keeps track of Entities that have a Trackable component
-    fn update_targetable_set(&self, world: &mut World, resources: &mut Resources) {
-
-        // query for 'Targetable' components
-        let mut targetable_set_atomic = resources.get_mut::<TargetableSet>().unwrap();
-        let mut query = <(&SimID, &FullState, &mut Targetable)>::query();
-        for mut chunk in query.iter_chunks_mut(world) {
-            // we can access information about the archetype (shape/component layout) of the entities
-            println!(
-                "the entities in the chunk have {:?} components",
-                chunk.archetype().layout().component_types(),
-            );
-
-            // we can iterate through a tuple of component references per entity
-            for (id, state, targetable) in chunk {
-                if targetable.0 == true {
-                    continue
-                } else {
-                    targetable_set_atomic.0.entry(id.uuid).or_insert(state.clone());
-                }
-            }
-        }
-
-    }
-
     fn setup_agents(&self, world: &mut World, resources: &mut Resources) {
 
         let radius = 10f32;
@@ -100,14 +76,16 @@ impl TrackingScenario {
         let Q = DMatrix::<f32>::identity(6, 6);
         let R = DMatrix::<f32>::identity(3, 3);
 
-        // Define agent entities
-        let agents: Vec<(FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID, Agent)> = (0..self.num_agents).into_iter()
+        // Define agent components
+        let agent_components: Vec<(FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID, Agent)> = (0..self.num_agents).into_iter()
             .zip(formation.iter())
             .map(| (i, pose) | -> (FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID, Agent) {
 
                 let name = "Agent".to_string() + &i.to_string();
                 let id = Uuid::new_v4();
                 let sim_id = SimID { uuid: id, name };
+
+                // Initial conditions
                 let state = DVector::<f32>::from_vec(vec![pose.0, pose.1, pose.2, 0.0, 0.0, 0.0]);
                 let statespace = StateSpace{
                     position: State::Position{x: 0, y: 1, z: Some(2)},
@@ -116,8 +94,13 @@ impl TrackingScenario {
                     angular_velocity: State::Empty
                 };
                 let fullstate = FullState { data: state, statespace };
+
+                // Agent dynamics model
                 let dynamics = DynamicsModel { model: DoubleIntegrator3D::new() };
+
+                // Agent controller
                 let controller = LQRController { model: LinearQuadraticRegulator::new(A.clone(), B.clone(), Q.clone(), R.clone()) };
+
                 let agent_flag = Agent { 0: true };
 
                 (fullstate, dynamics, controller, sim_id, agent_flag)
@@ -125,25 +108,26 @@ impl TrackingScenario {
             .collect();
 
         // Add agents to storage resource
-        for agent in agents.iter() {
+        for agent in agent_components.iter() {
             storage.data.entry(agent.3.clone()).or_insert(vec![agent.0.data.clone()]);
         }
 
-        world.extend(agents);
+        // Generate Agent Entities defined by component tuples and add to the World
+        let _agents: &[Entity] = world.extend(agent_components);
 
     }
 
     fn setup_targets(&self, world: &mut World, resources: &mut Resources) {
 
-        let radius = 10f32;
         let mut storage = resources.get_mut::<SimulationResult>().unwrap();
         let mut targetable_set = resources.get_mut::<TargetableSet>().unwrap();
 
         // Generate initial states
-        let formation = match self.agent_formation {
-            Distribution::Circle2D => circle_3d(radius, self.num_agents), // force 3d scenario
-            Distribution::Circle3D => circle_3d(radius, self.num_agents),
-            Distribution::Sphere => sphere(radius, self.num_agents)
+        let radius = 10f32;
+        let formation = match self.target_formation{
+            Distribution::Circle2D => circle_3d(radius, self.num_targets), // force 3d scenario
+            Distribution::Circle3D => circle_3d(radius, self.num_targets),
+            Distribution::Sphere => sphere(radius, self.num_targets)
         };
 
         // For now just use a double integrator and LQR
@@ -153,8 +137,8 @@ impl TrackingScenario {
         let Q = DMatrix::<f32>::identity(6, 6);
         let R = DMatrix::<f32>::identity(3, 3);
 
-        // Define target entities
-        let targets: Vec<(FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID, Target)>
+        // Define target components
+        let target_components: Vec<(FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID, Target)>
             = (0..self.num_targets).into_iter()
             .zip(formation.iter())
             .map(| (i, pose) | -> (FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID, Target) {
@@ -162,6 +146,8 @@ impl TrackingScenario {
                 let name = "Target".to_string() + &i.to_string();
                 let id = Uuid::new_v4();
                 let sim_id = SimID { uuid: id, name };
+
+                // Initial conditions
                 let state = DVector::<f32>::from_vec(vec![pose.0, pose.1, pose.2, 0.0, 0.0, 0.0]);
                 let statespace = StateSpace{
                     position: State::Position{x: 0, y: 1, z: Some(2)},
@@ -170,8 +156,14 @@ impl TrackingScenario {
                     angular_velocity: State::Empty
                 };
                 let fullstate = FullState { data: state, statespace };
+
+                // Target dynamics
                 let dynamics = DynamicsModel { model: DoubleIntegrator3D::new() };
+
+                // Target controllers
                 let controller = LQRController { model: LinearQuadraticRegulator::new(A.clone(), B.clone(), Q.clone(), R.clone()) };
+
+                // Identifier flag
                 let target_flag = Target { 0: true };
 
                 (fullstate, dynamics, controller, sim_id, target_flag)
@@ -181,14 +173,67 @@ impl TrackingScenario {
 
         // Add targets to storage resource
         // Add targets to targetable set resource
-        for target in targets.iter() {
+        for target in target_components.iter() {
             storage.data.entry(target.3.clone()).or_insert(vec![target.0.data.clone()]);
             targetable_set.0.entry(target.3.uuid.clone()).or_insert(target.0.clone());
         }
 
-        // NOTE: have to insert targetable_set afterwards since it's used in setup
-        // resources.insert(TargetableSet(targetable_set.0.clone()));
+        // Generate Target Entities defined by component tuples and add to the World
+        let _targets: &[Entity] = world.extend(target_components);
 
+    }
+
+    /// Keeps track of Entities that have a Trackable component
+    fn update_targetable_set(&self, world: &mut World, resources: &mut Resources) {
+
+        // query for 'Targetable' components
+        let mut targetable_set_atomic = resources.get_mut::<TargetableSet>().unwrap();
+
+        let mut query = <(&SimID, &FullState, &Target)>::query();
+        for chunk in query.iter_chunks_mut(world) {
+            // we can access information about the archetype (shape/component layout) of the entities
+            println!(
+                "the entities in the chunk have {:?} components",
+                chunk.archetype().layout().component_types(),
+            );
+
+            // we can iterate through a tuple of component references per entity
+            for (id, state, target) in chunk {
+                if target.0 == true {
+                    // update states for targets in target set
+                    targetable_set_atomic.0.insert(id.uuid, state.clone());
+                    // targetable_set_atomic.0.entry(id.uuid).or_insert(state.clone());
+                }
+            }
+        }
+
+    }
+
+    /// Generates an assignment between Agent and Target Entitites
+    fn assign(&self, world: &mut World, resources: &mut Resources) {
+
+        let mut assignments_atomic = resources.get_mut::<Assignments>().unwrap();
+
+        let mut target_query = <(&SimID, &FullState, &Target)>::query();
+        let mut agent_query = <(&SimID, &FullState, &Agent)>::query();
+
+        // assume n=m
+        let assignment: Vec<(SimID, SimID)> = agent_query.iter(world)
+            .zip(target_query.iter(world))
+            .map( |(agent_chunk, target_chunk)| -> (SimID, SimID) {
+
+                (agent_chunk.0.clone(), target_chunk.0.clone())
+
+            })
+            .collect();
+
+        for (agent_id, target_id) in assignment.iter() {
+
+            println!("agent: {}, target: {}", agent_id, target_id);
+
+            assignments_atomic.map.entry(agent_id.uuid).or_insert(Vec::new()).push(target_id.uuid);
+
+        }
 
     }
 
@@ -206,11 +251,13 @@ impl Scenario for TrackingScenario {
         let num_agents = NumAgents(self.num_agents);
         let num_targets = NumTargets(self.num_targets);
         let targetable_set = TargetableSet(HashMap::new());
+        let assignments = Assignments{ map: HashMap::new() };
         let storage = SimulationResult{ data: HashMap::new() };
         resources.insert(num_agents);
         resources.insert(num_targets);
-        resources.insert(storage);
         resources.insert(targetable_set);
+        resources.insert(assignments);
+        resources.insert(storage);
 
         self.setup_agents(world, resources);
         self.setup_targets(world, resources);
@@ -222,7 +269,7 @@ impl Scenario for TrackingScenario {
 
         let schedule = Schedule::builder()
             // .add_system(print_id_system())
-            // .add_system(print_errorstate_system()) // TODO: make this generic over two FullStates
+            // .add_system(print_error_state_system()) // TODO: make this generic over two FullStates
             // .add_system(print_state_system())
             .add_system(dynamics_lqr_solver_system::<DoubleIntegrator3D>()) // can add any dynamics type here
             .add_system(update_result_system())
@@ -233,14 +280,14 @@ impl Scenario for TrackingScenario {
 
     }
 
-    /// Update and perform necessary logic specific to the scenario
+    /// Update and perform logic specific to the scenario
     fn update(&mut self, world: &mut World, resources: &mut Resources) {
 
         // Updates entities flagged as Targetable
         self.update_targetable_set(world, resources);
 
         // Perform assignment of Agents to Targets
-        // self.assign(world, resources);
+        self.assign(world, resources);
 
     }
 

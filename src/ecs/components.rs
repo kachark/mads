@@ -1,4 +1,6 @@
 
+use std::fmt;
+
 use nalgebra::DVector;
 use uuid::Uuid;
 
@@ -39,6 +41,12 @@ pub struct FullState {
 pub struct SimID {
     pub uuid: Uuid,
     pub name: String
+}
+
+impl fmt::Display for SimID {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "uuid: {}, name: {}", self.uuid, self.name)
+    }
 }
 
 /// Flags an Entity as Targetable

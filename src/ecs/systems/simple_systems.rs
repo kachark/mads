@@ -12,20 +12,6 @@ pub fn update_position(pos: &mut Position, vel: &Velocity, #[resource] time: &Si
     println!("{:?}", pos);
 }
 
-// TODO: Agent component is scenario-specific
-// #[system(for_each)]
-// pub fn print_errorstate(_agent: &Agent, state1: &FullState, #[resource] targetable_set: &TargetableSet) {
-
-//     for (_id, state2) in targetable_set.0.iter() {
-//         if state1.data.len() != state2.data.len() {
-//             continue;
-//         } else {
-//             println!("ERROR STATE: {:?}", &state1.data  - &state2.data);
-//         }
-//     }
-
-// }
-
 #[system(for_each)]
 pub fn print_id(id: &SimID) {
 

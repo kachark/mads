@@ -46,13 +46,15 @@ impl NonlinearScenario {
 
         let mut storage = resources.get_mut::<SimulationResult>().unwrap();
 
-        // Define agent entities
+        // Define Components for "Agent" Entity
         let agents: Vec<(FullState, DynamicsModel::<DoublePendulum>, SimID)> = (0..self.num_agents).into_iter()
             .map(| i | -> (FullState, DynamicsModel::<DoublePendulum>, SimID) {
 
                 let name = "Agent".to_string() + &i.to_string();
                 let id = Uuid::new_v4();
                 let sim_id = SimID { uuid: id, name };
+
+                // Initial conditions
                 let state = DVector::<f32>::from_vec(vec![FRAC_PI_4, 3.0, FRAC_PI_4, 3.0]);
                 let statespace = StateSpace{
                     position: State::Empty,
@@ -61,6 +63,8 @@ impl NonlinearScenario {
                     angular_velocity: State::Empty
                 };
                 let fullstate = FullState { data: state, statespace };
+
+                // Define dynamics model to simulate
                 let dynamics = DynamicsModel { model: DoublePendulum::new() };
 
                 (fullstate, dynamics, sim_id)
@@ -108,7 +112,7 @@ impl Scenario for NonlinearScenario {
 
     }
 
-    /// Update and perform necessary logic specific to the scenario
+    /// Update and perform logic specific to the scenario
     fn update(&mut self, _world: &mut World, _resources: &mut Resources) {
 
         ()

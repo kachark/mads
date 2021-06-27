@@ -17,5 +17,5 @@ pub struct NumObstacles(pub u32);
 /// Assignment between agents and targets
 #[derive(Default, Debug)]
 pub struct Assignments {
-    map: HashMap<Uuid, Uuid>
+    pub map: HashMap<Uuid, Vec<Uuid>>
 }
