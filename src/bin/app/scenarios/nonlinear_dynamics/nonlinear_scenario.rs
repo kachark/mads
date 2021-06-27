@@ -12,7 +12,7 @@ use formflight::ecs::resources::*;
 use formflight::dynamics::statespace::{State, StateSpace};
 use formflight::dynamics::models::nonlinear::double_pendulum::DoublePendulum;
 
-use crate::scenarios::resources::NumAgents;
+use crate::scenarios::nonlinear_dynamics::resources::NumAgents;
 
 use std::f32::consts::FRAC_PI_4;
 

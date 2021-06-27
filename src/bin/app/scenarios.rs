@@ -1,6 +1,3 @@
-pub mod components;
-pub mod resources;
-
-pub mod tracking_scenario;
-pub mod nonlinear_scenario;
-pub mod linear_scenario;
+pub mod tracking;
+pub mod nonlinear_dynamics;
+pub mod linear_dynamics;

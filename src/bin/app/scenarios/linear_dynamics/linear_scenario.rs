@@ -13,7 +13,7 @@ use formflight::dynamics::statespace::{State, StateSpace};
 use formflight::dynamics::models::linear::inverted_pendulum::InvertedPendulum;
 use formflight::controls::models::lqr::LinearQuadraticRegulator;
 
-use crate::scenarios::resources::NumAgents;
+use crate::scenarios::linear_dynamics::resources::NumAgents;
 
 pub struct LinearScenario {
 
@@ -23,7 +23,7 @@ pub struct LinearScenario {
 
 impl LinearScenario {
 
-    pub fn new(num_agents: u32, num_targets:u32) -> Self {
+    pub fn new(num_agents: u32) -> Self {
 
         Self {
             num_agents,
@@ -57,7 +57,7 @@ impl LinearScenario {
                 let name = "Agent".to_string() + &i.to_string();
                 let id = Uuid::new_v4();
                 let sim_id = SimID { uuid: id, name };
-                let state = DVector::<f32>::from_vec(vec![10.0, 10.0, 10.0, 10.0]);
+                let state = DVector::<f32>::from_vec(vec![2.0, -3.0, 5.0, 1.0]);
                 let statespace = StateSpace{
                     position: State::Empty,
                     velocity: State::Empty,

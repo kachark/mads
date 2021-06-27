@@ -13,8 +13,8 @@ use formflight::dynamics::statespace::{State, StateSpace};
 use formflight::dynamics::models::linear::double_integrator::*;
 use formflight::controls::models::lqr::LinearQuadraticRegulator;
 
-use crate::scenarios::components::{Agent, Target};
-use crate::scenarios::resources::{NumAgents, NumTargets};
+use crate::scenarios::tracking::components::{Agent, Target};
+use crate::scenarios::tracking::resources::{NumAgents, NumTargets};
 use crate::distributions::*;
 
 pub struct TrackingScenario {
@@ -238,6 +238,9 @@ impl Scenario for TrackingScenario {
 
         // Updates entities flagged as Targetable
         self.update_targetable_set(world, resources);
+
+        // Perform assignment of Agents to Targets
+        // self.assign(world, resources);
 
     }
 
