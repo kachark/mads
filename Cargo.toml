@@ -21,8 +21,14 @@ lapack = "0.19.0"
 lapack-src = { version = "0.8", features = ["accelerate"] }
 legion = "0.4.0"
 uuid = "0.8"
+ordered-float = "2.5.1"
+numpy = "0.13"
 # osqp = "0.6.2" # Quadratic program optimization
 
 # bin
 plotters = "^0.3.1"
 #polars = "0.14.2"
+
+[dependencies.pyo3]
+version = "0.13.2"
+features = ["auto-initialize"]

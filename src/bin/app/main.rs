@@ -1,5 +1,8 @@
 #[allow(non_snake_case)]
 extern crate plotters;
+extern crate pyo3;
+extern crate numpy;
+extern crate ordered_float;
 
 pub mod plot;
 pub mod distributions;
@@ -55,12 +58,13 @@ fn main() {
 
     // println!("{:?}", targetable_set_atomic);
 
-    for (agent_uuid, target_uuids) in assignments_atomic.map.iter() {
+    // assignments
+    // for (agent_uuid, target_uuids) in assignments_atomic.map.iter() {
 
-        println!("Agent id: {}", agent_uuid);
-        println!("{:?}", target_uuids);
+    //     println!("Agent id: {}", agent_uuid);
+    //     println!("{:?}", target_uuids);
 
-    }
+    // }
 
     match plot::plot_trajectory(&time_history, &result) {
 

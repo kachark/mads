@@ -17,6 +17,7 @@ use crate::scenarios::tracking::components::{Agent, Target};
 use crate::scenarios::tracking::resources::{NumAgents, NumTargets, Assignments};
 use crate::scenarios::tracking::error_system::*;
 use crate::distributions::*;
+use crate::scenarios::tracking::assignments::emd_assignment;
 
 pub struct TrackingScenario {
 
@@ -217,23 +218,50 @@ impl TrackingScenario {
         let mut target_query = <(&SimID, &FullState, &Target)>::query();
         let mut agent_query = <(&SimID, &FullState, &Agent)>::query();
 
-        // assume n=m
-        let assignment: Vec<(SimID, SimID)> = agent_query.iter(world)
-            .zip(target_query.iter(world))
-            .map( |(agent_chunk, target_chunk)| -> (SimID, SimID) {
+        // // assume n=m
+        // if self.num_agents == self.num_targets {
+        //     let assignment: Vec<(SimID, SimID)> = agent_query.iter(world)
+        //         .zip(target_query.iter(world))
+        //         .map( |(agent_chunk, target_chunk)| -> (SimID, SimID) {
 
-                (agent_chunk.0.clone(), target_chunk.0.clone())
+        //             (agent_chunk.0.clone(), target_chunk.0.clone())
 
+        //         })
+        //         .collect();
+
+        //     for (agent_id, target_id) in assignment.iter() {
+
+        //         println!("agent: {}, target: {}", agent_id, target_id);
+
+        //         assignments_atomic.map.entry(agent_id.uuid).or_insert(Vec::new()).push(target_id.uuid);
+
+        //     }
+        // }
+
+        let agent_states: Vec<Vec<f32>> = agent_query.iter(world)
+            .map( |agent_chunk| -> Vec<f32> {
+                let state = agent_chunk.1.data.clone();
+                let pose = vec![state[0], state[1], state[2]];
+                pose
             })
             .collect();
 
-        for (agent_id, target_id) in assignment.iter() {
+        let target_states: Vec<Vec<f32>> = target_query.iter(world)
+            .map( |target_chunk| -> Vec<f32> {
+                let state = target_chunk.1.data.clone();
+                let pose = vec![state[0], state[1], state[2]];
+                pose
+            })
+            .collect();
 
-            println!("agent: {}, target: {}", agent_id, target_id);
+        let m = match emd_assignment(agent_states, target_states) {
 
-            assignments_atomic.map.entry(agent_id.uuid).or_insert(Vec::new()).push(target_id.uuid);
+            Ok(matrix) => matrix,
+            Err(error) => panic!("EMD assignment error {:?}", error)
 
-        }
+        };
+
+        println!("{:?}", m);
 
     }
 
