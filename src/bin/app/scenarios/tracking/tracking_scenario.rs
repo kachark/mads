@@ -17,7 +17,7 @@ use crate::scenarios::tracking::components::{Agent, Target};
 use crate::scenarios::tracking::resources::{NumAgents, NumTargets, Assignments};
 use crate::scenarios::tracking::error_system::*;
 use crate::distributions::*;
-use crate::scenarios::tracking::assignments::emd_assignment;
+use crate::scenarios::tracking::assignments::{unbalanced_emd_assignment, emd_assignment};
 
 pub struct TrackingScenario {
 
@@ -213,31 +213,13 @@ impl TrackingScenario {
     /// Generates an assignment between Agent and Target Entitites
     fn assign(&self, world: &mut World, resources: &mut Resources) {
 
+        let assignment: Vec<Vec<u32>>;
         let mut assignments_atomic = resources.get_mut::<Assignments>().unwrap();
 
         let mut target_query = <(&SimID, &FullState, &Target)>::query();
         let mut agent_query = <(&SimID, &FullState, &Agent)>::query();
 
-        // // assume n=m
-        // if self.num_agents == self.num_targets {
-        //     let assignment: Vec<(SimID, SimID)> = agent_query.iter(world)
-        //         .zip(target_query.iter(world))
-        //         .map( |(agent_chunk, target_chunk)| -> (SimID, SimID) {
-
-        //             (agent_chunk.0.clone(), target_chunk.0.clone())
-
-        //         })
-        //         .collect();
-
-        //     for (agent_id, target_id) in assignment.iter() {
-
-        //         println!("agent: {}, target: {}", agent_id, target_id);
-
-        //         assignments_atomic.map.entry(agent_id.uuid).or_insert(Vec::new()).push(target_id.uuid);
-
-        //     }
-        // }
-
+        // Collect distributions of pose for the group of Agents and Targets
         let agent_states: Vec<Vec<f32>> = agent_query.iter(world)
             .map( |agent_chunk| -> Vec<f32> {
                 let state = agent_chunk.1.data.clone();
@@ -254,14 +236,32 @@ impl TrackingScenario {
             })
             .collect();
 
-        let m = match emd_assignment(agent_states, target_states) {
+        // Perform assignment of agents to targets
+        // num_agents = num_targets
+        if self.num_agents == self.num_targets {
 
-            Ok(matrix) => matrix,
-            Err(error) => panic!("EMD assignment error {:?}", error)
+            assignment = match emd_assignment(agent_states, target_states) {
 
-        };
+                Ok(matrix) => matrix,
+                Err(error) => panic!("EMD assignment error {:?}", error)
 
-        println!("{:?}", m);
+            };
+
+        } else {
+
+            assignment = match unbalanced_emd_assignment(agent_states, target_states) {
+
+                Ok(matrix) => matrix,
+                Err(error) => panic!("Unbalanced EMD assignment error {:?}", error)
+
+            };
+
+        }
+
+        println!("{:?}", assignment);
+
+        // TODO: map indexes of assignment to SimID
+        // update assignment resource
 
     }
 
