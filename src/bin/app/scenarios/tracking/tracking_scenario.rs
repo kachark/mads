@@ -51,7 +51,7 @@ impl TrackingScenario {
 
         Self {
             num_agents: 5,
-            num_targets: 5,
+            num_targets: 7,
             agent_formation,
             target_formation
         }
@@ -210,6 +210,7 @@ impl TrackingScenario {
 
     }
 
+    // TODO: should this be a system?
     /// Generates an assignment between Agent and Target Entitites
     fn assign(&self, world: &mut World, resources: &mut Resources) {
 
@@ -260,8 +261,24 @@ impl TrackingScenario {
 
         println!("{:?}", assignment);
 
-        // TODO: map indexes of assignment to SimID
         // update assignment resource
+        let agent_ids: Vec<&Uuid> = agent_query.iter(world)
+            .map(|agent_chunk| &agent_chunk.0.uuid)
+            .collect();
+
+        let target_ids: Vec<&Uuid> = target_query.iter(world)
+            .map(|target_chunk| &target_chunk.0.uuid)
+            .collect();
+
+        for (i, agent) in assignment.iter().enumerate() {
+            for (j, possible_target) in agent.iter().enumerate() {
+                if *possible_target == 1 {
+                    let agent_id = agent_ids[i];
+                    let target_id = target_ids[j];
+                    assignments_atomic.map.entry(*agent_id).or_insert(vec![*target_id]).push(*target_id);
+                }
+            }
+        }
 
     }
 

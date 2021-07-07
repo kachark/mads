@@ -59,12 +59,12 @@ fn main() {
     // println!("{:?}", targetable_set_atomic);
 
     // assignments
-    // for (agent_uuid, target_uuids) in assignments_atomic.map.iter() {
+    for (agent_uuid, target_uuids) in assignments_atomic.map.iter() {
 
-    //     println!("Agent id: {}", agent_uuid);
-    //     println!("{:?}", target_uuids);
+        println!("Agent id: {}", agent_uuid);
+        println!("{:?}", target_uuids);
 
-    // }
+    }
 
     match plot::plot_trajectory(&time_history, &result) {
 
