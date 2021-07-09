@@ -15,7 +15,7 @@ use formflight::ecs::resources::*;
 
 // use formflight::scene::scenario::SimpleScenario;
 use crate::scenarios::tracking::tracking_scenario::TrackingScenario;
-use crate::scenarios::tracking::resources::Assignments;
+use crate::scenarios::tracking::resources::AssignmentHistory;
 // use crate::scenarios::nonlinear_dynamics::nonlinear_scenario::NonlinearScenario;
 // use crate::scenarios::linear_dynamics::linear_scenario::LinearScenario;
 
@@ -39,15 +39,15 @@ fn main() {
     let time_history = simulation.state.resources.get::<SimulationTimeHistory>().unwrap();
     let result = simulation.state.resources.get::<SimulationResult>().unwrap();
     let targetable_set_atomic = simulation.state.resources.get_mut::<TargetableSet>().unwrap();
-    let assignments_atomic = simulation.state.resources.get_mut::<Assignments>().unwrap();
+    let assignments_atomic = simulation.state.resources.get_mut::<AssignmentHistory>().unwrap();
 
-    // for (uuid, trajectory) in result.data.iter() {
-    //     println!("Entity: {:?}", uuid);
-    //     println!("length: {:?}", trajectory.len());
-    //     for state in trajectory {
-    //         println!("{:?}", state);
-    //     }
-    // }
+//     for (uuid, trajectory) in result.data.iter() {
+//         println!("Entity: {:?}", uuid);
+//         println!("length: {:?}", trajectory.len());
+//         for state in trajectory {
+//             println!("{:?}", state);
+//         }
+//     }
 
     // println!("{:?}", time_history.data.len());
     // for t in time_history.data.iter() {
@@ -58,15 +58,15 @@ fn main() {
 
     // println!("{:?}", targetable_set_atomic);
 
-    // assignments
-    for (agent_uuid, target_uuids) in assignments_atomic.map.iter() {
+    // // assignments
+    // for (agent_uuid, target_uuids) in assignments_atomic.map.iter() {
 
-        println!("Agent id: {}", agent_uuid);
-        println!("{:?}", target_uuids);
+    //     println!("Agent id: {}", agent_uuid);
+    //     println!("{:?}", target_uuids);
 
-    }
+    // }
 
-    match plot::plot_trajectory(&time_history, &result) {
+    match plot::plot_trajectory_3d(&time_history, &result) {
 
         Ok(()) => println!("hi"),
         Err(_) => println!("plot error")

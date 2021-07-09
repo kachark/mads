@@ -8,7 +8,7 @@ pub fn plot_trajectory_3d(
     data: &SimulationResult
 ) -> Result<(), Box<dyn std::error::Error>>
 {
-    let root = BitMapBackend::new("images/trajectory3d.png", (640, 480)).into_drawing_area();
+    let root = BitMapBackend::new("trajectory3d.png", (640, 480)).into_drawing_area();
     root.fill(&WHITE)?;
 
     let mut chart = ChartBuilder::on(&root)
@@ -16,7 +16,7 @@ pub fn plot_trajectory_3d(
         .margin(5)
         .x_label_area_size(30)
         .y_label_area_size(30)
-        .build_cartesian_3d(-10f32..10f32, -10f32..10f32, -10f32..10f32)?;
+        .build_cartesian_3d(-20f32..70f32, -10f32..10f32, -10f32..10f32)?;
 
     chart.with_projection(|mut pb| {
         pb.yaw = 0.5;

@@ -35,8 +35,8 @@ pub fn circle_3d(radius: f32, num_samples: u32) -> Vec<(f32, f32, f32)> {
         .map(|i: u32| -> (f32, f32, f32) {
             let angle = (i as f32) * (2.0*pi) / (num_samples as f32);
             let x = radius * angle.cos();
-            let y = 0f32;
-            let z = radius * angle.sin();
+            let y = radius * angle.sin();
+            let z = 0f32;
             (x, y, z)
         })
         .collect();

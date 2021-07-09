@@ -1,4 +1,6 @@
 
+use nalgebra::DVector;
+
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -14,8 +16,14 @@ pub struct NumTargets(pub u32);
 #[derive(Default)]
 pub struct NumObstacles(pub u32);
 
-/// Assignment between agents and targets
+/// Assignment history between agents and targets
 #[derive(Default, Debug)]
-pub struct Assignments {
+pub struct AssignmentHistory {
     pub map: HashMap<Uuid, Vec<Uuid>>
+}
+
+/// Current assignment as a mapping from Agent uuid to Target state
+#[derive(Default, Debug)]
+pub struct Assignment {
+    pub map: HashMap<Uuid, Option<DVector<f32>>>
 }

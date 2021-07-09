@@ -14,8 +14,8 @@ use formflight::dynamics::models::linear::double_integrator::*;
 use formflight::controls::models::lqr::LinearQuadraticRegulator;
 
 use crate::scenarios::tracking::components::{Agent, Target};
-use crate::scenarios::tracking::resources::{NumAgents, NumTargets, Assignments};
-use crate::scenarios::tracking::error_system::*;
+use crate::scenarios::tracking::resources::{NumAgents, NumTargets, Assignment, AssignmentHistory};
+use crate::scenarios::tracking::error_dynamics_systems::*;
 use crate::distributions::*;
 use crate::scenarios::tracking::assignments::{unbalanced_emd_assignment, emd_assignment};
 
@@ -50,8 +50,8 @@ impl TrackingScenario {
         let target_formation = Distribution::Circle3D;
 
         Self {
-            num_agents: 5,
-            num_targets: 7,
+            num_agents: 15,
+            num_targets: 15,
             agent_formation,
             target_formation
         }
@@ -125,11 +125,16 @@ impl TrackingScenario {
 
         // Generate initial states
         let radius = 10f32;
-        let formation = match self.target_formation{
+        let mut formation = match self.target_formation{
             Distribution::Circle2D => circle_3d(radius, self.num_targets), // force 3d scenario
             Distribution::Circle3D => circle_3d(radius, self.num_targets),
             Distribution::Sphere => sphere(radius, self.num_targets)
         };
+
+        // shift the distribution over
+        for (x, _y, _z) in formation.iter_mut() {
+            *x += 50.0;
+        }
 
         // For now just use a double integrator and LQR
         let double_integrator = DoubleIntegrator3D::new();
@@ -184,7 +189,7 @@ impl TrackingScenario {
 
     }
 
-    /// Keeps track of Entities that have a Trackable component
+    /// Keeps track of Entities that have a Target component
     fn update_targetable_set(&self, world: &mut World, resources: &mut Resources) {
 
         // query for 'Targetable' components
@@ -192,56 +197,56 @@ impl TrackingScenario {
 
         let mut query = <(&SimID, &FullState, &Target)>::query();
         for chunk in query.iter_chunks_mut(world) {
-            // we can access information about the archetype (shape/component layout) of the entities
-            println!(
-                "the entities in the chunk have {:?} components",
-                chunk.archetype().layout().component_types(),
-            );
 
             // we can iterate through a tuple of component references per entity
             for (id, state, target) in chunk {
                 if target.0 == true {
                     // update states for targets in target set
                     targetable_set_atomic.0.insert(id.uuid, state.clone());
-                    // targetable_set_atomic.0.entry(id.uuid).or_insert(state.clone());
+                    // targetable_set_atomic.0.entry(id.uuid).or_insert(state.clone()) = *state.clone();
                 }
             }
+
         }
 
     }
 
-    // TODO: should this be a system?
-    /// Generates an assignment between Agent and Target Entitites
+    /// Generates an assignment between Agent and Target Entitites based off of position
     fn assign(&self, world: &mut World, resources: &mut Resources) {
 
         let assignment: Vec<Vec<u32>>;
-        let mut assignments_atomic = resources.get_mut::<Assignments>().unwrap();
 
+        // Resources
+        let mut assignment_history = resources.get_mut::<AssignmentHistory>().unwrap();
+        let mut current_assignment = resources.get_mut::<Assignment>().unwrap();
+
+        // Query entities
         let mut target_query = <(&SimID, &FullState, &Target)>::query();
         let mut agent_query = <(&SimID, &FullState, &Agent)>::query();
 
-        // Collect distributions of pose for the group of Agents and Targets
-        let agent_states: Vec<Vec<f32>> = agent_query.iter(world)
-            .map( |agent_chunk| -> Vec<f32> {
-                let state = agent_chunk.1.data.clone();
-                let pose = vec![state[0], state[1], state[2]];
-                pose
-            })
-            .collect();
+        // Agent entity positions and ids
+        let mut agent_states: Vec<Vec<f32>> = Vec::new();
+        let mut agent_ids: Vec<&Uuid> = Vec::new();
+        for (id, state, _agent) in agent_query.iter(world) {
+            let pose = vec![state.data[0], state.data[1], state.data[2]];
+            agent_states.push(pose);
+            agent_ids.push(&id.uuid);
+        }
 
-        let target_states: Vec<Vec<f32>> = target_query.iter(world)
-            .map( |target_chunk| -> Vec<f32> {
-                let state = target_chunk.1.data.clone();
-                let pose = vec![state[0], state[1], state[2]];
-                pose
-            })
-            .collect();
+        // Target entity positions and ids
+        let mut target_states: Vec<Vec<f32>> = Vec::new();
+        let mut target_ids: Vec<&Uuid> = Vec::new();
+        for (id, state, _target) in target_query.iter(world) {
+            let pose = vec![state.data[0], state.data[1], state.data[2]];
+            target_states.push(pose);
+            target_ids.push(&id.uuid);
+        }
 
         // Perform assignment of agents to targets
         // num_agents = num_targets
         if self.num_agents == self.num_targets {
 
-            assignment = match emd_assignment(agent_states, target_states) {
+            assignment = match emd_assignment(&agent_states, &target_states) {
 
                 Ok(matrix) => matrix,
                 Err(error) => panic!("EMD assignment error {:?}", error)
@@ -250,7 +255,7 @@ impl TrackingScenario {
 
         } else {
 
-            assignment = match unbalanced_emd_assignment(agent_states, target_states) {
+            assignment = match unbalanced_emd_assignment(&agent_states, &target_states) {
 
                 Ok(matrix) => matrix,
                 Err(error) => panic!("Unbalanced EMD assignment error {:?}", error)
@@ -259,26 +264,39 @@ impl TrackingScenario {
 
         }
 
-        println!("{:?}", assignment);
-
-        // update assignment resource
-        let agent_ids: Vec<&Uuid> = agent_query.iter(world)
-            .map(|agent_chunk| &agent_chunk.0.uuid)
-            .collect();
-
-        let target_ids: Vec<&Uuid> = target_query.iter(world)
-            .map(|target_chunk| &target_chunk.0.uuid)
-            .collect();
-
+        // Update AssignmentHistory resource
         for (i, agent) in assignment.iter().enumerate() {
             for (j, possible_target) in agent.iter().enumerate() {
                 if *possible_target == 1 {
                     let agent_id = agent_ids[i];
                     let target_id = target_ids[j];
-                    assignments_atomic.map.entry(*agent_id).or_insert(vec![*target_id]).push(*target_id);
+                    assignment_history.map.entry(*agent_id).or_insert(vec![*target_id]).push(*target_id);
                 }
             }
         }
+
+        // Update current Assignment resource
+        for (_i, (agent_id, _agent_state, _agent)) in agent_query.iter(world).enumerate() {
+
+            let target_id = match assignment_history.map.get(&agent_id.uuid) {
+                Some(uuid_list) => uuid_list[uuid_list.len()-1],
+                None => continue
+            };
+
+            for (_j, (id, target_state, _target)) in target_query.iter(world).enumerate() {
+
+                if id.uuid == target_id {
+
+                    *current_assignment.map.entry(agent_id.uuid).or_insert(None) = Some(target_state.data.clone());
+
+                }
+
+            }
+
+        }
+
+        // println!("{:?}", assignment);
+
 
     }
 
@@ -296,12 +314,14 @@ impl Scenario for TrackingScenario {
         let num_agents = NumAgents(self.num_agents);
         let num_targets = NumTargets(self.num_targets);
         let targetable_set = TargetableSet(HashMap::new());
-        let assignments = Assignments{ map: HashMap::new() };
+        let assignment = Assignment{ map: HashMap::new() };
+        let assignment_history = AssignmentHistory{ map: HashMap::new() };
         let storage = SimulationResult{ data: HashMap::new() };
         resources.insert(num_agents);
         resources.insert(num_targets);
         resources.insert(targetable_set);
-        resources.insert(assignments);
+        resources.insert(assignment);
+        resources.insert(assignment_history);
         resources.insert(storage);
 
         self.setup_agents(world, resources);
@@ -316,7 +336,8 @@ impl Scenario for TrackingScenario {
             // .add_system(print_id_system())
             // .add_system(print_error_state_system()) // TODO: make this generic over two FullStates
             // .add_system(print_state_system())
-            .add_system(dynamics_lqr_solver_system::<DoubleIntegrator3D>()) // can add any dynamics type here
+            // .add_system(dynamics_lqr_solver_system::<DoubleIntegrator3D>()) // can add any dynamics type here
+            .add_system(error_dynamics_lqr_solver_system::<DoubleIntegrator3D>())
             .add_system(update_result_system())
             .add_system(increment_time_system())
             .build();
