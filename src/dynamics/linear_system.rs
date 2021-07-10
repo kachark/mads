@@ -37,12 +37,11 @@ impl StateSpaceRepresentation for LinearSystem {
     /// x: State vector
     /// u: Control/input vector
     fn f(&self, _t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
-        let result: DVector<f32>;
 
-        match u {
-            Some(u) => result = &self.A * x + &self.B * u,
-            None => result = &self.A * x,
-        }
+        let result = match u {
+            Some(u) => &self.A * x + &self.B * u,
+            None => &self.A * x,
+        };
 
         result
     }
@@ -52,12 +51,11 @@ impl StateSpaceRepresentation for LinearSystem {
     /// x: State vector
     /// u: Control/input vector
     fn h(&self, _t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
-        let result: DVector<f32>;
 
-        match u {
-            Some(u) => result = &self.C * x + &self.D * u,
-            None => result = &self.C * x,
-        }
+        let result = match u {
+            Some(u) => &self.C * x + &self.D * u,
+            None => &self.C * x,
+        };
 
         result
     }

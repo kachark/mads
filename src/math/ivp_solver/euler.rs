@@ -16,10 +16,10 @@ where
     let time = range_step(t0, tf, h);
 
     let mut y: Vec<DVector<f32>> = vec![DVector::<f32>::zeros(y0.len()); time.len()];
-    y[0] = y0.clone();
+    y[0] = y0;
 
     for k in 0..time.len() - 1 {
-        let yk = &y[k].clone();
+        let yk = &y[k];
 
         let m = h * f(time[k], &yk);
 
@@ -45,10 +45,10 @@ where
     let time = range_step(t0, tf, h);
 
     let mut y: Vec<DVector<f32>> = vec![DVector::<f32>::zeros(y0.len()); time.len()];
-    y[0] = y0.clone();
+    y[0] = y0;
 
     for k in 0..time.len() - 1 {
-        let yk = &y[k].clone();
+        let yk = &y[k];
 
         let y_half = yk + (h / 2.0 * f(time[k], yk));
 

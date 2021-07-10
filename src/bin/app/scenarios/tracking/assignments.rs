@@ -43,7 +43,7 @@ pub fn emd_assignment(agent_states: &Vec<Vec<f32>>, target_states: &Vec<Vec<f32>
             }
         }
 
-        // cost as a Py object
+        // cost as a 2d numpy array
         let cost = PyArray2::from_vec2(py, &cost).unwrap();
 
         // Compute optimal coupling matrix

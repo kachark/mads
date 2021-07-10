@@ -46,12 +46,12 @@ impl TrackingScenario {
 
     pub fn default() -> Self {
 
-        let agent_formation = Distribution::Sphere;
-        let target_formation = Distribution::Circle3D;
+        let agent_formation = Distribution::Circle3D;
+        let target_formation = Distribution::Sphere;
 
         Self {
-            num_agents: 15,
-            num_targets: 15,
+            num_agents: 150,
+            num_targets: 150,
             agent_formation,
             target_formation
         }

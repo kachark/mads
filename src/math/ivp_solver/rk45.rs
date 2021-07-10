@@ -29,7 +29,7 @@ where
         h = h.min(tf - tk);
 
         // let tk = time[time.len()-1];
-        let yk = &y[y.len()-1].clone();
+        let yk = &y[y.len()-1];
 
         let k1 = h * f(tk, yk);
         let k2 = h * f(tk + (1./4.)*h, &(yk + (1./4.) * &k1));
