@@ -1,7 +1,7 @@
 
 use legion::{World, Resources};
 use uuid::Uuid;
-use crate::util::range_step;
+use crate::util::misc::range_step;
 use crate::ecs::resources::*;
 use crate::ecs::components::{CartesianCoordinates, SimID};
 use crate::math::coordinate_frame::CartesianFrame;

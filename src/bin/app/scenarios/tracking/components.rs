@@ -1,6 +1,4 @@
 
-use nalgebra::DVector;
-
 // NOTE: having the component is enough to flag as an agent
 /// Flags an entity as an Agent
 #[derive(Clone, Copy, Debug, PartialEq)]

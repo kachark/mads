@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 
 // How Legion System macros work
 // https://docs.rs/legion/0.4.0/legion/attr.system.html
@@ -17,22 +18,10 @@ use formflight::ecs::components::*;
 use crate::scenarios::tracking::resources::Assignment;
 use crate::scenarios::tracking::components::Agent;
 
-// TODO:
-// 2 options: system or system(for_each)
-// the difference between the two is that system we have to write the query ourselves
-// and system(for_each) is a system defined as a query (args into the funciton handle)
-//  - with system you write the query and loop over what it returns
-//  - with system(for_each) the query is literally the system so you are "inside" that for loop
-//  already
-// using system would require a look up for the assigned target state for every agent state
-// it would probably make more sense to compute the error state AT the assignment step rather than
-// perform a look up per agent (and potentially lose performance/parallization)
-
-// NOTE: to parallelize with Rayon, use par_for_each
 // #[system(for_each)]
 #[system(par_for_each)]
 pub fn error_dynamics_lqr_solver<T>(
-    agent: &Agent, // NOTE: test only evolving agents and NOT targets
+    _agent: &Agent, // NOTE: test only evolving agents and NOT targets
     id: &SimID,
     state: &mut FullState,
     dynamics: &DynamicsModel<T>,
@@ -68,7 +57,6 @@ where
 
     let x_prev = trajectory[trajectory.len()-1].clone();
 
-    // TODO: review this
     // Compute error state for the controller
     let target_state = match assignment.map.get(&id.uuid) {
 

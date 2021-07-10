@@ -3,7 +3,7 @@ use std::fmt;
 use lapack::{sgees, Select2F32};
 use na::DMatrix;
 
-use crate::util::{block, hcombine, vcombine, MatrixCompareError};
+use crate::util::matrix_util::{block, hcombine, vcombine, MatrixCompareError};
 
 #[derive(Debug, Clone)]
 pub struct LinAlgError;

@@ -1,14 +1,9 @@
 
 use na::{DMatrix, DVector};
-use crate::dynamics::linear_system::LinearSystem; // TODO: deprecated
+use crate::dynamics::linear_system::LinearSystem;
 use crate::dynamics::statespace::StateSpaceRepresentation;
 
 
-// TODO: implement the println trait for each and print out the matrices nicely
-//
-
-
-// TODO: just make this a function of time
 // put the rest in a the structure
 pub fn ClohessyWiltshire(t: f32, x: &DVector<f32>) -> DVector<f32> {
 
@@ -61,7 +56,7 @@ impl EulerHill3D {
         let r: f32 = 100E3; // LEO
         let mu: f32 = 3.986004418E14;
 
-        let n = (mu/r.powf(3f32)).sqrt();
+        let _n = (mu/r.powf(3f32)).sqrt();
 
         let n: f32 = 0.00113;
 

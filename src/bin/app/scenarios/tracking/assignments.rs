@@ -1,10 +1,9 @@
 
 use pyo3::prelude::*;
-use pyo3::types::{PyList, PyTuple, IntoPyDict};
-use numpy::{PyArray, PyArray2, IntoPyArray};
+use pyo3::types::PyTuple;
+use numpy::{PyArray, PyArray2};
 use ordered_float::OrderedFloat;
 
-// TODO: optimize this a bit
 // prefer to use PyArray objects since they trigger errors and tracing
 
 pub fn emd_assignment(agent_states: &Vec<Vec<f32>>, target_states: &Vec<Vec<f32>>) -> PyResult< Vec<Vec<u32>> > {
