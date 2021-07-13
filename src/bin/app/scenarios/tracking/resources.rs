@@ -3,6 +3,7 @@ use nalgebra::DVector;
 
 use std::collections::HashMap;
 use uuid::Uuid;
+use serde::Serialize;
 
 /// Number of Agents
 #[derive(Default)]
@@ -17,7 +18,7 @@ pub struct NumTargets(pub u32);
 pub struct NumObstacles(pub u32);
 
 /// Assignment history between agents and targets
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize)]
 pub struct AssignmentHistory {
     pub map: HashMap<Uuid, Vec<Uuid>>
 }

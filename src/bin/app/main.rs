@@ -13,13 +13,17 @@ use formflight::simulator::simulation::Simulation;
 use formflight::simulator::state::SimulationState;
 use formflight::ecs::resources::*;
 use formflight::util::save::to_csv;
-use formflight::log::logger::Logger;
+// use formflight::log::logger::Logger;
+use formflight::log::simulation_logger::SimulationLogger;
 
 // use formflight::scene::scenario::SimpleScenario;
 use crate::scenarios::tracking::tracking_scenario::TrackingScenario;
 use crate::scenarios::tracking::resources::AssignmentHistory;
 // use crate::scenarios::nonlinear_dynamics::nonlinear_scenario::NonlinearScenario;
 // use crate::scenarios::linear_dynamics::linear_scenario::LinearScenario;
+//
+
+use crate::scenarios::tracking::logger::Logger;
 
 fn main() {
 
@@ -41,6 +45,8 @@ fn main() {
     let time_history = simulation.state.resources.get::<SimulationTimeHistory>().unwrap();
     let result = simulation.state.resources.get::<SimulationResult>().unwrap();
 
+
+    // TODO: need to have a logger for scenario specific things - maybe a SimLogger trait
     // tracking scenario specific
     // let targetable_set_atomic = simulation.state.resources.get_mut::<TargetableSet>().unwrap();
     // let assignments_atomic = simulation.state.resources.get_mut::<AssignmentHistory>().unwrap();
@@ -72,6 +78,10 @@ fn main() {
 
     let logger = Logger;
     if let Err(err) = logger.to_csv(&simulation.state) {
+        println!("csv write error, {}", err);
+    };
+
+    if let Err(err) = logger.assignments_to_csv(&simulation.state) {
         println!("csv write error, {}", err);
     };
 

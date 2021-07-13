@@ -25,6 +25,7 @@ ordered-float = "2.5.1"
 numpy = "0.13"
 csv = "1.1"
 serde = "1.0.126"
+serde_json = "1.0"
 # osqp = "0.6.2" # Quadratic program optimization
 
 # bin
