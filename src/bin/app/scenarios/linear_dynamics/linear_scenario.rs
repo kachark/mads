@@ -81,7 +81,7 @@ impl LinearScenario {
 
         // Add agents to storage resource
         for agent in agents.iter() {
-            storage.data.entry(agent.3.clone()).or_insert(vec![agent.0.data.clone()]);
+            storage.data.entry(agent.3.clone()).or_insert(vec![agent.0.clone()]);
         }
 
         world.extend(agents);

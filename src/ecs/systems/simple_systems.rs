@@ -48,11 +48,11 @@ pub fn update_result(id: &SimID, state: &FullState, #[resource] storage: &mut Si
     match storage.data.entry(id.clone()) {
         // No previous entry for uuid: insert new Vector of DVector<f32>
         std::collections::hash_map::Entry::Vacant(e) => {
-            e.insert(vec![state.data.clone()]);
+            e.insert(vec![state.clone()]);
         },
         // Previous entry for uuid: push DVector<f32> to existing Vector
         std::collections::hash_map::Entry::Occupied(mut e) => {
-            e.get_mut().push(state.data.clone());
+            e.get_mut().push(state.clone());
         }
     }
 

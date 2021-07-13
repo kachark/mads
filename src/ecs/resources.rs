@@ -2,6 +2,7 @@
 use std::collections::HashMap;
 use na::DVector;
 use uuid::Uuid;
+use serde::Serialize;
 
 use crate::ecs::components::*;
 use crate::math::integrators::IntegratorType;
@@ -39,7 +40,7 @@ pub struct Integrator(pub IntegratorType);
 pub struct TargetableSet(pub HashMap::<Uuid, FullState>);
 
 /// Storage for Simulation outputs
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize)]
 pub struct SimulationResult {
-    pub data: HashMap<SimID, Vec<DVector<f32>>>
+    pub data: HashMap<SimID, Vec<FullState>>
 }

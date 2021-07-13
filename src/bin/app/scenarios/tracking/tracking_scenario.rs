@@ -51,7 +51,7 @@ impl TrackingScenario {
         let target_formation = Distribution::Sphere;
 
         Self {
-            num_agents: 150,
+            num_agents: 15,
             num_targets: 150,
             agent_formation,
             target_formation
@@ -111,7 +111,7 @@ impl TrackingScenario {
 
         // Add agents to storage resource
         for agent in agent_components.iter() {
-            storage.data.entry(agent.3.clone()).or_insert(vec![agent.0.data.clone()]);
+            storage.data.entry(agent.3.clone()).or_insert(vec![agent.0.clone()]);
         }
 
         // Generate Agent Entities defined by component tuples and add to the World
@@ -181,7 +181,7 @@ impl TrackingScenario {
         // Add targets to storage resource
         // Add targets to targetable set resource
         for target in target_components.iter() {
-            storage.data.entry(target.3.clone()).or_insert(vec![target.0.data.clone()]);
+            storage.data.entry(target.3.clone()).or_insert(vec![target.0.clone()]);
             targetable_set.0.entry(target.3.uuid.clone()).or_insert(target.0.clone());
         }
 
@@ -335,7 +335,6 @@ impl Scenario for TrackingScenario {
 
         let schedule = Schedule::builder()
             // .add_system(print_id_system())
-            // .add_system(print_error_state_system()) // TODO: make this generic over two FullStates
             // .add_system(print_state_system())
             // .add_system(dynamics_lqr_solver_system::<DoubleIntegrator3D>()) // can add any dynamics type here
             .add_system(error_dynamics_lqr_solver_system::<DoubleIntegrator3D>())

@@ -3,6 +3,7 @@ use std::fmt;
 
 use nalgebra::DVector;
 use uuid::Uuid;
+use serde::Serialize;
 
 use crate::controls::models::lqr::LinearQuadraticRegulator;
 use crate::dynamics::statespace::{StateSpace, StateSpaceRepresentation};
@@ -30,14 +31,14 @@ pub struct CartesianCoordinates {
 }
 
 /// Assigns a Dynamic Vector (see nalgebra) to an Entity
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct FullState {
     pub data: DVector<f32>,
     pub statespace: StateSpace
 }
 
 /// Assigns a unique identifier and name to an Entity
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize)]
 pub struct SimID {
     pub uuid: Uuid,
     pub name: String

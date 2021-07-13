@@ -67,7 +67,7 @@ impl SimulationState
     pub fn update(&mut self) {
 
         // Check for simulator exit condition and update status accordingly
-        if let EngineState::Inactive = self.check_done() {
+        if let true = self.check_done() {
 
             println!("************************** DONE! *******************************");
             self.status = EngineState::Inactive;
@@ -82,18 +82,18 @@ impl SimulationState
     }
 
     /// Checks for simulation exit condition (time)
-    fn check_done(&mut self) -> EngineState {
+    fn check_done(&mut self) -> bool {
 
         let elapsed_times = self.resources.get::<SimulationTimeHistory>().unwrap();
         let k = elapsed_times.data.len();
 
         if elapsed_times.data[k-1] >= self.engine_config.max_simulation_time {
 
-            EngineState::Inactive
+            true
 
         } else {
 
-            EngineState::Active
+            false
 
         }
 

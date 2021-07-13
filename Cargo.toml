@@ -16,13 +16,15 @@ path = "src/bin/app/main.rs"
 
 [dependencies]
 approx = "0.5.0"
-nalgebra = "0.27.1"
+nalgebra = { version = "0.27.1", features = ["serde-serialize"] }
 lapack = "0.19.0"
 lapack-src = { version = "0.8", features = ["accelerate"] }
 legion = "0.4.0"
 uuid = "0.8"
 ordered-float = "2.5.1"
 numpy = "0.13"
+csv = "1.1"
+serde = "1.0.126"
 # osqp = "0.6.2" # Quadratic program optimization
 
 # bin

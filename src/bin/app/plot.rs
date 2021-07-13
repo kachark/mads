@@ -32,7 +32,10 @@ pub fn plot_trajectory_3d(
 
         // recover position in XYZ
         let xyz_traj: Vec<(f32, f32, f32)> = trajectory.iter()
-            .map(|state| (state[0], state[1], state[2]))
+            .map(|fullstate| {
+                let state = &fullstate.data;
+                (state[0], state[1], state[2])
+            })
             .collect();
 
         // Draw
@@ -81,7 +84,10 @@ pub fn plot_trajectory(
 //         // recover position and generate couple with timeseries
         let pos_traj: Vec<(f32, f32)> = times.data.iter()
             .zip(trajectory.iter())
-            .map(|(t, x)| (*t, x[0]))
+            .map(|(t, fullstate)| {
+                let state = &fullstate.data;
+                (*t, state[0])
+            })
             .collect();
 
         // // recover position in X and Y

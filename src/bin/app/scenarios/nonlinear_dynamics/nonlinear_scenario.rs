@@ -36,7 +36,7 @@ impl NonlinearScenario {
     pub fn default() -> Self {
 
         Self {
-            num_agents: 1,
+            num_agents: 10,
         }
 
     }
@@ -73,7 +73,7 @@ impl NonlinearScenario {
 
         // Add agents to storage resource
         for agent in agents.iter() {
-            storage.data.entry(agent.2.clone()).or_insert(vec![agent.0.data.clone()]);
+            storage.data.entry(agent.2.clone()).or_insert(vec![agent.0.clone()]);
         }
 
         world.extend(agents);

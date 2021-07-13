@@ -12,6 +12,8 @@ use formflight::simulator::configuration::{EngineConfig, SimulationConfig};
 use formflight::simulator::simulation::Simulation;
 use formflight::simulator::state::SimulationState;
 use formflight::ecs::resources::*;
+use formflight::util::save::to_csv;
+use formflight::log::logger::Logger;
 
 // use formflight::scene::scenario::SimpleScenario;
 use crate::scenarios::tracking::tracking_scenario::TrackingScenario;
@@ -38,8 +40,10 @@ fn main() {
     // TODO: safely unwrap resources.get()
     let time_history = simulation.state.resources.get::<SimulationTimeHistory>().unwrap();
     let result = simulation.state.resources.get::<SimulationResult>().unwrap();
-    let targetable_set_atomic = simulation.state.resources.get_mut::<TargetableSet>().unwrap();
-    let assignments_atomic = simulation.state.resources.get_mut::<AssignmentHistory>().unwrap();
+
+    // tracking scenario specific
+    // let targetable_set_atomic = simulation.state.resources.get_mut::<TargetableSet>().unwrap();
+    // let assignments_atomic = simulation.state.resources.get_mut::<AssignmentHistory>().unwrap();
 
 //     for (uuid, trajectory) in result.data.iter() {
 //         println!("Entity: {:?}", uuid);
@@ -65,6 +69,11 @@ fn main() {
     //     println!("{:?}", target_uuids);
 
     // }
+
+    let logger = Logger;
+    if let Err(err) = logger.to_csv(&simulation.state) {
+        println!("csv write error, {}", err);
+    };
 
     match plot::plot_trajectory_3d(&time_history, &result) {
 

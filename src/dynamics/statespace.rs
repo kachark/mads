@@ -1,5 +1,6 @@
 
 use na::DVector;
+use serde::Serialize;
 
 /// Defines an interface for solving systems of equations according to a State Space
 /// model
@@ -8,7 +9,7 @@ pub trait StateSpaceRepresentation {
     fn h(&self, t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32>;
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Serialize)]
 pub enum State {
     Empty,
     Position{ x: u32, y: u32, z: Option<u32> },
@@ -19,7 +20,7 @@ pub enum State {
 
 /// Defines a generic statespace for dynamic mechanical systems in a Cartesian coordinate system
 /// Each field represents the corresponding indices of the state vector
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Serialize)]
 pub struct StateSpace {
     pub position: State,
     pub velocity: State,
