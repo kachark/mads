@@ -52,7 +52,7 @@ impl TrackingScenario {
 
         Self {
             num_agents: 15,
-            num_targets: 150,
+            num_targets: 15,
             agent_formation,
             target_formation
         }

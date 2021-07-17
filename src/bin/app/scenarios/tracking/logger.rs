@@ -2,18 +2,22 @@
 use std::fs;
 use std::io::BufWriter;
 use std::error::Error;
+use std::collections::HashMap;
+use legion::*;
 
+use formflight::ecs::components::SimID;
 use formflight::ecs::resources::{SimulationResult, SimulationTimeHistory};
 use formflight::simulator::state::SimulationState;
 use formflight::log::simulation_logger::SimulationLogger;
 
 use crate::scenarios::tracking::resources::AssignmentHistory;
+use crate::scenarios::tracking::components::{Agent, Target};
 
 pub struct Logger;
 
 impl Logger {
 
-    pub fn assignments_to_csv(&self, sim_state: &SimulationState) -> serde_json::Result<()> {
+    pub fn assignments_to_json(&self, sim_state: &SimulationState) -> serde_json::Result<()> {
 
         let f = fs::File::create("assignments.json").expect("Unable to create file");
         let bw = BufWriter::new(f);
@@ -33,10 +37,41 @@ impl Logger {
 
     }
 
+    pub fn sim_id_to_json(&self, sim_state: &SimulationState) -> serde_json::Result<()> {
+
+        let f = fs::File::create("entities.json").expect("Unable to create file");
+        let bw = BufWriter::new(f);
+
+        let mut agent_id_query = <(&SimID, &Agent)>::query();
+        let mut target_id_query = <(&SimID, &Target)>::query();
+
+        let mut entities = HashMap::<String, Vec<&SimID>>::new();
+
+        for (id, _agent) in agent_id_query.iter(&sim_state.world) {
+            entities.entry("Agents".to_string()).or_insert(Vec::new()).push(&id);
+        }
+
+        for (id, _target) in target_id_query.iter(&sim_state.world) {
+            entities.entry("Targets".to_string()).or_insert(Vec::new()).push(&id);
+        }
+
+        // Serialize to JSON
+        let entities_json = serde_json::to_string_pretty(&entities)?;
+
+        // println!("{}", &entities_json);
+
+        serde_json::to_writer(bw, &entities_json).expect("Failed writing : (");
+
+
+        Ok(())
+
+    }
+
 }
 
 impl SimulationLogger for Logger {
 
+    /// Write SimulationTimeHistory and SimulationResult Resources to CSV
     fn to_csv(&self, sim_state: &SimulationState) -> std::result::Result<(), Box<dyn Error>> {
 
         let mut wtr = csv::Writer::from_path("test.csv")?;

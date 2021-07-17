@@ -12,7 +12,6 @@ use formflight::simulator::configuration::{EngineConfig, SimulationConfig};
 use formflight::simulator::simulation::Simulation;
 use formflight::simulator::state::SimulationState;
 use formflight::ecs::resources::*;
-use formflight::util::save::to_csv;
 // use formflight::log::logger::Logger;
 use formflight::log::simulation_logger::SimulationLogger;
 
@@ -81,7 +80,11 @@ fn main() {
         println!("csv write error, {}", err);
     };
 
-    if let Err(err) = logger.assignments_to_csv(&simulation.state) {
+    if let Err(err) = logger.assignments_to_json(&simulation.state) {
+        println!("csv write error, {}", err);
+    };
+
+    if let Err(err) = logger.sim_id_to_json(&simulation.state) {
         println!("csv write error, {}", err);
     };
 
