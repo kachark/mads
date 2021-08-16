@@ -18,7 +18,8 @@ use crate::scenarios::tracking::components::{Agent, Target};
 use crate::scenarios::tracking::resources::{NumAgents, NumTargets, Assignment, AssignmentHistory};
 use crate::scenarios::tracking::error_dynamics_systems::*;
 use crate::distributions::*;
-use crate::scenarios::tracking::assignments::{unbalanced_emd_assignment, emd_assignment};
+// use crate::scenarios::tracking::assignments::{unbalanced_emd_assignment, emd_assignment};
+use crate::scenarios::tracking::assignments::emd_assignment;
 
 pub struct TrackingScenario {
 
@@ -256,7 +257,9 @@ impl TrackingScenario {
 
         } else {
 
-            assignment = match unbalanced_emd_assignment(&agent_states, &target_states) {
+            // assignment = match unbalanced_emd_assignment(&agent_states, &target_states) {
+            // assignment = match unbalanced_emd_assignment(&agent_states, &target_states) {
+            assignment = match emd_assignment(&agent_states, &target_states) {
 
                 Ok(matrix) => matrix,
                 Err(error) => panic!("Unbalanced EMD assignment error {:?}", error)

@@ -83,7 +83,7 @@ impl SimulationLogger for Logger {
         let time_history = sim_state.resources.get::<SimulationTimeHistory>().unwrap();
         let results = sim_state.resources.get::<SimulationResult>().unwrap();
 
-        println!("{:?}", time_history);
+        // println!("{:?}", time_history);
 
         // Construct header
         let mut header: Vec<String> = vec!["Time".to_string()];
