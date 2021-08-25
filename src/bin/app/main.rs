@@ -1,8 +1,5 @@
 #[allow(non_snake_case)]
 extern crate plotters;
-// extern crate pyo3;
-// extern crate numpy;
-extern crate ordered_float;
 extern crate rust_optimal_transport as ot;
 
 pub mod plot;

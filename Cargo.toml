@@ -16,26 +16,19 @@ path = "src/bin/app/main.rs"
 
 [dependencies]
 approx = "0.5.0"
-#nalgebra = { version = "0.27.1", features = ["serde-serialize"] }
 nalgebra = { version = "0.29", features = ["serde-serialize"] }
 lapack = "0.19.0"
 lapack-src = { version = "0.8", features = ["accelerate"] }
 legion = "0.4.0"
 uuid = "0.8"
-ordered-float = "2.5.1"
-#numpy = "0.13"
 csv = "1.1"
 serde = "1.0.126"
 serde_json = "1.0"
-# osqp = "0.6.2" # Quadratic program optimization
+rust-optimal-transport = { path = "../rust-optimal-transport" }
+# rust-optimal-transport = { git = "https://github.com/kachark/rust-optimal-transport", branch = "add_unbalanced_OT" }
 
 # bin
 plotters = "^0.3.1"
 #polars = "0.14.2"
 
-#[dependencies.pyo3]
-#version = "0.13.2"
-#features = ["auto-initialize"]
 
-[dependencies.rust-optimal-transport]
-path = "../rust-optimal-transport"
