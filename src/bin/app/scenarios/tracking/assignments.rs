@@ -1,11 +1,12 @@
 
 use std::error::Error;
 use nalgebra::{DVector, DMatrix};
-use ot::emd;
-use ot::unbalanced::{sinkhorn_unbalanced, UnbalancedSolverType}; 
-use ot::utils::metrics::{dist, MetricType};
+use rot::ot::emd::emd;
+use rot::unbalanced::unbalanced_sinkhorn::sinkhorn_knopp_unbalanced;
+use rot::utils::metrics::{dist, MetricType};
 
-// TODO: one single function for assignments that match for nagents = ntargets or not
+// TODO: one single function for assignments that match for nagents = ntargets or not - actually
+// check for the weights of the discrete distributions summing to the same value or not
 
 pub fn emd_assignment(agent_states: &Vec<Vec<f32>>, target_states: &Vec<Vec<f32>>) -> Result<Vec<Vec<u32>>, Box<dyn Error>> {
 
@@ -40,7 +41,7 @@ pub fn emd_assignment(agent_states: &Vec<Vec<f32>>, target_states: &Vec<Vec<f32>
     let mut b = DVector::<f64>::from_vec(vec![1f64 / (ntargets as f64); ntargets]);
 
     // Get Euclidean distance cost between distributions of agent/target states
-    let mut cost = dist(&xs, Some(&xt), MetricType::SqEuclidean);
+    let mut cost = dist(&xs, &xt, MetricType::SqEuclidean);
 
     // Normalize each cost row by it's maximum value
     for mut row in cost.row_iter_mut() {
@@ -99,10 +100,10 @@ pub fn unbalanced_emd_assignment(agent_states: &Vec<Vec<f32>>, target_states: &V
     // Weights of discrete distribution masses representing agents/target states
     // For now: Uniform distribution
     let mut a = DVector::<f64>::from_vec(vec![1f64 / (nagents as f64); nagents]);
-    let mut b = DMatrix::<f64>::from_row_slice(ntargets, 1, vec![1f64 / (ntargets as f64); ntargets].as_slice());
+    let mut b = DVector::<f64>::from_vec(vec![1f64 / (ntargets as f64); ntargets]);
 
     // Get Euclidean distance cost between distributions of agent/target states
-    let mut cost = dist(&xs, Some(&xt), MetricType::SqEuclidean);
+    let mut cost = dist(&xs, &xt, MetricType::SqEuclidean);
 
     // Normalize each cost row by it's maximum value
     for mut row in cost.row_iter_mut() {
@@ -111,9 +112,8 @@ pub fn unbalanced_emd_assignment(agent_states: &Vec<Vec<f32>>, target_states: &V
     }
 
     // Get coupling matrix according to a given cost
-    let gamma = sinkhorn_unbalanced(&mut a, &mut b, &mut cost, 0.1, 1.0,
-                                    UnbalancedSolverType::Sinkhorn,
-                                    None, None, None);
+    let gamma = sinkhorn_knopp_unbalanced(&mut a, &mut b, &mut cost,
+                                          0.1, 1.0, None, None);
 
     // Convert coupling matrix to binary coupling matrix
     let mut binary = vec![vec![0; ntargets]; nagents];

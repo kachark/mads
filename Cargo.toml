@@ -25,7 +25,7 @@ csv = "1.1"
 serde = "1.0.126"
 serde_json = "1.0"
 rust-optimal-transport = { path = "../rust-optimal-transport" }
-# rust-optimal-transport = { git = "https://github.com/kachark/rust-optimal-transport", branch = "add_unbalanced_OT" }
+# rust-optimal-transport = { git = "https://github.com/kachark/rust-optimal-transport", branch = "main" }
 
 # bin
 plotters = "^0.3.1"
