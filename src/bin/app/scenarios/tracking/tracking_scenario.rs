@@ -18,7 +18,7 @@ use crate::scenarios::tracking::components::{Agent, Target};
 use crate::scenarios::tracking::resources::{NumAgents, NumTargets, Assignment, AssignmentHistory};
 use crate::scenarios::tracking::error_dynamics_systems::*;
 use crate::distributions::*;
-use crate::scenarios::tracking::assignments::{unbalanced_emd_assignment, emd_assignment};
+use crate::scenarios::tracking::assignments::ot_assignment;
 
 pub struct TrackingScenario {
 
@@ -51,8 +51,8 @@ impl TrackingScenario {
         let target_formation = Distribution::Sphere;
 
         Self {
-            num_agents: 40,
-            num_targets: 40,
+            num_agents: 2,
+            num_targets: 2,
             agent_formation,
             target_formation
         }
@@ -244,26 +244,12 @@ impl TrackingScenario {
         }
 
         // Perform assignment of agents to targets
-        // num_agents = num_targets
-        if self.num_agents == self.num_targets {
+        assignment = match ot_assignment(&agent_states, &target_states) {
 
-            assignment = match emd_assignment(&agent_states, &target_states) {
+            Ok(ot_matrix) => ot_matrix,
+            Err(error) => panic!("EMD assignment error {:?}", error)
 
-                Ok(matrix) => matrix,
-                Err(error) => panic!("EMD assignment error {:?}", error)
-
-            };
-
-        } else {
-
-            assignment = match unbalanced_emd_assignment(&agent_states, &target_states) {
-
-                Ok(matrix) => matrix,
-                Err(error) => panic!("Unbalanced EMD assignment error {:?}", error)
-
-            };
-
-        }
+        };
 
         // Update AssignmentHistory resource
         for (i, agent) in assignment.iter().enumerate() {
