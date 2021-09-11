@@ -20,5 +20,7 @@ fn main() {
     simulation.build();
     simulation.run();
 
+    // TODO: print out the results - maybe add a printSystem()?
+
  }
 

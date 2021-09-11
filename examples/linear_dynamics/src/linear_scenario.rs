@@ -113,6 +113,7 @@ impl Scenario for LinearScenario {
         let schedule = Schedule::builder()
             .add_system(dynamics_lqr_solver_system::<InvertedPendulum>()) // can add any dynamics type here
             .add_system(update_result_system())
+            .add_system(print_state_system())
             .add_system(increment_time_system())
             .build();
 
