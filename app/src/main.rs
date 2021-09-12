@@ -13,7 +13,6 @@ use formflight::ecs::resources::*;
 // use formflight::log::logger::Logger;
 use formflight::log::simulation_logger::SimulationLogger;
 
-// use formflight::scene::scenario::SimpleScenario;
 use crate::scenarios::tracking::tracking_scenario::TrackingScenario;
 use crate::scenarios::tracking::resources::AssignmentHistory;
 
@@ -26,7 +25,6 @@ fn main() {
     let sim_config = SimulationConfig::default();
     let sim_state = SimulationState::new(engine_config, sim_config);
     let scenario = TrackingScenario::default();
-    // let scenario = SimpleScenario::new();
 
     let mut simulation = Simulation::new(sim_state, scenario);
     simulation.build();

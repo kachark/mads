@@ -2,6 +2,7 @@
 [workspace]
 members = [
   "formflight",
+  "app",
   "examples/linear_dynamics",
   "examples/nonlinear_dynamics",
   "examples/simple_example"
