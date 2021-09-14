@@ -7,13 +7,13 @@ use nalgebra::{DVector, DMatrix};
 use legion::*;
 use legion::storage::Component;
 
-use formflight::dynamics::statespace::StateSpaceRepresentation;
-use formflight::math::ivp_solver::rk45::RungeKutta45;
-use formflight::math::ivp_solver::euler::ForwardEuler;
-use formflight::math::ivp_solver::euler::MidPointEuler;
-use formflight::math::integrators::IntegratorType;
-use formflight::ecs::resources::*;
-use formflight::ecs::components::*;
+use mads::dynamics::statespace::StateSpaceRepresentation;
+use mads::math::ivp_solver::rk45::RungeKutta45;
+use mads::math::ivp_solver::euler::ForwardEuler;
+use mads::math::ivp_solver::euler::MidPointEuler;
+use mads::math::integrators::IntegratorType;
+use mads::ecs::resources::*;
+use mads::ecs::components::*;
 
 use crate::scenarios::tracking::resources::Assignment;
 use crate::scenarios::tracking::components::Agent;

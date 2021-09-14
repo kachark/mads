@@ -6,12 +6,12 @@ pub mod plot;
 pub mod distributions;
 pub mod scenarios;
 
-use formflight::simulator::configuration::{EngineConfig, SimulationConfig};
-use formflight::simulator::simulation::Simulation;
-use formflight::simulator::state::SimulationState;
-use formflight::ecs::resources::*;
-// use formflight::log::logger::Logger;
-use formflight::log::simulation_logger::SimulationLogger;
+use mads::simulator::configuration::{EngineConfig, SimulationConfig};
+use mads::simulator::simulation::Simulation;
+use mads::simulator::state::SimulationState;
+use mads::ecs::resources::*;
+// use mads::log::logger::Logger;
+use mads::log::simulation_logger::SimulationLogger;
 
 use crate::scenarios::tracking::tracking_scenario::TrackingScenario;
 use crate::scenarios::tracking::resources::AssignmentHistory;

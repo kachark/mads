@@ -2,9 +2,9 @@
 pub mod nonlinear_scenario;
 pub mod resources;
 
-use formflight::simulator::configuration::{EngineConfig, SimulationConfig};
-use formflight::simulator::simulation::Simulation;
-use formflight::simulator::state::SimulationState;
+use mads::simulator::configuration::{EngineConfig, SimulationConfig};
+use mads::simulator::simulation::Simulation;
+use mads::simulator::state::SimulationState;
 
 use crate::nonlinear_scenario::NonlinearScenario;
 

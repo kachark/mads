@@ -1,6 +1,6 @@
 
 use plotters::prelude::*;
-use formflight::ecs::resources::{SimulationTimeHistory, SimulationResult};
+use mads::ecs::resources::{SimulationTimeHistory, SimulationResult};
 
 
 pub fn plot_trajectory_3d(

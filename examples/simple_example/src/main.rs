@@ -1,10 +1,10 @@
-use formflight::simulator::configuration::{EngineConfig, SimulationConfig};
-use formflight::simulator::simulation::Simulation;
-use formflight::simulator::state::SimulationState;
-use formflight::ecs::resources::*;
-use formflight::log::simulation_logger::SimulationLogger;
+use mads::simulator::configuration::{EngineConfig, SimulationConfig};
+use mads::simulator::simulation::Simulation;
+use mads::simulator::state::SimulationState;
+use mads::ecs::resources::*;
+use mads::log::simulation_logger::SimulationLogger;
 
-use formflight::scene::scenario::SimpleScenario;
+use mads::scene::scenario::SimpleScenario;
 
 fn main() {
 

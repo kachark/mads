@@ -1,7 +1,7 @@
 
 use legion::*;
-use formflight::ecs::resources::TargetableSet;
-use formflight::ecs::components::FullState;
+use mads::ecs::resources::TargetableSet;
+use mads::ecs::components::FullState;
 use crate::scenarios::tracking::components::Agent;
 
 #[system(for_each)]

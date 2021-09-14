@@ -5,14 +5,14 @@ use nalgebra::{DMatrix, DVector};
 use legion::*;
 use uuid::Uuid;
 
-use formflight::scene::scenario::Scenario;
-use formflight::ecs::systems::simple_systems::*;
-use formflight::ecs::systems::dynamics_systems::*;
-use formflight::ecs::components::*;
-use formflight::ecs::resources::*;
-use formflight::dynamics::statespace::{State, StateSpace};
-use formflight::dynamics::models::linear::inverted_pendulum::InvertedPendulum;
-use formflight::controls::models::lqr::LinearQuadraticRegulator;
+use mads::scene::scenario::Scenario;
+use mads::ecs::systems::simple_systems::*;
+use mads::ecs::systems::dynamics_systems::*;
+use mads::ecs::components::*;
+use mads::ecs::resources::*;
+use mads::dynamics::statespace::{State, StateSpace};
+use mads::dynamics::models::linear::inverted_pendulum::InvertedPendulum;
+use mads::controls::models::lqr::LinearQuadraticRegulator;
 
 use crate::resources::NumAgents;
 
