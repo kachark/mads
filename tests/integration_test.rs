@@ -1,9 +1,9 @@
 
 use nalgebra::{DVector, DMatrix};
-use formflight::dynamics::models::linear::double_integrator::DoubleIntegrator3D;
-use formflight::dynamics::statespace::StateSpaceRepresentation;
-use formflight::controls::models::lqr::LinearQuadraticRegulator as LQR;
-use formflight::math::ivp_solver::euler::MidPointEuler;
+use mads::dynamics::models::linear::double_integrator::DoubleIntegrator3D;
+use mads::dynamics::statespace::StateSpaceRepresentation;
+use mads::controls::models::lqr::LinearQuadraticRegulator as LQR;
+use mads::math::ivp_solver::euler::MidPointEuler;
 
 #[test]
 fn test_linear_dynamics() {
