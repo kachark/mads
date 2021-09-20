@@ -22,5 +22,5 @@ The following are supported:
 
 MADS would not be possible without the great work put into these projects:
 
-[Legion](https://github.com/amethyst/legion): High performance Entity Component system library
-[nalgebra](https://github.com/amethyst/legion): Easy to use linear algebra and matrix library
+- [Legion](https://github.com/amethyst/legion): High performance Entity Component system library
+- [nalgebra](https://github.com/amethyst/legion): Easy to use linear algebra and matrix library
