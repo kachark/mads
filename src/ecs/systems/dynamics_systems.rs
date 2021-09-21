@@ -4,9 +4,9 @@ use legion::*;
 use legion::storage::Component;
 
 use crate::dynamics::statespace::StateSpaceRepresentation;
-use crate::math::ivp_solver::rk45::{RungeKutta45, DOP853};
-use crate::math::ivp_solver::euler::ForwardEuler;
-use crate::math::ivp_solver::euler::MidPointEuler;
+use crate::math::integrate::runge_kutta::{RK45, DOP853};
+use crate::math::integrate::euler::ForwardEuler;
+use crate::math::integrate::euler::MidPointEuler;
 use crate::math::integrators::IntegratorType;
 use crate::ecs::resources::*;
 use crate::ecs::components::*;
@@ -59,7 +59,7 @@ where
     let (_t_history, traj) = match integrator.0 {
         IntegratorType::ForwardEuler => ForwardEuler(f, time.0, x_prev, tf, step),
         IntegratorType::MidpointEuler => MidPointEuler(f, time.0, x_prev, tf, step),
-        IntegratorType::RK45 => RungeKutta45(f, time.0, x_prev, tf, step, rtol),
+        IntegratorType::RK45 => RK45(f, time.0, x_prev, tf, step, rtol),
         IntegratorType::DOP583 => DOP853(f, time.0, x_prev, tf, step, rtol)
     };
 
@@ -123,7 +123,7 @@ where
     let (_t_history, traj) = match integrator.0 {
         IntegratorType::ForwardEuler => ForwardEuler(f, time.0, x_prev, tf, step),
         IntegratorType::MidpointEuler => MidPointEuler(f, time.0, x_prev, tf, step),
-        IntegratorType::RK45 => RungeKutta45(f, time.0, x_prev, tf, step, rtol),
+        IntegratorType::RK45 => RK45(f, time.0, x_prev, tf, step, rtol),
         IntegratorType::DOP583 => DOP853(f, time.0, x_prev, tf, step, rtol)
     };
 

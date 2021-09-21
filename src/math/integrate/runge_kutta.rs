@@ -2,7 +2,8 @@
 use na::DVector;
 
 // Reference: https://math.okstate.edu/people/yqwang/teaching/math4513_fall11/Notes/rungekutta.pdf
-pub fn RungeKutta45<F>(
+// Runge-Kutta-Fehlberg method aka RK45
+pub fn RK45<F>(
     f: F,
     t0: f32,
     y0: DVector<f32>,
@@ -198,7 +199,7 @@ mod tests {
         let n = 1000.0;
         let step = (tf - t0) / n;
         let rtol = 1E-5;
-        let (_t, y) = RungeKutta45(f, t0, y0, tf, step, rtol);
+        let (_t, y) = RK45(f, t0, y0, tf, step, rtol);
 
         for ele in y.iter() {
             println!("{:?}", ele.data);

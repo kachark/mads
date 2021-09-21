@@ -1,4 +1,4 @@
-pub mod ivp_solver;
+pub mod integrate;
 pub mod integrators;
 pub mod riccati;
 
