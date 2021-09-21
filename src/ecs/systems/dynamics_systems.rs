@@ -4,7 +4,7 @@ use legion::*;
 use legion::storage::Component;
 
 use crate::dynamics::statespace::StateSpaceRepresentation;
-use crate::math::ivp_solver::rk45::RungeKutta45;
+use crate::math::ivp_solver::rk45::{RungeKutta45, DOP853};
 use crate::math::ivp_solver::euler::ForwardEuler;
 use crate::math::ivp_solver::euler::MidPointEuler;
 use crate::math::integrators::IntegratorType;
@@ -59,7 +59,8 @@ where
     let (_t_history, traj) = match integrator.0 {
         IntegratorType::ForwardEuler => ForwardEuler(f, time.0, x_prev, tf, step),
         IntegratorType::MidpointEuler => MidPointEuler(f, time.0, x_prev, tf, step),
-        IntegratorType::RK45 => RungeKutta45(f, time.0, x_prev, tf, step, rtol)
+        IntegratorType::RK45 => RungeKutta45(f, time.0, x_prev, tf, step, rtol),
+        IntegratorType::DOP583 => DOP853(f, time.0, x_prev, tf, step, rtol)
     };
 
     // Update entity FullState component
@@ -122,7 +123,8 @@ where
     let (_t_history, traj) = match integrator.0 {
         IntegratorType::ForwardEuler => ForwardEuler(f, time.0, x_prev, tf, step),
         IntegratorType::MidpointEuler => MidPointEuler(f, time.0, x_prev, tf, step),
-        IntegratorType::RK45 => RungeKutta45(f, time.0, x_prev, tf, step, rtol)
+        IntegratorType::RK45 => RungeKutta45(f, time.0, x_prev, tf, step, rtol),
+        IntegratorType::DOP583 => DOP853(f, time.0, x_prev, tf, step, rtol)
     };
 
     // Update entity FullState component

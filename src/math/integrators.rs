@@ -5,7 +5,8 @@ pub enum IntegratorType {
 
     ForwardEuler,
     MidpointEuler,
-    RK45
+    RK45,
+    DOP583,
 
 }
 
