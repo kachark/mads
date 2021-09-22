@@ -102,7 +102,7 @@ impl StateSpaceRepresentation for DoublePendulum {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::math::ivp_solver::rk45::RungeKutta45;
+    use crate::math::integrate::runge_kutta::RK45;
     use std::f32::consts::FRAC_PI_4;
 
     #[test]
@@ -126,7 +126,7 @@ mod tests {
         let n = 1000.0;
         let step = (tf - t0) / n;
         let rtol = 1E-3;
-        let (_t, y) = RungeKutta45(dynamics, t0, x0, tf, step, rtol);
+        let (_t, y) = RK45(dynamics, t0, x0, tf, step, rtol);
 
         for ele in y.iter() {
             println!("{:?}", ele.data);

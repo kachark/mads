@@ -1,12 +1,21 @@
 
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum IntegrateError {
+    // max iterations
+    //
+
+}
+
 /// IVP Integrators
 #[derive(Copy, Clone, PartialEq)]
 pub enum IntegratorType {
 
     ForwardEuler,
     MidpointEuler,
+    RKF45,
     RK45,
-    DOP583,
 
 }
 

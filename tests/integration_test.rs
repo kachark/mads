@@ -3,7 +3,7 @@ use nalgebra::{DVector, DMatrix};
 use mads::dynamics::models::linear::double_integrator::DoubleIntegrator3D;
 use mads::dynamics::statespace::StateSpaceRepresentation;
 use mads::controls::models::lqr::LinearQuadraticRegulator as LQR;
-use mads::math::ivp_solver::euler::MidPointEuler;
+use mads::math::integrate::euler::MidPointEuler;
 
 #[test]
 fn test_linear_dynamics() {

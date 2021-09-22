@@ -2,8 +2,8 @@
 use na::DVector;
 
 // Reference: https://math.okstate.edu/people/yqwang/teaching/math4513_fall11/Notes/rungekutta.pdf
-// Runge-Kutta-Fehlberg method aka RK45
-pub fn RK45<F>(
+// Runge-Kutta-Fehlberg method
+pub fn RKF45<F>(
     f: F,
     t0: f32,
     y0: DVector<f32>,
@@ -78,8 +78,8 @@ where
 }
 
 
-// Dormand-Prince Runge-Kutta method
-pub fn DOP853<F>(
+// Dormand-Prince Runge-Kutta method of orders 4 and 5
+pub fn RK45<F>(
     f: F,
     t0: f32,
     y0: DVector<f32>,
@@ -113,7 +113,7 @@ where
         let k3 = h * f(tk + (3./10.)*h, &(yk + (3./40.) * &k1 + (9./40.) * &k2));
         let k4 = h * f(tk + (4./5.)*h, &(yk + (44./45.) * &k1 - (56./15.) * &k2 + (32./9.) * &k3));
         let k5 = h * f(tk + (8./9.)*h, &(yk + (19372./6561.) * &k1 - (25360./2187.) * &k2 + (64448./6561.) * &k3 - (212./729.) * &k4));
-        let k6 = h * f(tk + h, &(yk + (9017./3168.) * &k1 - (355./33.) * &k2 - (46732./5247.) * &k3 + (49./176.) * &k4 - (5103./18656.) * &k5));
+        let k6 = h * f(tk + h, &(yk + (9017./3168.) * &k1 - (355./33.) * &k2 + (46732./5247.) * &k3 + (49./176.) * &k4 - (5103./18656.) * &k5));
         let k7 = h * f(tk + h, &(yk + (35./384.) * &k1 + (500./1113.) * &k3 + (125./192.) * &k4 - (2187./6784.) * &k5 + (11./84.) * &k6));
 
         // Fourth-order Runge-Kutta result
@@ -122,8 +122,8 @@ where
         // Fifth-order Runge-Kutta result
         let w2 = yk + (35.*&k1/384.) + (500.*&k3/1113.) + (125.*&k4/192.) - (2187.*&k5/6784.) + (11.*&k6/84.);
 
-        let truncation_error: f32 = (&w2 - &w1).norm();
-        let s = 0.84 * (rtol / truncation_error).powf(0.20);
+        let truncation_error: f32 = (&w2 - &w1).norm() / h;
+        let s = 0.84 * (rtol / truncation_error).powf(0.25);
 
         // If step size satisfies error tolerance, accept this value
         if truncation_error <= rtol {
@@ -199,7 +199,7 @@ mod tests {
         let n = 1000.0;
         let step = (tf - t0) / n;
         let rtol = 1E-5;
-        let (_t, y) = RK45(f, t0, y0, tf, step, rtol);
+        let (_t, y) = RKF45(f, t0, y0, tf, step, rtol);
 
         for ele in y.iter() {
             println!("{:?}", ele.data);
@@ -244,7 +244,7 @@ mod tests {
         let n = 1000.0;
         let step = (tf - t0) / n;
         let rtol = 1E-5;
-        let (_t, y) = DOP853(f, t0, y0, tf, step, rtol);
+        let (_t, y) = RK45(f, t0, y0, tf, step, rtol);
 
         for ele in y.iter() {
             println!("{:?}", ele.data);
