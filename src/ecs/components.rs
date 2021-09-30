@@ -7,7 +7,7 @@ use serde::Serialize;
 
 use crate::controls::models::lqr::LinearQuadraticRegulator;
 use crate::dynamics::statespace::{StateSpace, StateSpaceRepresentation};
-use crate::math::coordinate_frame::CartesianFrame;
+use crate::math::frames::ReferenceFrame;
 
 // Define Components
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -24,10 +24,10 @@ pub struct Velocity {
     pub z: f32
 }
 
-/// Define coordinates frame for an entity
+/// Define reference frame for an entity
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct CartesianCoordinates {
-    pub frame: CartesianFrame
+pub struct EntityFrame {
+    pub frame: ReferenceFrame
 }
 
 /// Assigns a Dynamic Vector (see nalgebra) to an Entity
@@ -72,4 +72,7 @@ pub struct LQRController {
 }
 
 
+/// Flags an Entity as a Waypoint
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Waypoint(pub bool);
 

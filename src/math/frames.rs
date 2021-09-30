@@ -1,39 +1,33 @@
 
 use na::{Rotation3, Vector3, Matrix3};
 
-pub enum CoordinateFrame {
-    World { x: f32, y: f32, z: f32 },
-    BodyFixed { xB: f32, yB: f32, zB: f32 }
-}
-
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct CartesianFrame {
+#[derive(Default, Debug, Clone, Copy, PartialEq)]
+pub struct ReferenceFrame {
 
     origin: Vector3<f32>,
-    axes: Matrix3<f32>
+    coordinates: Matrix3<f32>
 
 }
 
-impl CartesianFrame {
+impl ReferenceFrame {
 
     pub fn new(origin: (f32, f32, f32)) -> Self {
 
         let o = Vector3::new(origin.0, origin.1, origin.2);
-        let mut axes = Matrix3::from_element(0.0);
-        axes.fill_with_identity();
+        let mut coordinates = Matrix3::from_element(0.0);
+        coordinates.fill_with_identity();
 
-        Self { origin: o, axes }
+        Self { origin: o, coordinates }
 
     }
 
     pub fn default() -> Self {
 
         let origin = Vector3::new(0f32, 0f32, 0f32);
-        let mut axes = Matrix3::from_element(0.0);
-        axes.fill_with_identity();
+        let mut coordinates = Matrix3::from_element(0.0);
+        coordinates.fill_with_identity();
 
-        Self { origin, axes }
+        Self { origin, coordinates }
 
     }
 
@@ -43,7 +37,7 @@ impl CartesianFrame {
         let rot = Rotation3::from_euler_angles(roll, pitch, yaw);
 
         // self.axes = rot.transpose() * self.axes // transpose because nalgebra uses col-major matrices
-        self.axes = rot * self.axes
+        self.coordinates = rot * self.coordinates
 
     }
 
@@ -55,9 +49,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_CartesianFrame_rotate() {
+    fn test_ReferenceFrame_rotate() {
 
-        let mut body_fixed_frame = CartesianFrame::default();
+        let mut body_fixed_frame = ReferenceFrame::default();
         body_fixed_frame.rotate(std::f32::consts::FRAC_PI_4, 0.0, std::f32::consts::FRAC_PI_6);
 
         let correct = Matrix3::from_row_slice(
@@ -67,7 +61,7 @@ mod tests {
 
         println!("{:?}", body_fixed_frame);
 
-        let _ = relative_eq!(body_fixed_frame.axes, correct);
+        let _ = relative_eq!(body_fixed_frame.coordinates, correct);
     }
 
 }

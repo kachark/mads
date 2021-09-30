@@ -203,8 +203,7 @@ mod tests {
 
         for ele in y.iter() {
             println!("{:?}", ele.data);
-        }
-    }
+        } }
 
     #[test]
     fn test_DormandPrince() {
@@ -243,7 +242,7 @@ mod tests {
         let tf = 10.0;
         let n = 1000.0;
         let step = (tf - t0) / n;
-        let rtol = 1E-5;
+        let rtol = 1E-4;
         let (_t, y) = RK45(f, t0, y0, tf, step, rtol);
 
         for ele in y.iter() {

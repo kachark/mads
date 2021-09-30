@@ -3,8 +3,8 @@ use legion::{World, Resources};
 use uuid::Uuid;
 use crate::util::misc::range_step;
 use crate::ecs::resources::*;
-use crate::ecs::components::{CartesianCoordinates, SimID};
-use crate::math::coordinate_frame::CartesianFrame;
+use crate::ecs::components::{EntityFrame, SimID};
+use crate::math::frames::ReferenceFrame;
 use crate::simulator::configuration::{EngineConfig, SimulationConfig};
 
 /// Define World, Resources, and Components
@@ -53,8 +53,8 @@ fn add_engine_resources(resources: &mut legion::Resources, config: &EngineConfig
 fn add_simulation_entities(world: &mut legion::World) {
 
     // Add entity for origin
-    let inertial_frame = CartesianCoordinates {
-        frame: CartesianFrame::default()
+    let inertial_frame = EntityFrame {
+        frame: ReferenceFrame::default()
     };
     let sim_id = SimID { uuid: Uuid::new_v4(), name: "O".to_string() };
     world.extend(vec![(inertial_frame, sim_id)]);

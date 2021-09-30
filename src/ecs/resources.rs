@@ -6,6 +6,7 @@ use serde::Serialize;
 
 use crate::ecs::components::*;
 use crate::math::integrators::IntegratorType;
+use crate::math::frames::ReferenceFrame;
 
 // Define Engine resources for Legion Entity-Component-System
 
@@ -44,3 +45,11 @@ pub struct TargetableSet(pub HashMap::<Uuid, FullState>);
 pub struct SimulationResult {
     pub data: HashMap<SimID, Vec<FullState>>
 }
+
+/// Define an inertial reference frame for the World
+#[derive(Default, Debug, Clone, Copy, PartialEq)]
+pub struct WorldFrame {
+    pub frame: ReferenceFrame
+}
+
+
