@@ -1,5 +1,7 @@
 
 use na::DVector;
+use na::base::UniformNorm;
+use std::f32;
 
 // Reference: https://math.okstate.edu/people/yqwang/teaching/math4513_fall11/Notes/rungekutta.pdf
 // Runge-Kutta-Fehlberg method
@@ -17,16 +19,21 @@ where
     let mut h = step;
     let mut time: Vec<f32> = Vec::new();
     let mut y: Vec<DVector<f32>> = Vec::new();
+    let atol = 1E-10;
 
     time.push(t0);
     y.push(y0);
 
     let mut tk = t0;
+
+    // inner-step iteration
     let mut _k = 0;
-    let mut count = 0;
+
+    // global iteration
+    let mut _it = 1;
+
     while tk < tf {
 
-        // h = h.min(tf - time[time.len()-1]);
         h = h.min(tf - tk);
 
         // let tk = time[time.len()-1];
@@ -45,33 +52,38 @@ where
         // Fifth-order Runge-Kutta result
         let w2 = yk + (16.*&k1/135.) + (6656.*&k3/12825.) + (28561.*&k4/56430.) - (9.*&k5/50.) + (2.*&k6/55.);
 
-        let truncation_error: f32 = (&w2 - &w1).norm() / h;
-        let s = 0.84 * (rtol / truncation_error).powf(0.25);
+        // Error tolerance
+        let tol = atol + yk.apply_norm(&UniformNorm)*rtol;
+
+        // L-infinity error norm
+        let truncation_error = ((&w2 - &w1) / h).apply_norm(&UniformNorm);
+
+        // Optimal step size scale factor
+        let s = 0.84 * (tol / truncation_error).powf(0.25);
 
         // If step size satisfies error tolerance, accept this value
-        if truncation_error <= rtol {
+        if truncation_error <= tol {
 
             tk += h;
-            time.push(tk);
-            y.push(w1);
-            _k += 1;
             h = s*h;
+            _it += 1;
+
+            time.push(tk);
+            y.push(w2);
+
+            _k = 0;
+
+        } else if _k == 0 { // Tolerance not met for first time in this step
+
+            h = s*h;
+            _k += 1;
 
         } else { // continue searching for a better step size
 
-            h = s*h;
-            count += 1;
-
-            // TODO: better handling of endless step size adjustments
-            if count > 10000 {
-
-                break;
-
-            }
+            h = h / 2.0;
 
         }
     }
-
 
     (time, y)
 
@@ -79,6 +91,8 @@ where
 
 
 // Dormand-Prince Runge-Kutta method of orders 4 and 5
+// "A family of embedded Runge-Kutta formulae"
+// J.R.Dormand and P.J.Prince
 pub fn RK45<F>(
     f: F,
     t0: f32,
@@ -93,16 +107,21 @@ where
     let mut h = step;
     let mut time: Vec<f32> = Vec::new();
     let mut y: Vec<DVector<f32>> = Vec::new();
+    let atol = 1E-10;
 
     time.push(t0);
     y.push(y0);
 
     let mut tk = t0;
+
+    // inner-step iteration
     let mut _k = 0;
-    let mut count = 0;
+
+    // global iteration
+    let mut _it = 1;
+
     while tk < tf {
 
-        // h = h.min(tf - time[time.len()-1]);
         h = h.min(tf - tk);
 
         // let tk = time[time.len()-1];
@@ -122,29 +141,35 @@ where
         // Fifth-order Runge-Kutta result
         let w2 = yk + (35.*&k1/384.) + (500.*&k3/1113.) + (125.*&k4/192.) - (2187.*&k5/6784.) + (11.*&k6/84.);
 
-        let truncation_error: f32 = (&w2 - &w1).norm() / h;
-        let s = 0.84 * (rtol / truncation_error).powf(0.25);
+        // Error tolerance
+        let tol = atol + yk.apply_norm(&UniformNorm)*rtol;
+
+        // L-infinity error norm
+        let truncation_error = ((&w2 - &w1) / h).apply_norm(&UniformNorm);
+
+        // Optimal step size scale factor
+        let s = 0.9 * (tol / truncation_error).powf(0.25);
 
         // If step size satisfies error tolerance, accept this value
-        if truncation_error <= rtol {
+        if truncation_error <= tol {
 
             tk += h;
-            time.push(tk);
-            y.push(w1);
-            _k += 1;
             h = s*h;
+            _it += 1;
+
+            time.push(tk);
+            y.push(w2);
+
+            _k = 0;
+
+        } else if _k == 0 { // Tolerance not met for first time in this step
+
+            h = s*h;
+            _k += 1;
 
         } else { // continue searching for a better step size
 
-            h = s*h;
-            count += 1;
-
-            // TODO: better handling of endless step size adjustments
-            if count > 10000 {
-
-                break;
-
-            }
+            h = h / 2.0;
 
         }
     }
@@ -162,7 +187,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_RungeKutta45() {
+    fn test_RKF45() {
 
         use na::DMatrix;
         use crate::controls::models::lqr::LinearQuadraticRegulator as LQR;
@@ -206,7 +231,7 @@ mod tests {
         } }
 
     #[test]
-    fn test_DormandPrince() {
+    fn test_RK45() {
 
         use na::DMatrix;
         use crate::controls::models::lqr::LinearQuadraticRegulator as LQR;
@@ -242,7 +267,7 @@ mod tests {
         let tf = 10.0;
         let n = 1000.0;
         let step = (tf - t0) / n;
-        let rtol = 1E-4;
+        let rtol = 1E-6;
         let (_t, y) = RK45(f, t0, y0, tf, step, rtol);
 
         for ele in y.iter() {
