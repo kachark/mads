@@ -32,6 +32,45 @@ where
     // global iteration
     let mut _it = 1;
 
+    let a2 = 1./4.;
+    let a3 = 3./8.;
+    let a4 = 12./13.;
+    let a5 = 1.;
+    let a6 = 1./2.;
+
+    let b21 = 1./4.;
+    let b31 = 3./32.;
+    let b32 = 9./32.;
+    let b41 = 1932./2197.;
+    let b42 = -7200./2197.;
+    let b43 = 7296./2197.;
+    let b51 = 439./216.;
+    let b52 = -8.;
+    let b53 = 3680./513.;
+    let b54 = -845./4104.;
+    let b61 = -8./27.;
+    let b62 = 2.;
+    let b63 = -3544./2565.;
+    let b64 = 1859./4104.;
+    let b65 = -11./40.;
+
+    let c1 = 25./216.;
+    let c3 = 1408./2565.;
+    let c4 = 2197./4104.;
+    let c5 = -1./5.;
+
+    let ch1 = 16./135.;
+    let ch3 = 6656./12825.;
+    let ch4 = 28561./56430.;
+    let ch5 = -9./50.;
+    let ch6 = 2./55.;
+
+    let _ce1 = 1./360.;
+    let _ce3 = -128./4275.;
+    let _ce4 = -2197./75240.;
+    let _ce5 = 1./50.;
+    let _ce6 = 2./55.;
+
     while tk < tf {
 
         h = h.min(tf - tk);
@@ -40,23 +79,24 @@ where
         let yk = &y[y.len()-1];
 
         let k1 = h * f(tk, yk);
-        let k2 = h * f(tk + (1./4.)*h, &(yk + (1./4.) * &k1));
-        let k3 = h * f(tk + (3./8.)*h, &(yk + (3./32.) * &k1 + (9./32.) * &k2));
-        let k4 = h * f(tk + (12./13.)*h, &(yk + (1932./2197.) * &k1 - (7200./2197.) * &k2 + (7296./2197.) * &k3));
-        let k5 = h * f(tk + h, &(yk + (439./216.) * &k1 - 8. * &k2 + (3680./513.) * &k3 - (845./4104.) * &k4));
-        let k6 = h * f(tk + (1./2.)*h, &(yk - (8./27.) * &k1 + 2. * &k2 - (3544./2565.) * &k3 + (1859./4104.) * &k4 - (11./40.) * &k5));
+        let k2 = h * f(tk + a2*h, &(yk + b21 * &k1));
+        let k3 = h * f(tk + a3*h, &(yk + b31 * &k1 + b32 * &k2));
+        let k4 = h * f(tk + a4*h, &(yk + b41 * &k1 + b42 * &k2 + b43 * &k3));
+        let k5 = h * f(tk + a5*h, &(yk + b51 * &k1 + b52 * &k2 + b53 * &k3 + b54 * &k4));
+        let k6 = h * f(tk + a6*h, &(yk + b61 * &k1 + b62 * &k2 + b63 * &k3 + b64 * &k4 + b65 * &k5));
 
         // Fourth-order Runge-Kutta result
-        let w1 = yk + (25.*&k1/216.) + (1408.*&k3/2565.) + (2197.*&k4/4104.) - (&k5/5.);
+        let w1 = yk + c1*&k1 + c3*&k3 + c4*&k4 + c5*&k5;
 
         // Fifth-order Runge-Kutta result
-        let w2 = yk + (16.*&k1/135.) + (6656.*&k3/12825.) + (28561.*&k4/56430.) - (9.*&k5/50.) + (2.*&k6/55.);
+        let w2 = yk + ch1*&k1 + ch3*&k3 + ch4*&k4 + ch5*&k5 + ch6*&k6;
 
         // Error tolerance
         let tol = atol + yk.apply_norm(&UniformNorm)*rtol;
 
         // L-infinity error norm
         let truncation_error = ((&w2 - &w1) / h).apply_norm(&UniformNorm);
+        // let truncation_error = h * (ce1*&k1 + ce3*&k3 + ce4*&k4 + ce5*&k5 + ce6*&k6).apply_norm(&UniformNorm);
 
         // Optimal step size scale factor
         let s = 0.84 * (tol / truncation_error).powf(0.25);
@@ -120,6 +160,47 @@ where
     // global iteration
     let mut _it = 1;
 
+    let a2 = 1./5.;
+    let a3 = 3./10.;
+    let a4 = 4./5.;
+    let a5 = 8./9.;
+    let a6 = 1.;
+    let a7 = 1.;
+
+    let b21 = 1./5.;
+    let b31 = 3./40.;
+    let b32 = 9./40.;
+    let b41 = 44./45.;
+    let b42 = -56./15.;
+    let b43 = 32./9.;
+    let b51 = 19372./6561.;
+    let b52 = -25360./2187.;
+    let b53 = 64448./6561.;
+    let b54 = -212./729.;
+    let b61 = 9017./3168.;
+    let b62 = -355./33.;
+    let b63 = 46732./5247.;
+    let b64 = 49./176.;
+    let b65 = -5103./18656.;
+    let b71 = 35./384.;
+    let b73 = 500./1113.;
+    let b74 = 125./192.;
+    let b75 = -2187./6784.;
+    let b76 = 11./84.;
+
+    let c1 = 5179./57600.;
+    let c3 = 7571./16695.;
+    let c4 = 393./640.;
+    let c5 = -92097./339200.;
+    let c6 = 187./2100.;
+    let c7 = 1./40.;
+
+    let ch1 = 35./384.;
+    let ch3 = 500./1113.;
+    let ch4 = 125./192.;
+    let ch5 = -2187./6784.;
+    let ch6 = 11./84.;
+
     while tk < tf {
 
         h = h.min(tf - tk);
@@ -128,18 +209,18 @@ where
         let yk = &y[y.len()-1];
 
         let k1 = h * f(tk, yk);
-        let k2 = h * f(tk + (1./5.)*h, &(yk + (1./5.) * &k1));
-        let k3 = h * f(tk + (3./10.)*h, &(yk + (3./40.) * &k1 + (9./40.) * &k2));
-        let k4 = h * f(tk + (4./5.)*h, &(yk + (44./45.) * &k1 - (56./15.) * &k2 + (32./9.) * &k3));
-        let k5 = h * f(tk + (8./9.)*h, &(yk + (19372./6561.) * &k1 - (25360./2187.) * &k2 + (64448./6561.) * &k3 - (212./729.) * &k4));
-        let k6 = h * f(tk + h, &(yk + (9017./3168.) * &k1 - (355./33.) * &k2 + (46732./5247.) * &k3 + (49./176.) * &k4 - (5103./18656.) * &k5));
-        let k7 = h * f(tk + h, &(yk + (35./384.) * &k1 + (500./1113.) * &k3 + (125./192.) * &k4 - (2187./6784.) * &k5 + (11./84.) * &k6));
+        let k2 = h * f(tk + a2*h, &(yk + b21 * &k1));
+        let k3 = h * f(tk + a3*h, &(yk + b31 * &k1 + b32 * &k2));
+        let k4 = h * f(tk + a4*h, &(yk + b41 * &k1 + b42 * &k2 + b43 * &k3));
+        let k5 = h * f(tk + a5*h, &(yk + b51 * &k1 + b52 * &k2 + b53 * &k3 + b54 * &k4));
+        let k6 = h * f(tk + a6*h, &(yk + b61 * &k1 + b62 * &k2 + b63 * &k3 + b64 * &k4 + b65 * &k5));
+        let k7 = h * f(tk + a7*h, &(yk + b71 * &k1 + b73 * &k3 + b74 * &k4 + b75 * &k5 + b76 * &k6));
 
         // Fourth-order Runge-Kutta result
-        let w1 = yk + (5179.*&k1/57600.) + (7571.*&k3/16695.) + (393.*&k4/640.) - (92097.*&k5/339200.) + (187.*&k6/2100.) + (1.*&k7/40.);
+        let w1 = yk + c1*&k1 + c3*&k3 + c4*&k4 + c5*&k5 + c6*&k6 + c7*&k7;
 
         // Fifth-order Runge-Kutta result
-        let w2 = yk + (35.*&k1/384.) + (500.*&k3/1113.) + (125.*&k4/192.) - (2187.*&k5/6784.) + (11.*&k6/84.);
+        let w2 = yk + ch1*&k1 + ch3*&k3 + ch4*&k4 + ch5*&k5 + ch6*&k6;
 
         // Error tolerance
         let tol = atol + yk.apply_norm(&UniformNorm)*rtol;
