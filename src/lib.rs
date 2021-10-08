@@ -7,14 +7,14 @@ extern crate lapack_src;
 extern crate nalgebra as na;
 extern crate serde;
 
-// FormFlight Core
+// MADS Core
 pub mod controls;
 pub mod dynamics;
 pub mod math;
 pub mod log;
 pub mod util;
 
-// FormFlight Engine
+// MADS Engine
 pub mod simulator;
 pub mod scene;
 pub mod ecs;

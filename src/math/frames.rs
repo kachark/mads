@@ -21,6 +21,7 @@ impl ReferenceFrame {
 
     }
 
+    /// Generates a ReferenceFrame at (0,0,0) with cartesian unit vectors +x, +y, +z
     pub fn default() -> Self {
 
         let origin = Vector3::new(0f32, 0f32, 0f32);
@@ -51,17 +52,17 @@ mod tests {
     #[test]
     fn test_ReferenceFrame_rotate() {
 
-        let mut body_fixed_frame = ReferenceFrame::default();
-        body_fixed_frame.rotate(std::f32::consts::FRAC_PI_4, 0.0, std::f32::consts::FRAC_PI_6);
+        let mut some_frame = ReferenceFrame::default();
+        some_frame.rotate(std::f32::consts::FRAC_PI_4, 0.0, std::f32::consts::FRAC_PI_6);
 
         let correct = Matrix3::from_row_slice(
             &[1.0, 0.0, 0.0,
             0.0, 0.707, -0.707,
             0.0, 0.707, 0.707]);
 
-        println!("{:?}", body_fixed_frame);
+        println!("{:?}", some_frame);
 
-        let _ = relative_eq!(body_fixed_frame.coordinates, correct);
+        let _ = relative_eq!(some_frame.coordinates, correct);
     }
 
 }
