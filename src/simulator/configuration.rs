@@ -35,14 +35,14 @@ impl EngineConfig {
 }
 
 /// Configuration for the Simulation and dynamics solvers
-pub struct SimulationConfig {
+pub struct SimulatorConfig {
 
     pub integrator: IntegratorType,
     pub integrator_step: f32
 
 }
 
-impl SimulationConfig {
+impl SimulatorConfig {
 
     pub fn new(integrator: IntegratorType, integrator_step: f32) -> Self {
 

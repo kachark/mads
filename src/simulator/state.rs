@@ -1,5 +1,5 @@
 
-use crate::simulator::configuration::{EngineConfig, SimulationConfig};
+use crate::simulator::configuration::{EngineConfig, SimulatorConfig};
 use crate::simulator::setup::setup;
 use crate::ecs::systems::simple_systems::*;
 use crate::ecs::resources::SimulationTimeHistory;
@@ -14,13 +14,13 @@ pub enum EngineState {
 }
 
 /// Maintains ECS World and entities
-pub struct SimulationState
+pub struct SimulatorState
 {
 
     pub status: EngineState,
 
     engine_config: EngineConfig,
-    simulation_config: SimulationConfig,
+    simulation_config: SimulatorConfig,
 
     pub world: World,
     pub resources: Resources,
@@ -32,12 +32,12 @@ pub struct SimulationState
 
 }
 
-impl SimulationState
+impl SimulatorState
 {
 
     pub fn new(
         engine_config: EngineConfig,
-        simulation_config: SimulationConfig,
+        simulation_config: SimulatorConfig,
         ) -> Self {
 
         let status = EngineState::Inactive;

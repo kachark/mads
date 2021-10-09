@@ -1,30 +1,30 @@
 
-use crate::simulator::state::{EngineState, SimulationState};
+use crate::simulator::state::{EngineState, SimulatorState};
 use crate::scene::scenario::Scenario;
 
-pub struct Simulation<T>
+pub struct Simulator<T>
 where
     T: Scenario
 {
 
     // TODO: don't keep public
-    pub state: SimulationState,
+    pub state: SimulatorState,
     pub scenario: T
 
 }
 
-impl<T> Simulation<T>
+impl<T> Simulator<T>
 where
     T: Scenario
 {
 
-    pub fn new(state: SimulationState, scenario: T) -> Self {
+    pub fn new(state: SimulatorState, scenario: T) -> Self {
 
         Self { state, scenario }
 
     }
 
-    /// Builds Simulation using Simulation state ECS World and Resources
+    /// Builds Simulator using Simulator state ECS World and Resources
     pub fn build(&mut self) {
 
         // Add resources to simulation state and prepare scenario internal state
@@ -35,7 +35,7 @@ where
 
     }
 
-    /// Simulation loop
+    /// Simulator loop
     pub fn run(&mut self) {
 
         self.state.status = EngineState::Active;

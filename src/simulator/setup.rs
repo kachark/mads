@@ -5,7 +5,7 @@ use crate::util::misc::range_step;
 use crate::ecs::resources::*;
 use crate::ecs::components::{EntityFrame, SimID};
 use crate::math::frames::ReferenceFrame;
-use crate::simulator::configuration::{EngineConfig, SimulationConfig};
+use crate::simulator::configuration::{EngineConfig, SimulatorConfig};
 
 /// Define World, Resources, and Components
 /// Input:
@@ -17,7 +17,7 @@ use crate::simulator::configuration::{EngineConfig, SimulationConfig};
 /// (legion::World, legion::Resources, Vec<f32>)
 pub fn setup(
     engine_params: &EngineConfig,
-    sim_params: &SimulationConfig
+    sim_params: &SimulatorConfig
 ) -> (World, Resources, Vec<f32>)
 {
 
@@ -61,8 +61,8 @@ fn add_simulation_entities(world: &mut legion::World) {
 
 }
 
-/// Inserts Resources to ECS derived from a SimulationConfig
-fn add_simulation_resources(resources: &mut legion::Resources, config: &SimulationConfig) {
+/// Inserts Resources to ECS derived from a SimulatorConfig
+fn add_simulation_resources(resources: &mut legion::Resources, config: &SimulatorConfig) {
 
     resources.insert(IntegratorStep(config.integrator_step));
     resources.insert(Integrator(config.integrator));
