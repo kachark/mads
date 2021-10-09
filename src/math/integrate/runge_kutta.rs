@@ -16,9 +16,12 @@ pub fn RKF45<F>(
 where
     F: Fn(f32, &DVector<f32>) -> DVector<f32>,
 {
+
+    let iterations = (tf - t0) / step;
+
     let mut h = step;
-    let mut time: Vec<f32> = Vec::new();
-    let mut y: Vec<DVector<f32>> = Vec::new();
+    let mut time: Vec<f32> = Vec::with_capacity(iterations as usize);
+    let mut y: Vec<DVector<f32>> = Vec::with_capacity(iterations as usize);
     let atol = 1E-10;
 
     time.push(t0);
@@ -144,9 +147,12 @@ pub fn RK45<F>(
 where
     F: Fn(f32, &DVector<f32>) -> DVector<f32>,
 {
+
+    let iterations = (tf - t0) / step;
+
     let mut h = step;
-    let mut time: Vec<f32> = Vec::new();
-    let mut y: Vec<DVector<f32>> = Vec::new();
+    let mut time: Vec<f32> = Vec::with_capacity(iterations as usize);
+    let mut y: Vec<DVector<f32>> = Vec::with_capacity(iterations as usize);
     let atol = 1E-10;
 
     time.push(t0);
