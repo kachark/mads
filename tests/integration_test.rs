@@ -6,7 +6,7 @@ use mads::controls::models::lqr::LinearQuadraticRegulator as LQR;
 use mads::math::integrate::euler::MidPointEuler;
 
 #[test]
-fn test_linear_dynamics() {
+fn test_dynamics_no_ecs() {
     let model = DoubleIntegrator3D::new();
 
     // Define matrices for a Linear Quadratic Regulator
@@ -29,7 +29,7 @@ fn test_linear_dynamics() {
         Err(_) => (DMatrix::<f32>::zeros(1, 1), DMatrix::<f32>::zeros(1, 1)),
     };
 
-    // Simulate
+    // Evolve dynamics
     let mut trajectory: Vec<DVector<f32>> = vec![x0];
     let step = 0.1;
     let t0 = 0;
@@ -37,6 +37,8 @@ fn test_linear_dynamics() {
     for t in t0..tf {
 
         let x_prev = trajectory[trajectory.len()-1].clone();
+
+        println!("{:?}", &x_prev);
 
         // Wrap dynamics/controls in appropriately defined closure - f(t, x)
         let f = |t: f32, x: &DVector<f32>| {
