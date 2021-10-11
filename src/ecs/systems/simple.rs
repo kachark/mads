@@ -1,16 +1,9 @@
 
-use legion::*;
+// system macro flags a function as a Legion ECS system and appends "_system" to the handle
 
+use legion::*;
 use crate::ecs::resources::*;
 use crate::ecs::components::*;
-
-#[system(for_each)]
-pub fn update_position(pos: &mut Position, vel: &Velocity, #[resource] time: &SimulationTime) {
-    pos.x += vel.x * time.0;
-    pos.y += vel.y * time.0;
-
-    println!("{:?}", pos);
-}
 
 #[system(for_each)]
 pub fn print_id(id: &SimID) {

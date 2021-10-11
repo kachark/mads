@@ -13,7 +13,7 @@ use crate::ecs::components::*;
 // NOTE: to parallelize with Rayon, use par_for_each
 // #[system(for_each)]
 #[system(par_for_each)]
-pub fn dynamics_lqr_solver<T>(
+pub fn simulate_lqr_dynamics<T>(
     state: &mut FullState,
     dynamics: &DynamicsModel<T>,
     controller: &LQRController,
@@ -85,7 +85,7 @@ where
 // NOTE: to parallelize with Rayon, use par_for_each
 // #[system(for_each)]
 #[system(par_for_each)]
-pub fn dynamics_solver<T>(
+pub fn simulate_dynamics<T>(
     state: &mut FullState,
     dynamics: &DynamicsModel<T>,
     #[resource] time: &SimulationTime,

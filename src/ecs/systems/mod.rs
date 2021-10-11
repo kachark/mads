@@ -1,2 +1,2 @@
-pub mod simple_systems;
-pub mod dynamics_systems;
+pub mod simple;
+pub mod simulate;

@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use legion::{World, Resources, Schedule};
 use crate::ecs::resources::SimulationResult;
-use crate::ecs::systems::simple_systems::*;
+use crate::ecs::systems::simple::*;
 
 pub trait Scenario {
 
