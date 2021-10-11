@@ -21,7 +21,7 @@ fn main() {
     // Serialize results to csv
     println!("Logging...");
     let logger = SimpleLogger;
-    if let Err(err) = logger.to_csv(&simulator.state) {
+    if let Err(err) = logger.to_csv(&simulator.state, "./simple_example.csv") {
         println!("csv write error, {}", err);
     };
 
