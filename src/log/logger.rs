@@ -1,18 +1,26 @@
 
 use std::error::Error;
-
 use crate::ecs::resources::{SimulationResult, SimulationTimeHistory};
 use crate::simulator::state::SimulatorState;
-use crate::log::simulation_logger::SimulationLogger;
 
-pub struct Logger;
+/// Generic interface for saving Simulator state
+pub trait Logger {
 
-impl SimulationLogger for Logger {
+    fn to_csv(&self, sim_state: &SimulatorState) -> Result<(), Box<dyn Error>>;
+
+}
+
+
+/// Simple Logging struct for serializing time history and sim results into csv
+pub struct SimpleLogger;
+
+impl Logger for SimpleLogger {
 
     fn to_csv(&self, sim_state: &SimulatorState) -> Result<(), Box<dyn Error>> {
 
         let mut wtr = csv::Writer::from_path("test.csv")?;
 
+        // TODO: don't unwrap. propogate resource query errors to user
         // Access time and entity FullStates
         let time_history = sim_state.resources.get::<SimulationTimeHistory>().unwrap();
         let results = sim_state.resources.get::<SimulationResult>().unwrap();

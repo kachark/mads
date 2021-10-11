@@ -1,10 +1,8 @@
 
 use std::fmt;
-
 use nalgebra::DVector;
 use uuid::Uuid;
 use serde::Serialize;
-
 use crate::controls::models::lqr::LinearQuadraticRegulator;
 use crate::dynamics::statespace::{StateSpace, StateSpaceRepresentation};
 use crate::math::frames::ReferenceFrame;

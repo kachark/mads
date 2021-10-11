@@ -1,6 +1,5 @@
 
 use na::{DMatrix, DVector};
-
 use crate::dynamics::statespace::StateSpaceRepresentation;
 
 /// Defines a linear time-invariant system of equations

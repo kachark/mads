@@ -2,7 +2,6 @@
 use nalgebra::{DMatrix, DVector};
 use legion::*;
 use legion::storage::Component;
-
 use crate::dynamics::statespace::StateSpaceRepresentation;
 use crate::math::integrate::runge_kutta::{RK45, RKF45};
 use crate::math::integrate::euler::ForwardEuler;

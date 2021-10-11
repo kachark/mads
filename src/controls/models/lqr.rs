@@ -1,6 +1,5 @@
 use na::{DMatrix, DVector};
 use std::fmt;
-
 use crate::math::riccati::*;
 
 #[derive(Clone, Debug)]

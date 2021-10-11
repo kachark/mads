@@ -1,6 +1,5 @@
 
 use na::DVector;
-
 use crate::dynamics::statespace::StateSpaceRepresentation;
 
 // https://stackoverflow.com/questions/27831944/how-do-i-store-a-closure-in-a-struct-in-rust
