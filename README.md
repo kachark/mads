@@ -13,13 +13,6 @@ The following are supported:
 ### Controllers
 - Continuous Infinite-Horizon Linear Quadratic Regulator
 
-## Libraries Used
-
-MADS would not be possible without the great work put into these projects:
-
-- [Legion](https://github.com/amethyst/legion): High performance Entity Component system library
-- [nalgebra](https://github.com/amethyst/legion): Easy to use linear algebra and matrix library
-
 ## Setup
 
 MADS consists of a higher level "Engine", managing the overall runtime and step size, and a lower level "Simulator" which
@@ -67,6 +60,7 @@ See below for an example user-defined Scenario of a single Entity, with 2D Doubl
 
 ```rust
 
+use std::collections::HashMap;
 use legion::*;
 use nalgebra::{DMatrix, DVector};
 use uuid::Uuid;
@@ -86,23 +80,18 @@ pub struct MyScenario {
 
 }
 
-// Setup entities and add to the world
 impl MyScenario {
 
   pub fn new() -> Self {
 
-    let num_entities = 1;
-
-    Self {
-      num_entities,
-    }
+    Self { num_entities: 1 }
 
   }
 
 
   fn setup_entities(&self, world: &mut World, resources: &mut Resources) {
 
-    // SimulationResult is a Resource which maps SimIDs to an entity FullState time series data
+    // SimulationResult maps SimIDs to an entity's history of states
     // This is initialized when SimulatorState is first constructed
     // See src/ecs/resources.rs
     let mut storage = resources.get_mut::<SimulationResult>().unwrap();
@@ -190,18 +179,28 @@ impl Scenario for MyScenario {
 
 ```
 
-### Simulator
+### Running a simulation
 
-A simulator can be constructed using the initial simulator state and scenario.
-Once built, the Simulator can be ran and perform the Scenario with the given configuration:
+A simulator can be constructed using the initial simulator state and scenario generated earlier.
+Once built, the simulator can be ran to perform the Scenario with the given configuration:
 
 ```rust
 
+// Construct user defined scenario
 let scenario = MyScenario::new();
 
+// Run simulation
 let mut simulator = Simulator::new(sim_state, scenario);
 simulator.build();
 simulator.run();
 
 ```
+
+## Libraries Used
+
+MADS would not be possible without the great work put into these projects:
+
+- [Legion](https://github.com/amethyst/legion): High performance Entity Component system library
+- [nalgebra](https://github.com/amethyst/legion): Easy to use linear algebra and matrix library
+
 
