@@ -4,14 +4,25 @@ pub mod my_scenario;
 use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
 use mads::simulator::simulator::Simulator;
 use mads::simulator::state::SimulatorState;
+use mads::math::integrators::IntegratorType;
 use crate::my_scenario::MyScenario;
 
 fn main() {
 
-    // Configure simulation, engine, and scenario
-    let engine_config = EngineConfig::default();
-    let sim_config = SimulatorConfig::default();
+    // Configure engine
+    let start_time = 0.0;
+    let max_time = 10.0;
+    let engine_step = 0.1;
+    let engine_config = EngineConfig::new(start_time, max_time, engine_step);
+
+    // Configure simulator
+    let integrator = IntegratorType::RK45;
+    let integrator_step = 0.1;
+    let sim_config = SimulatorConfig::new(integrator, integrator_step);
+
+    // Initial simulator state
     let sim_state = SimulatorState::new(engine_config, sim_config);
+
     let scenario = MyScenario::new();
 
     let mut simulator = Simulator::new(sim_state, scenario);

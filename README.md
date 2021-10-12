@@ -38,7 +38,7 @@ let engine_config = EngineConfig::new(start_time, max_time, engine_step);
 // Configure simulator
 let integrator = IntegratorType::RK45;
 let integrator_step = 0.1;
-let simulator_config = SimulatorConfig::new(integrator, integrator_step);
+let sim_config = SimulatorConfig::new(integrator, integrator_step);
 
 // Initial simulator state
 let sim_state = SimulatorState::new(engine_config, sim_config);
