@@ -1,68 +1,8 @@
-# MADS: Multi-Agent Dynamics Simulator
-
-This library provides tools to perform large-scale multi-agent simulations using an Entity Component System.
-
-The following are supported:
-
-### Dynamics Models
-- 2D/3D Double Integrator
-- Linear/Nonlinear Inverted Pendulum
-- Nonlinear Double Pendulum
-- Clohessy-Whiltshire equations
-
-### Controllers
-- Continuous Infinite-Horizon Linear Quadratic Regulator
-
-## Setup
-
-MADS consists of a higher level "Engine", managing the overall runtime and step size, and a lower level "Simulator" which
-propogates the dynamics between engine time steps.
-
-### Configuration
-
-To setup MADS, you must first configure these two components into the initial SimulatorState. Upon construction, the state initializes
-Legion ECS Resources, Schedule, and World with some of these parameters. Further user configuration and world building is done with Scenarios:
-
-```rust
-use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
-use mads::simulator::state::SimulatorState;
-use mads::simulator::simulator::Simulator;
-use mads::math::integrators::IntegratorType;
-
-// Configure engine
-let start_time = 0.0;
-let max_time = 10.0;
-let engine_step = 0.1;
-let engine_config = EngineConfig::new(start_time, max_time, engine_step);
-
-// Configure simulator
-let integrator = IntegratorType::RK45;
-let integrator_step = 0.1;
-let simulator_config = SimulatorConfig::new(integrator, integrator_step);
-
-// Initial simulator state
-let sim_state = SimulatorState::new(engine_config, sim_config);
-
-```
-
-### Scenarios
-
-Scenarios capture the user-defined world to be simulated, including entities, their interactions, and dynamics models to be evaluated.
-Using the Legion ECS library, Scenarios provide a structured way to setup Entities, Systems, the World, and other necessary data strucures
-for the simulation.
-
-A detailed description of Entity Component Systems (ECS) and Legion can be read [here](https://en.wikipedia.org/wiki/Entity_component_system)
-and [here](https://docs.rs/legion/0.4.0/legion/).
-
-#### Example
-
-See below for an example user-defined Scenario of a single Entity, with 2D Double Integrator dynamics, and driven by an LQR controller:
-
-```rust
+#![allow(non_snake_case)]
 
 use std::collections::HashMap;
-use legion::*;
 use nalgebra::{DMatrix, DVector};
+use legion::*;
 use uuid::Uuid;
 
 use mads::scene::scenario::Scenario;
@@ -175,34 +115,4 @@ impl Scenario for MyScenario {
   }
 
 }
-
-
-```
-
-### Running a simulation
-
-A simulator can be constructed using the initial simulator state and scenario generated earlier.
-Once built, the simulator can be ran to perform the Scenario with the given configuration:
-
-```rust
-
-// Construct user defined scenario
-let scenario = MyScenario::new();
-
-// Run simulation
-let mut simulator = Simulator::new(sim_state, scenario);
-simulator.build();
-simulator.run();
-
-```
-
-See [examples](https://github.com/kachark/mads/tree/refactor/examples) for more details on how to setup the simulation and scenario.
-
-## Libraries Used
-
-MADS would not be possible without the great work put into these projects:
-
-- [Legion](https://github.com/amethyst/legion): High performance Entity Component system library
-- [nalgebra](https://github.com/amethyst/legion): Easy to use linear algebra and matrix library
-
 
