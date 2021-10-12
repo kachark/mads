@@ -203,6 +203,6 @@ See [examples](https://github.com/kachark/mads/tree/refactor/examples) for more 
 MADS would not be possible without the great work put into these projects:
 
 - [Legion](https://github.com/amethyst/legion): High performance Entity Component system library
-- [nalgebra](https://github.com/amethyst/legion): Easy to use linear algebra and matrix library
+- [nalgebra](https://nalgebra.org): Easy to use linear algebra and matrix library
 
 
