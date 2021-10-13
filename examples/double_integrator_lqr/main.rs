@@ -2,9 +2,11 @@
 pub mod my_scenario;
 
 use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
-use mads::simulator::simulator::Simulator;
+use mads::simulator::Simulator;
 use mads::simulator::state::SimulatorState;
 use mads::math::integrators::IntegratorType;
+use mads::log::{Logger, SimpleLogger};
+
 use crate::my_scenario::MyScenario;
 
 fn main() {
@@ -28,6 +30,11 @@ fn main() {
     let mut simulator = Simulator::new(sim_state, scenario);
     simulator.build();
     simulator.run();
+
+    let logger = SimpleLogger;
+    if let Err(err) = logger.to_csv(&simulator.state, "./my_scenario_results.csv") {
+        println!("csv write error, {}", err);
+    };
 
  }
 

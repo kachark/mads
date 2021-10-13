@@ -26,7 +26,7 @@ Legion ECS Resources, Schedule, and World with some of these parameters. Further
 ```rust
 use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
 use mads::simulator::state::SimulatorState;
-use mads::simulator::simulator::Simulator;
+use mads::simulator::Simulator;
 use mads::math::integrators::IntegratorType;
 
 // Configure engine
@@ -201,7 +201,7 @@ simulator.run();
 To serialze simulation results to csv:
 
 ```rust
-use mads::log::logger::{SimpleLogger, Logger};
+use mads::log::{SimpleLogger, Logger};
 
 let logger = SimpleLogger;
 if let Err(err) = logger.to_csv(&simulator.state, "./my_scenario_results.csv") {

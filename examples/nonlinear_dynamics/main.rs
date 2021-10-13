@@ -3,7 +3,7 @@ pub mod nonlinear_scenario;
 pub mod resources;
 
 use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
-use mads::simulator::simulator::Simulator;
+use mads::simulator::Simulator;
 use mads::simulator::state::SimulatorState;
 use crate::nonlinear_scenario::NonlinearScenario;
 

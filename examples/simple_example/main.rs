@@ -1,8 +1,8 @@
 
 use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
-use mads::simulator::simulator::Simulator;
+use mads::simulator::Simulator;
 use mads::simulator::state::SimulatorState;
-use mads::log::logger::{SimpleLogger, Logger};
+use mads::log::{SimpleLogger, Logger};
 use mads::scene::scenario::SimpleScenario;
 
 fn main() {
