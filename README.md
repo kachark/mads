@@ -196,7 +196,25 @@ simulator.run();
 
 ```
 
-See [examples](https://github.com/kachark/mads/tree/refactor/examples) for more details on how to setup the simulation and scenario.
+### Logging results
+
+To serialze simulation results to csv:
+
+```rust
+use mads::log::logger::{SimpleLogger, Logger};
+
+let logger = SimpleLogger;
+if let Err(err) = logger.to_csv(&simulator.state, "./my_scenario_results.csv") {
+  println!("csv write error, {}", err);
+};
+
+```
+
+The time-series data stored in the csv is organized by the dynamic state of each Entity,
+but each Entity is stored unordered.
+
+See [examples](https://github.com/kachark/mads/tree/main/examples) for more details on how to
+setup and run simulations and scenarios.
 
 ## Libraries Used
 
