@@ -3,6 +3,7 @@ use nalgebra::{DMatrix, DVector};
 use legion::*;
 use legion::storage::Component;
 use crate::dynamics::statespace::StateSpaceRepresentation;
+use crate::dynamics::closed_form::ClosedFormRepresentation;
 use crate::math::integrate::runge_kutta::{RK45, RKF45};
 use crate::math::integrate::euler::ForwardEuler;
 use crate::math::integrate::euler::MidPointEuler;
@@ -13,7 +14,7 @@ use crate::ecs::components::*;
 // NOTE: to parallelize with Rayon, use par_for_each
 // #[system(for_each)]
 #[system(par_for_each)]
-pub fn simulate_lqr_dynamics<T>(
+pub fn integrate_lqr_dynamics<T>(
     state: &mut FullState,
     dynamics: &DynamicsModel<T>,
     controller: &LQRController,
@@ -85,7 +86,7 @@ where
 // NOTE: to parallelize with Rayon, use par_for_each
 // #[system(for_each)]
 #[system(par_for_each)]
-pub fn simulate_dynamics<T>(
+pub fn integrate_dynamics<T>(
     state: &mut FullState,
     dynamics: &DynamicsModel<T>,
     #[resource] time: &SimulationTime,
@@ -145,4 +146,30 @@ where
 
 }
 
+
+// NOTE: to parallelize with Rayon, use par_for_each
+// #[system(for_each)]
+#[system(par_for_each)]
+pub fn evaluate_closed_form<T>(
+    state: &mut FullState,
+    dynamics: &ClosedForm<T>,
+    #[resource] time: &SimulationTime,
+    #[resource] sim_step: &EngineStep,
+    #[resource] step: &IntegratorStep
+)
+where
+    T: Component + ClosedFormRepresentation
+{
+
+    let dt = sim_step.0;
+    let tf = time.0 + dt;
+    let x_prev = state.data.clone();
+
+    // Solve for state at tf
+    let new_state = dynamics.model.rhs(tf, &x_prev);
+
+    // Update entity FullState component
+    state.data = new_state.clone();
+
+}
 

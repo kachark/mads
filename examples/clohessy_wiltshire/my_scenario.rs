@@ -8,12 +8,11 @@ use rand::prelude::*;
 
 use mads::scene::scenario::Scenario;
 use mads::ecs::systems::simple::*;
-use mads::ecs::systems::simulate::integrate_lqr_dynamics_system;
+use mads::ecs::systems::simulate::evaluate_closed_form_system;
 use mads::ecs::components::*;
 use mads::ecs::resources::*;
 use mads::dynamics::statespace::{State, StateSpace};
-use mads::dynamics::models::linear::double_integrator::DoubleIntegrator3D;
-use mads::controls::models::lqr::LinearQuadraticRegulator;
+use mads::dynamics::models::nonlinear::clohessy_wiltshire::ClohessyWiltshire;
 
 pub struct MyScenario {
 
@@ -37,18 +36,11 @@ impl MyScenario {
     // See src/ecs/resources.rs
     let mut storage = resources.get_mut::<SimulationResult>().unwrap();
 
-    // Define dynamics models and controllers
-    let double_integrator = DoubleIntegrator3D::new();
-    let A = double_integrator.dynamics.A.clone();
-    let B = double_integrator.dynamics.B.clone();
-    let Q = DMatrix::<f32>::identity(6, 6);
-    let R = DMatrix::<f32>::identity(3, 3);
-
     let mut rng = thread_rng();
 
     // Define each Entity as a tuple of Components and collect into a vector
-    let entities: Vec<(FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID)> = (0..self.num_entities).into_iter()
-        .map(| i | -> (FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID) {
+    let entities: Vec<(FullState, ClosedForm::<ClohessyWiltshire>, SimID)> = (0..self.num_entities).into_iter()
+        .map(| i | -> (FullState, ClosedForm::<ClohessyWiltshire>, SimID) {
 
             // Generate an ID for each Entity
             let name = "Entity".to_string() + &i.to_string();
@@ -71,19 +63,16 @@ impl MyScenario {
             let fullstate = FullState { data: state, statespace };
 
             // Define dynamics model component
-            let dynamics = DynamicsModel { model: DoubleIntegrator3D::new() };
+            let dynamics = ClosedForm { model: ClohessyWiltshire::new() };
 
-            // Define controller component
-            let controller = LQRController { model: LinearQuadraticRegulator::new(A.clone(), B.clone(), Q.clone(), R.clone()) };
-
-            (fullstate, dynamics, controller, sim_id)
+            (fullstate, dynamics, sim_id)
         })
         .collect();
 
     // Create an entry in the SimulatorResult resource for each Entity
     // Each entity state is updated here as the simulation runs
     for entity in entities.iter() {
-        storage.data.entry(entity.3.clone()).or_insert(vec![entity.0.clone()]);
+        storage.data.entry(entity.2.clone()).or_insert(vec![entity.0.clone()]);
     }
 
     // Add the Entities to the World
@@ -106,9 +95,8 @@ impl Scenario for MyScenario {
   // Build a Schedule to execute at the beginning of an engine time step
   fn build(&self) -> Schedule {
     let schedule = Schedule::builder()
-        .add_system(integrate_lqr_dynamics_system::<DoubleIntegrator3D>())
+        .add_system(evaluate_closed_form_system::<ClohessyWiltshire>())
         .add_system(update_result_system())
-        .add_system(print_state_system())
         .add_system(increment_time_system())
         .build();
 

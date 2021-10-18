@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 use mads::scene::scenario::Scenario;
 use mads::ecs::systems::simple::*;
-use mads::ecs::systems::simulate::simulate_dynamics_system;
+use mads::ecs::systems::simulate::integrate_dynamics_system;
 use mads::ecs::components::*;
 use mads::ecs::resources::*;
 use mads::dynamics::statespace::{State, StateSpace};
@@ -104,7 +104,7 @@ impl Scenario for NonlinearScenario {
     fn build(&self) -> Schedule {
 
         let schedule = Schedule::builder()
-            .add_system(simulate_dynamics_system::<DoublePendulum>()) // can add any dynamics type here
+            .add_system(integrate_dynamics_system::<DoublePendulum>()) // can add any dynamics type here
             .add_system(update_result_system())
             .add_system(print_state_system())
             .add_system(increment_time_system())

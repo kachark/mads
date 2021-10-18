@@ -5,6 +5,7 @@ use uuid::Uuid;
 use serde::Serialize;
 use crate::controls::models::lqr::LinearQuadraticRegulator;
 use crate::dynamics::statespace::{StateSpace, StateSpaceRepresentation};
+use crate::dynamics::closed_form::ClosedFormRepresentation;
 use crate::math::frames::ReferenceFrame;
 
 // Define Components
@@ -59,6 +60,15 @@ pub struct Targetable(pub bool);
 pub struct DynamicsModel<T>
 where
     T: StateSpaceRepresentation
+{
+    pub model: T
+}
+
+/// Generic Component for a closed-form equation
+#[derive(Clone, Debug, PartialEq)]
+pub struct ClosedForm<T>
+where
+    T: ClosedFormRepresentation
 {
     pub model: T
 }

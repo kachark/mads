@@ -85,7 +85,7 @@ mod tests {
     use std::path::Path;
 
     use crate::scene::scenario::SimpleScenario;
-    use crate::simulator::simulator::Simulator;
+    use crate::simulator::Simulator;
     use crate::simulator::configuration::{EngineConfig, SimulatorConfig};
 
     use super::*;

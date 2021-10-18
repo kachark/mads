@@ -6,6 +6,7 @@ extern crate lapack;
 extern crate lapack_src;
 extern crate nalgebra as na;
 extern crate serde;
+extern crate rand;
 
 // MADS Core
 pub mod controls;
