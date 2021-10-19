@@ -1,5 +1,7 @@
 # MADS: Multi-Agent Dynamics Simulator
 
+![](https://github.com/kachark/mads/blob/main/images/50_lqr_double_integrators.gif)
+
 This library provides tools to perform large-scale multi-agent simulations using an Entity Component System.
 
 The following are supported:
@@ -210,11 +212,12 @@ if let Err(err) = logger.to_csv(&simulator.state, "./my_scenario_results.csv") {
 
 ```
 
-The time-series data stored in the csv is organized by the dynamic state of each Entity,
-but each Entity is stored unordered.
+The default logged data is the time-series of each entity's state, however you can implement your own logger as you see fit.
 
 See [examples](https://github.com/kachark/mads/tree/main/examples) for more details on how to
 setup and run simulations and scenarios.
+
+![](https://github.com/kachark/mads/blob/main/images/5_clohessy_wiltshire.gif)
 
 ## Libraries Used
 

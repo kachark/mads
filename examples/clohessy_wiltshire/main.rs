@@ -13,8 +13,8 @@ fn main() {
 
     // Configure engine
     let start_time = 0.0;
-    let max_time = 100.0;
-    let engine_step = 0.1;
+    let max_time = 300.0;
+    let engine_step = 0.5;
     let engine_config = EngineConfig::new(start_time, max_time, engine_step);
 
     // Configure simulator
