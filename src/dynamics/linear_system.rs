@@ -63,18 +63,16 @@ impl StateSpaceRepresentation for LinearSystem {
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
+    use na::{DMatrix, DVector};
 
     #[test]
     fn test_LinearSystem_solve() {
-        // import StateSpaceRepresentation trait to access related methods
-        use na::{DMatrix, DVector};
 
         // generate row-major matrices
         let A = DMatrix::from_row_slice(2, 2, &[1., 1., 0., 1.]);
-
         let B = DMatrix::from_row_slice(2, 1, &[0., 1.]);
-
         let C = A.clone();
         let D = B.clone();
 
@@ -85,16 +83,13 @@ mod tests {
         let u = DVector::from_vec(vec![10.]);
 
         let result = double_integrator.f(0f32, &x, Some(&u));
-        // let result = double_integrator.solve(&x, None);
-        // let result = double_integrator.A.dot(&x);
 
         assert_eq!(result, DVector::from_vec(vec![20., 20.]));
+
     }
 
     #[test]
     fn test_LinearSystem_solve_output() {
-        // import StateSpaceRepresentation trait to access related methods
-        use na::{DMatrix, DVector};
 
         let C = DMatrix::from_row_slice(1, 2, &[1., 0.]);
         let D = DMatrix::<f32>::zeros(1, 1);
@@ -109,8 +104,8 @@ mod tests {
         let u = DVector::from_vec(vec![10.]);
 
         let result = double_integrator.h(0f32, &x, Some(&u));
-        // let result = double_integrator.solve_output(&x, None);
 
         assert_eq!(result, DVector::from_vec(vec![10.]));
+
     }
 }
