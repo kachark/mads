@@ -1,6 +1,6 @@
 # MADS: Multi-Agent Dynamics Simulator
 
-![](https://github.com/kachark/mads/blob/main/images/50_lqr_double_integrators.gif)
+![](https://github.com/kachark/mads/blob/main/images/5_clohessy_wiltshire.gif)
 
 This library provides tools to perform large-scale multi-agent simulations using an Entity Component System.
 
@@ -216,8 +216,6 @@ The default logged data is the time-series of each entity's state, however you c
 
 See [examples](https://github.com/kachark/mads/tree/main/examples) for more details on how to
 setup and run simulations and scenarios.
-
-![](https://github.com/kachark/mads/blob/main/images/5_clohessy_wiltshire.gif)
 
 ## Libraries Used
 
