@@ -3,8 +3,12 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum IntegrateError {
-    // max iterations
-    //
+
+    #[error("Max iterations, {0}, reached")]
+    MaxIterationsError(usize),
+
+    #[error("Did not converge")]
+    NoCoverganceError,
 
 }
 

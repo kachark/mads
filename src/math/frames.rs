@@ -1,7 +1,7 @@
 
 use na::{Rotation3, Vector3, Matrix3};
 
-#[derive(Default, Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ReferenceFrame {
 
     origin: Vector3<f32>,
@@ -21,17 +21,6 @@ impl ReferenceFrame {
 
     }
 
-    /// Generates a ReferenceFrame at (0,0,0) with cartesian unit vectors +x, +y, +z
-    pub fn default() -> Self {
-
-        let origin = Vector3::new(0f32, 0f32, 0f32);
-        let mut coordinates = Matrix3::from_element(0.0);
-        coordinates.fill_with_identity();
-
-        Self { origin, coordinates }
-
-    }
-
     /// Rotates frame using euler angles rotations with a ZYX sequence
     pub fn rotate(&mut self, roll: f32, pitch: f32, yaw: f32) {
 
@@ -39,6 +28,21 @@ impl ReferenceFrame {
 
         // self.axes = rot.transpose() * self.axes // transpose because nalgebra uses col-major matrices
         self.coordinates = rot * self.coordinates
+
+    }
+
+}
+
+impl Default for ReferenceFrame {
+
+    /// Generates a ReferenceFrame at (0,0,0) with cartesian unit vectors +x, +y, +z
+    fn default() -> Self {
+
+        let origin = Vector3::new(0f32, 0f32, 0f32);
+        let mut coordinates = Matrix3::from_element(0.0);
+        coordinates.fill_with_identity();
+
+        Self { origin, coordinates }
 
     }
 

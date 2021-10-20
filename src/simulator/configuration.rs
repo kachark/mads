@@ -22,7 +22,11 @@ impl EngineConfig {
 
     }
 
-    pub fn default() -> Self {
+}
+
+impl Default for EngineConfig {
+
+    fn default() -> Self {
 
         Self {
             simulation_time: 0f32,
@@ -33,6 +37,7 @@ impl EngineConfig {
     }
 
 }
+
 
 /// Configuration for the Simulation and dynamics solvers
 pub struct SimulatorConfig {
@@ -53,7 +58,11 @@ impl SimulatorConfig {
 
     }
 
-    pub fn default() -> Self {
+}
+
+impl Default for SimulatorConfig {
+
+    fn default() -> Self {
 
         Self {
             integrator: IntegratorType::RK45,
@@ -63,3 +72,4 @@ impl SimulatorConfig {
     }
 
 }
+

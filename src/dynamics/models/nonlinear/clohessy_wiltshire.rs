@@ -13,6 +13,7 @@ pub fn ClohessyWiltshireSolution(t: f32, x: &DVector<f32>) -> DVector<f32> {
     let ydot0 = x[4];
     let zdot0 = x[5];
 
+    // TODO: needs to be user-defined
     let n: f32 = 0.00113; // LEO orbit - omega_dot
     // let R: f32 = 405.0 + 6870.0;
     // let mu = 398600.5;

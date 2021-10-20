@@ -19,21 +19,43 @@ pub struct SimulationTimeHistory {
 }
 
 /// Max simulation time
-#[derive(Default)]
 pub struct MaxSimulationTime(pub f32);
 
+impl Default for MaxSimulationTime {
+
+    fn default() -> Self {
+        Self { 0: 10.0 }
+    }
+
+}
+
 /// Simulation engine step size
-#[derive(Default)]
 pub struct EngineStep(pub f32);
 
+impl Default for EngineStep {
+
+    fn default() -> Self {
+        Self { 0: 0.1 }
+    }
+
+}
+
 /// Integrator step size (ie. dynamics integrations)
-#[derive(Default)]
 pub struct IntegratorStep(pub f32);
+
+impl Default for IntegratorStep {
+
+    fn default() -> Self {
+        Self { 0: 0.1 }
+    }
+
+}
 
 /// Integrator type to be used in simulation
 #[derive(Default)]
 pub struct Integrator(pub IntegratorType);
 
+// TODO: should TargetableSet map SimID's instead of Uuid?
 /// Tracks a set of entities defined by Uuid
 #[derive(Default, Debug)]
 pub struct TargetableSet(pub HashMap::<Uuid, FullState>);
