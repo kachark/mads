@@ -49,11 +49,24 @@ impl fmt::Display for SimID {
     }
 }
 
+// IDENTIFIERS
+
 /// Flags an Entity as Targetable
 /// Targetable entities are tracked within the TargetableSet
 /// resource
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Targetable(pub bool);
+
+/// Flags an Entity as a Waypoint
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Waypoint(pub bool);
+
+/// Flags an Entity as Static
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Static(pub bool);
+
+
+// DYNAMICS MODELS
 
 /// Generic Component for a Dynamics model
 #[derive(Clone, Debug, PartialEq)]
@@ -73,14 +86,11 @@ where
     pub model: T
 }
 
+// CONTROLLERS
+
 /// Component representing a Linear-Quadratic Regulator
 #[derive(Clone, Debug, PartialEq)]
 pub struct LQRController {
     pub model: LinearQuadraticRegulator
 }
-
-
-/// Flags an Entity as a Waypoint
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Waypoint(pub bool);
 

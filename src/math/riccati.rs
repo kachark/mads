@@ -1,7 +1,10 @@
 use std::fmt;
 use lapack::{sgees, Select2F32};
 use na::DMatrix;
+use thiserror::Error;
 use crate::util::matrix_util::{block, hcombine, vcombine, MatrixCompareError};
+
+// TODO: update error handling for riccati
 
 #[derive(Debug, Clone)]
 pub struct LinAlgError;
@@ -10,80 +13,6 @@ impl fmt::Display for LinAlgError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Linear algebra error")
     }
-}
-
-/// Iterative solver for Algebraic Riccati Equation for continuous models
-pub fn solve_continuous_riccati_iterative(
-    A: &DMatrix<f32>,
-    B: &DMatrix<f32>,
-    Q: &DMatrix<f32>,
-    R: &DMatrix<f32>,
-    dt: f32,
-    iter_max: u32,
-    tolerance: f32,
-) -> Result<DMatrix<f32>, LinAlgError> {
-
-    let mut P = Q.clone_owned();
-
-    let mut P_next: DMatrix<f32>;
-
-    let AT = A.transpose();
-    let BT = B.transpose();
-
-    if let Some(Rinv) = R.clone().try_inverse() {
-        let mut diff: f32;
-        for i in 0..iter_max {
-            P_next = &P + ((&P * A) + (&AT * &P) - (&P * B * &Rinv * &BT * &P) + Q) * dt;
-
-            diff = (&P_next - &P).amax();
-            P = P_next;
-
-            if diff < tolerance {
-                println!("{:?}", i);
-                break;
-            }
-        }
-
-        Ok(P)
-    } else {
-        return Err(LinAlgError);
-    }
-}
-
-/// Iterative solver for Algebraic Riccati Equation for discrete models
-pub fn solve_discrete_riccati_iterative(
-    A: &DMatrix<f32>,
-    B: &DMatrix<f32>,
-    Q: &DMatrix<f32>,
-    R: &DMatrix<f32>,
-    iter_max: u32,
-    tolerance: f32,
-) -> Result<DMatrix<f32>, LinAlgError> {
-
-    let mut P = Q.clone_owned();
-
-    let mut P_next: DMatrix<f32>;
-
-    let AT = A.transpose();
-    let BT = B.transpose();
-
-    let mut diff: f32;
-    for i in 0..iter_max {
-        let mut RBTPBinv = (R + &BT * &P * B).clone();
-        RBTPBinv.try_inverse_mut();
-
-        P_next = &AT * &P * A - &AT * &P * B * RBTPBinv * &BT * &P * A + Q;
-
-        diff = (&P_next - &P).amax();
-        P = P_next;
-
-        if diff < tolerance {
-            println!("{:?}", i);
-            break;
-        }
-    }
-
-    Ok(P)
 }
 
 /// Solve algebraic riccati equation using Hamiltonian eigenvalue decomposition
@@ -255,6 +184,84 @@ pub fn solve_continuous_riccati_eigen(
 
     Ok(P)
 }
+
+
+/// Iterative solver for Algebraic Riccati Equation for continuous models
+pub fn solve_continuous_riccati_iterative(
+    A: &DMatrix<f32>,
+    B: &DMatrix<f32>,
+    Q: &DMatrix<f32>,
+    R: &DMatrix<f32>,
+    dt: f32,
+    iter_max: u32,
+    tolerance: f32,
+) -> Result<DMatrix<f32>, LinAlgError> {
+
+    let mut P = Q.clone_owned();
+
+    let mut P_next: DMatrix<f32>;
+
+    let AT = A.transpose();
+    let BT = B.transpose();
+
+    if let Some(Rinv) = R.clone().try_inverse() {
+        let mut diff: f32;
+        for i in 0..iter_max {
+            P_next = &P + ((&P * A) + (&AT * &P) - (&P * B * &Rinv * &BT * &P) + Q) * dt;
+
+            diff = (&P_next - &P).amax();
+            P = P_next;
+
+            if diff < tolerance {
+                println!("{:?}", i);
+                break;
+            }
+        }
+
+        Ok(P)
+    } else {
+        return Err(LinAlgError);
+    }
+}
+
+/// Iterative solver for Algebraic Riccati Equation for discrete models
+pub fn solve_discrete_riccati_iterative(
+    A: &DMatrix<f32>,
+    B: &DMatrix<f32>,
+    Q: &DMatrix<f32>,
+    R: &DMatrix<f32>,
+    iter_max: u32,
+    tolerance: f32,
+) -> Result<DMatrix<f32>, LinAlgError> {
+
+    let mut P = Q.clone_owned();
+
+    let mut P_next: DMatrix<f32>;
+
+    let AT = A.transpose();
+    let BT = B.transpose();
+
+    let mut diff: f32;
+    for i in 0..iter_max {
+        let mut RBTPBinv = (R + &BT * &P * B).clone();
+        RBTPBinv.try_inverse_mut();
+
+        P_next = &AT * &P * A - &AT * &P * B * RBTPBinv * &BT * &P * A + Q;
+
+        diff = (&P_next - &P).amax();
+        P = P_next;
+
+        if diff < tolerance {
+            println!("{:?}", i);
+            break;
+        }
+    }
+
+    Ok(P)
+}
+
+
+
 
 #[cfg(test)]
 mod tests {

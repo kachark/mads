@@ -2,6 +2,9 @@ use std::fmt;
 
 use na::DMatrix;
 
+// TODO: update util error handling
+// TODO: add util assertions
+
 #[derive(Debug, Clone)]
 pub struct MatrixCompareError;
 
