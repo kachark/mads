@@ -2,12 +2,10 @@
 use nalgebra::{DMatrix, DVector};
 use legion::*;
 use legion::storage::Component;
+use thiserror::Error;
 use crate::dynamics::statespace::StateSpaceRepresentation;
 use crate::dynamics::closed_form::ClosedFormRepresentation;
-use crate::math::integrate::runge_kutta::{RK45, RKF45};
-use crate::math::integrate::euler::ForwardEuler;
-use crate::math::integrate::euler::MidPointEuler;
-use crate::math::integrators::IntegratorType;
+use crate::math::integrate::{solve_ivp, SolverOptions, IntegrateError};
 use crate::ecs::resources::*;
 use crate::ecs::components::*;
 
@@ -22,16 +20,14 @@ pub fn integrate_lqr_dynamics<T>(
     #[resource] sim_step: &EngineStep,
     #[resource] integrator: &Integrator,
     #[resource] step: &IntegratorStep
-)
+) -> Result<(), IntegrateError>
 where
     T: Component + StateSpaceRepresentation // Need to include Component trait from Legion
 {
 
-    let dt = sim_step.0;
-    let h = step.0;
-
     // Define initial conditions
     let x0 = state.data.clone();
+    let mut trajectory: Vec<DVector<f32>> = vec![x0.clone()];
 
     // Solve the LQR controller
     let (K, _P) = match controller.model.solve() {
@@ -39,15 +35,13 @@ where
         Err(_) => (DMatrix::<f32>::zeros(1, 1), DMatrix::<f32>::zeros(1, 1)),
     };
 
-    // Simulate
-    let mut trajectory: Vec<DVector<f32>> = vec![x0];
-    let step = h;
-    // let t0 = 0;
+    // Parameters
+    let dt = sim_step.0;
+    let step = step.0;
+    let t0 = time.0;
     let tf = time.0 + dt;
+    let t_span = (t0, tf);
     let rtol = 1E-3;
-
-
-    let x_prev = trajectory[trajectory.len()-1].clone();
 
     // Wrap dynamics/controls in appropriately defined closure - f(t, x)
     let f = |t: f32, x: &DVector<f32>| {
@@ -56,21 +50,15 @@ where
     };
 
     // Integrate dynamics
-    let (_t_history, traj) = match integrator.0 {
-        IntegratorType::ForwardEuler => ForwardEuler(f, time.0, x_prev, tf, step),
-        IntegratorType::MidpointEuler => MidPointEuler(f, time.0, x_prev, tf, step),
-        IntegratorType::RKF45 => RKF45(f, time.0, x_prev, tf, step, rtol),
-        IntegratorType::RK45 => RK45(f, time.0, x_prev, tf, step, rtol)
-    };
+    let opts = SolverOptions{ first_step: Some(step), rtol, ..SolverOptions::default() };
+    let (_times, traj) = solve_ivp(f, t_span, x0, integrator.0, opts)?;
 
     // Update entity FullState component
     state.data = traj[traj.len()-1].clone();
 
     // Store result
     for state in traj {
-
         trajectory.push(state);
-
     }
 
     // DEBUG: show integrated dynamics
@@ -79,6 +67,8 @@ where
     //     println!("{:?}", &x.data);
 
     // }
+
+    Ok(())
 
 }
 
@@ -93,26 +83,22 @@ pub fn integrate_dynamics<T>(
     #[resource] sim_step: &EngineStep,
     #[resource] integrator: &Integrator,
     #[resource] step: &IntegratorStep
-)
+) -> Result<(), IntegrateError>
 where
     T: Component + StateSpaceRepresentation // Need to include Component trait from Legion
 {
 
-    let dt = sim_step.0;
-    let h = step.0;
-
     // Define initial conditions
     let x0 = state.data.clone();
+    let mut trajectory: Vec<DVector<f32>> = vec![x0.clone()];
 
-    // Simulate
-    let mut trajectory: Vec<DVector<f32>> = vec![x0];
-    let step = h;
-    // let t0 = 0;
+    // Parameters
+    let dt = sim_step.0;
+    let step = step.0;
+    let t0 = time.0;
     let tf = time.0 + dt;
+    let t_span = (t0, tf);
     let rtol = 1E-3;
-
-
-    let x_prev = trajectory[trajectory.len()-1].clone();
 
     // Wrap dynamics/controls in appropriately defined closure - f(t, x)
     let f = |t: f32, x: &DVector<f32>| {
@@ -120,21 +106,15 @@ where
     };
 
     // Integrate dynamics
-    let (_t_history, traj) = match integrator.0 {
-        IntegratorType::ForwardEuler => ForwardEuler(f, time.0, x_prev, tf, step),
-        IntegratorType::MidpointEuler => MidPointEuler(f, time.0, x_prev, tf, step),
-        IntegratorType::RKF45 => RKF45(f, time.0, x_prev, tf, step, rtol),
-        IntegratorType::RK45 => RK45(f, time.0, x_prev, tf, step, rtol)
-    };
+    let opts = SolverOptions{ first_step: Some(step), rtol, ..SolverOptions::default() };
+    let (_times, traj) = solve_ivp(f, t_span, x0, integrator.0, opts)?;
 
     // Update entity FullState component
     state.data = traj[traj.len()-1].clone();
 
     // Store result
     for state in traj {
-
         trajectory.push(state);
-
     }
 
     // DEBUG: show integrated dynamics
@@ -143,6 +123,8 @@ where
     //     println!("{:?}", &x.data);
 
     // }
+
+    Ok(())
 
 }
 

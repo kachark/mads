@@ -25,7 +25,7 @@ impl MyScenario {
 
   pub fn new() -> Self {
 
-    Self { num_entities: 1 }
+    Self { num_entities: 50 }
 
   }
 

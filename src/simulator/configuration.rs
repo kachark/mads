@@ -1,5 +1,5 @@
 
-use crate::math::integrators::IntegratorType;
+use crate::math::integrate::IntegratorType;
 
 /// Configuration for the Simulator loop and engine
 pub struct EngineConfig {

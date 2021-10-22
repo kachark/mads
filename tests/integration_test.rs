@@ -3,7 +3,7 @@ use nalgebra::{DVector, DMatrix};
 use mads::dynamics::models::linear::double_integrator::DoubleIntegrator3D;
 use mads::dynamics::statespace::StateSpaceRepresentation;
 use mads::controls::models::lqr::LinearQuadraticRegulator as LQR;
-use mads::math::integrate::euler::MidPointEuler;
+use mads::math::integrate::{solve_ivp, SolverOptions, IntegratorType, IntegrateError};
 
 #[test]
 fn test_dynamics_no_ecs() {
@@ -47,7 +47,11 @@ fn test_dynamics_no_ecs() {
         };
 
         // Integrate dynamics
-        let (_t_history, traj) = MidPointEuler(f, t as f32, x_prev, (t as f32)+1f32, step);
+        let opts = SolverOptions{ first_step: Some(step), ..SolverOptions::default() };
+        let (_t_history, traj) = match solve_ivp(f, (t as f32, (t as f32)+1f32), x_prev, IntegratorType::RK45, opts) {
+            Ok(ode_result) => ode_result,
+            Err(error) => panic!("solve_ivp error! {}", error)
+        };
 
         // Store result
         for state in traj {

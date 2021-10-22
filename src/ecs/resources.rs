@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use uuid::Uuid;
 use serde::Serialize;
 use crate::ecs::components::*;
-use crate::math::integrators::IntegratorType;
+use crate::math::integrate::IntegratorType;
 use crate::math::frames::ReferenceFrame;
 
 // Define Engine resources for Legion Entity-Component-System

@@ -4,7 +4,7 @@ pub mod my_scenario;
 use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
 use mads::simulator::Simulator;
 use mads::simulator::state::SimulatorState;
-use mads::math::integrators::IntegratorType;
+use mads::math::integrate::IntegratorType;
 use mads::log::{Logger, SimpleLogger};
 
 use crate::my_scenario::MyScenario;
