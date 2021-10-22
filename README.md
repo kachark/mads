@@ -69,7 +69,7 @@ use uuid::Uuid;
 
 use mads::scene::scenario::Scenario;
 use mads::ecs::systems::simple::*;
-use mads::ecs::systems::simulate::simulate_lqr_dynamics_system;
+use mads::ecs::systems::simulate::integrate_lqr_dynamics_system;
 use mads::ecs::components::*;
 use mads::ecs::resources::*;
 use mads::dynamics::statespace::{State, StateSpace};
@@ -160,7 +160,7 @@ impl Scenario for MyScenario {
   // Build a Schedule to execute at the beginning of an engine time step
   fn build(&self) -> Schedule {
     let schedule = Schedule::builder()
-        .add_system(simulate_lqr_dynamics_system::<DoubleIntegrator2D>())
+        .add_system(integrate_lqr_dynamics_system::<DoubleIntegrator2D>())
         .add_system(update_result_system())
         .add_system(print_state_system())
         .add_system(increment_time_system())
