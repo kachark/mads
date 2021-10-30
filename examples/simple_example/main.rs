@@ -2,7 +2,7 @@
 use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
 use mads::simulator::Simulator;
 use mads::simulator::state::SimulatorState;
-use mads::log::{SimpleLogger, Logger};
+use mads::log::{SimpleLogger, Logger, LogDataType};
 use mads::scene::scenario::SimpleScenario;
 
 fn main() {
@@ -21,7 +21,7 @@ fn main() {
     // Serialize results to csv
     println!("Logging...");
     let logger = SimpleLogger;
-    if let Err(err) = logger.to_csv(&simulator.state, "./simple_example.csv") {
+    if let Err(err) = logger.to_csv(&simulator.state, "./simple_example.csv", LogDataType::SimResult) {
         println!("csv write error, {}", err);
     };
 

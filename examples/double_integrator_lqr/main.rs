@@ -5,7 +5,7 @@ use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
 use mads::simulator::Simulator;
 use mads::simulator::state::SimulatorState;
 use mads::math::integrate::IntegratorType;
-use mads::log::{Logger, SimpleLogger};
+use mads::log::{Logger, LogDataType, SimpleLogger};
 
 use crate::my_scenario::MyScenario;
 
@@ -32,7 +32,7 @@ fn main() {
     simulator.run();
 
     let logger = SimpleLogger;
-    if let Err(err) = logger.to_csv(&simulator.state, "./my_scenario_results.csv") {
+    if let Err(err) = logger.to_csv(&simulator.state, "./my_scenario_results.csv", LogDataType::SimResult) {
         println!("csv write error, {}", err);
     };
 

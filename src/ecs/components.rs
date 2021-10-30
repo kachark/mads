@@ -51,19 +51,23 @@ impl fmt::Display for SimID {
 
 // IDENTIFIERS
 
+/// Flags an Entity as Static
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct StaticFlag(pub bool);
+
 /// Flags an Entity as Targetable
 /// Targetable entities are tracked within the TargetableSet
 /// resource
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Targetable(pub bool);
+pub struct TargetableFlag(pub bool);
 
 /// Flags an Entity as a Waypoint
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Waypoint(pub bool);
+pub struct WaypointFlag(pub bool);
 
-/// Flags an Entity as Static
+/// Flags an Entity as Loggable
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Static(pub bool);
+pub struct LoggableFlag(pub bool);
 
 
 // DYNAMICS MODELS

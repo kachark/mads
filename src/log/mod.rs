@@ -6,15 +6,52 @@ use crate::simulator::state::SimulatorState;
 
 #[derive(Error, Debug)]
 pub enum LogError {
+    #[error("Data not supported")]
+    DataTypeError,
     #[error("{0} data not found in resources")]
     MissingDataError(String),
+}
+
+pub enum LogDataType {
+    SimTimeHistory,
+    SimResult,
+    SimStaticEntities,
+    SimTargetEntities,
+    SimWaypointEntities
+}
+
+pub enum LogFileType {
+    CSV,
+    JSON,
 }
 
 
 /// Generic interface for saving Simulator state
 pub trait Logger {
 
-    fn to_csv(&self, sim_state: &SimulatorState, filepath: &str) -> Result<(), Box<dyn Error>> {
+    /// Saves MADS simulation data versus time as a csv
+    /// Supported data:
+    /// - SimulationTimeHistory
+    /// - SimulationResult
+    fn to_csv(&self, sim_state: &SimulatorState, filepath: &str, data_type: LogDataType) -> Result<(), Box<dyn Error>> {
+
+        match data_type {
+            LogDataType::SimTimeHistory => self.log_sim_time(sim_state, filepath, LogFileType::CSV),
+            LogDataType::SimResult => self.log_sim_result(sim_state, filepath, LogFileType::CSV),
+            _ => Err(Box::new(LogError::DataTypeError))
+        }
+
+    }
+
+
+
+    fn log_sim_time(&self, sim_state: &SimulatorState, filepath: &str, filetype: LogFileType) -> Result<(), Box<dyn Error>> {
+
+        Ok(())
+
+    }
+
+    fn log_sim_result(&self, sim_state: &SimulatorState, filepath: &str, filetype: LogFileType) -> Result<(), Box<dyn Error>> {
 
         let mut wtr = csv::Writer::from_path(filepath)?;
 
@@ -107,7 +144,7 @@ mod tests {
 
         // test.csv should have a time value of 0.0 because the sim wasn't run
         let logger = SimpleLogger;
-        if let Err(err) = logger.to_csv(&simulator.state, filepath) {
+        if let Err(err) = logger.to_csv(&simulator.state, filepath, LogDataType::SimResult) {
             panic!("test_SimpleLogger to_csv() test failed: {}", err);
         };
 
