@@ -5,8 +5,9 @@ To run an example:
 cargo run --example clohessy_wiltshire
 ```
 
-The examples will output a csv file with the trajectories of each of the simulated dynamics models.
-With this data, the reader is encouraged to use third-party tools to generate plot or animations.
+The examples will output a csv file in the run directory with the trajectories of each of the Entities which have a FullState component.
+
+With this data, the reader is encouraged to use third-party tools to generate plots or animations.
 
 An example in python is shown:
 ```python

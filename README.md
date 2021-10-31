@@ -62,19 +62,6 @@ See below for an example user-defined Scenario of a single Entity, with 2D Doubl
 
 ```rust
 
-use std::collections::HashMap;
-use legion::*;
-use nalgebra::{DMatrix, DVector};
-use uuid::Uuid;
-
-use mads::scene::scenario::Scenario;
-use mads::ecs::systems::simple::*;
-use mads::ecs::systems::simulate::integrate_lqr_dynamics_system;
-use mads::ecs::components::*;
-use mads::ecs::resources::*;
-use mads::dynamics::models::linear::double_integrator::DoubleIntegrator2D;
-use mads::controls::models::lqr::LinearQuadraticRegulator;
-
 pub struct MyScenario {
 
   pub num_entities: u32,
@@ -104,7 +91,7 @@ impl MyScenario {
     let Q = DMatrix::<f32>::identity(4, 4);
     let R = DMatrix::<f32>::identity(2, 2);
 
-    // Define each Entity as a tuple of Components and collect into a vector
+    // Iterate over the range of 0-n entities, initialize each Entity as a tuple of Components, and collect into a vector
     let entities: Vec<(FullState, DynamicsModel::<DoubleIntegrator2D>, LQRController, SimID)> = (0..self.num_entities).into_iter()
         .map(| i | -> (FullState, DynamicsModel::<DoubleIntegrator2D>, LQRController, SimID) {
 
@@ -142,7 +129,7 @@ impl MyScenario {
 
 ```
 
-Implement the Scenario trait for your custom scenario:
+Implement the Scenario trait for your custom scenario and build the schedule of systems to run as part of the simulation:
 
 ```rust
 
