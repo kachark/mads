@@ -147,6 +147,12 @@ impl MyScenario {
 
 }
 
+```
+
+Implement the Scenario trait for your custom scenario:
+
+```rust
+
 impl Scenario for MyScenario {
 
   fn setup(&self, world: &mut World, resources: &mut Resources) {
