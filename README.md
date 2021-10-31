@@ -159,6 +159,7 @@ impl Scenario for MyScenario {
   // Build a Schedule to execute at the beginning of an engine time step
   fn build(&self) -> Schedule {
     let schedule = Schedule::builder()
+        .add_system(print_time_system())
         .add_system(integrate_lqr_dynamics_system::<DoubleIntegrator2D>())
         .add_system(update_result_system())
         .add_system(print_state_system())
