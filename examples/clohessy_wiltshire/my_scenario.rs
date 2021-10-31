@@ -11,7 +11,6 @@ use mads::ecs::systems::simple::*;
 use mads::ecs::systems::simulate::evaluate_closed_form_system;
 use mads::ecs::components::*;
 use mads::ecs::resources::*;
-use mads::dynamics::statespace::{State, StateSpace};
 use mads::dynamics::models::nonlinear::clohessy_wiltshire::ClohessyWiltshire;
 
 pub struct MyScenario {
@@ -54,13 +53,7 @@ impl MyScenario {
                 *x = rng.sample(distr);
             }
             let state = DVector::<f32>::from_row_slice(&state_slice);
-            let statespace = StateSpace{
-                position: State::Empty,
-                velocity: State::Empty,
-                attitude: State::Empty,
-                angular_velocity: State::Empty
-            };
-            let fullstate = FullState { data: state, statespace };
+            let fullstate = FullState { data: state };
 
             // Define dynamics model component
             let dynamics = ClosedForm { model: ClohessyWiltshire::new() };

@@ -72,7 +72,6 @@ use mads::ecs::systems::simple::*;
 use mads::ecs::systems::simulate::integrate_lqr_dynamics_system;
 use mads::ecs::components::*;
 use mads::ecs::resources::*;
-use mads::dynamics::statespace::{State, StateSpace};
 use mads::dynamics::models::linear::double_integrator::DoubleIntegrator2D;
 use mads::controls::models::lqr::LinearQuadraticRegulator;
 
@@ -116,13 +115,7 @@ impl MyScenario {
 
             // Initial x,y position and velocity
             let state = DVector::<f32>::from_vec(vec![2.0, -3.0, 5.0, 1.0]);
-            let statespace = StateSpace{
-                position: State::Empty,
-                velocity: State::Empty,
-                attitude: State::Empty,
-                angular_velocity: State::Empty
-            };
-            let fullstate = FullState { data: state, statespace };
+            let fullstate = FullState { data: state };
 
             // Define dynamics model component
             let dynamics = DynamicsModel { model: DoubleIntegrator2D::new() };

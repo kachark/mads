@@ -10,7 +10,7 @@ use crate::dynamics::statespace::StateSpaceRepresentation;
 #[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator1D {
 
-    pub dynamics: LinearSystem
+    pub dynamics: LinearSystem,
 
 }
 

@@ -9,7 +9,6 @@ use mads::ecs::systems::simple::*;
 use mads::ecs::systems::simulate::integrate_dynamics_system;
 use mads::ecs::components::*;
 use mads::ecs::resources::*;
-use mads::dynamics::statespace::{State, StateSpace};
 use mads::dynamics::models::nonlinear::double_pendulum::DoublePendulum;
 
 use crate::resources::NumAgents;
@@ -57,13 +56,7 @@ impl NonlinearScenario {
 
                 // Initial conditions
                 let state = DVector::<f32>::from_vec(vec![FRAC_PI_4, 3.0, FRAC_PI_4, 3.0]);
-                let statespace = StateSpace{
-                    position: State::Empty,
-                    velocity: State::Empty,
-                    attitude: State::Empty,
-                    angular_velocity: State::Empty
-                };
-                let fullstate = FullState { data: state, statespace };
+                let fullstate = FullState { data: state };
 
                 // Define dynamics model to simulate
                 let dynamics = DynamicsModel { model: DoublePendulum::new() };

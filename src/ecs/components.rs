@@ -4,7 +4,7 @@ use nalgebra::DVector;
 use uuid::Uuid;
 use serde::Serialize;
 use crate::controls::models::lqr::LinearQuadraticRegulator;
-use crate::dynamics::statespace::{StateSpace, StateSpaceRepresentation};
+use crate::dynamics::statespace::StateSpaceRepresentation;
 use crate::dynamics::closed_form::ClosedFormRepresentation;
 use crate::math::frames::ReferenceFrame;
 
@@ -33,7 +33,6 @@ pub struct EntityFrame {
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct FullState {
     pub data: DVector<f32>,
-    pub statespace: StateSpace
 }
 
 /// Assigns a unique identifier and name to an Entity
