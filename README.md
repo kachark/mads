@@ -190,10 +190,10 @@ simulator.run();
 To serialze simulation results to csv:
 
 ```rust
-use mads::log::{SimpleLogger, Logger};
+use mads::log::{SimpleLogger, LogDataType, Logger};
 
 let logger = SimpleLogger;
-if let Err(err) = logger.to_csv(&simulator.state, "./my_scenario_results.csv") {
+if let Err(err) = logger.to_csv(&simulator.state, "./my_scenario_results.csv", LogDataType::SimResult) {
   println!("csv write error, {}", err);
 };
 
