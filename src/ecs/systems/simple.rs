@@ -20,6 +20,11 @@ pub fn print_state(state: &FullState) {
 }
 
 #[system]
+pub fn print_time(#[resource] time: &SimulationTime) {
+    println!("{:?}", time.0);
+}
+
+#[system]
 pub fn increment_time(
     #[resource] time_history: &mut SimulationTimeHistory,
     #[resource] time: &mut SimulationTime,
@@ -27,8 +32,6 @@ pub fn increment_time(
 )
 {
 
-    // TODO: update resources to have actual field names, not zeros
-    println!("{:?}", time.0);
     time.0 += step.0;
     time_history.data.push(time.0);
 

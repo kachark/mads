@@ -24,7 +24,7 @@ pub struct Velocity {
 }
 
 /// Define reference frame for an entity
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct EntityFrame {
     pub frame: ReferenceFrame
 }

@@ -56,12 +56,12 @@ pub trait Logger {
         let mut wtr = csv::Writer::from_path(filepath)?;
 
         // Access time and entity FullStates
-        let time_history = match sim_state.resources.get::<SimulationTimeHistory>() {
+        let time_history = match sim_state.ecs.resources.get::<SimulationTimeHistory>() {
             Some(time_resource) => time_resource,
             None => return Err(Box::new(LogError::MissingDataError("Time history".to_string())))
         };
 
-        let results = match sim_state.resources.get::<SimulationResult>() {
+        let results = match sim_state.ecs.resources.get::<SimulationResult>() {
             Some(result_resource) => result_resource,
             None => return Err(Box::new(LogError::MissingDataError("Result".to_string())))
         };
@@ -144,7 +144,7 @@ mod tests {
 
         // test.csv should have a time value of 0.0 because the sim wasn't run
         let logger = SimpleLogger;
-        if let Err(err) = logger.to_csv(&simulator.state, filepath, LogDataType::SimResult) {
+        if let Err(err) = logger.to_csv(&simulator.get_state(), filepath, LogDataType::SimResult) {
             panic!("test_SimpleLogger to_csv() test failed: {}", err);
         };
 

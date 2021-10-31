@@ -45,6 +45,7 @@ impl Scenario for SimpleScenario {
     fn build(&self) -> Schedule {
 
         let schedule = Schedule::builder()
+            .add_system(print_time_system())
             .add_system(increment_time_system())
             .build();
 

@@ -97,6 +97,7 @@ impl Scenario for NonlinearScenario {
     fn build(&self) -> Schedule {
 
         let schedule = Schedule::builder()
+            .add_system(print_time_system())
             .add_system(integrate_dynamics_system::<DoublePendulum>()) // can add any dynamics type here
             .add_system(update_result_system())
             .add_system(print_state_system())

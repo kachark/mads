@@ -32,7 +32,7 @@ fn main() {
     simulator.run();
 
     let logger = SimpleLogger;
-    if let Err(err) = logger.to_csv(&simulator.state, "./my_scenario_results.csv", LogDataType::SimResult) {
+    if let Err(err) = logger.to_csv(&simulator.get_state(), "./my_scenario_results.csv", LogDataType::SimResult) {
         println!("csv write error, {}", err);
     };
 

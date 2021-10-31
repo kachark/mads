@@ -1,5 +1,5 @@
 // Generate ECS World and default Resources
-pub mod setup;
+pub mod ecs;
 
 // Define Simulator and Simulator states
 pub mod configuration;
@@ -13,9 +13,8 @@ where
     T: Scenario
 {
 
-    // TODO: don't keep public
-    pub state: SimulatorState,
-    pub scenario: T
+    state: SimulatorState,
+    scenario: T
 
 }
 
@@ -34,10 +33,10 @@ where
     pub fn build(&mut self) {
 
         // Add resources to simulation state and prepare scenario internal state
-        self.scenario.setup(&mut self.state.world, &mut self.state.resources);
+        self.scenario.setup(&mut self.state.ecs.world, &mut self.state.ecs.resources);
 
         // Define simulation state schedule
-        self.state.schedule = self.scenario.build();
+        self.state.ecs.schedule = self.scenario.build();
 
     }
 
@@ -52,9 +51,15 @@ where
             self.state.update();
 
             // update scenario or perform additional operations / queries on entities
-            self.scenario.update(&mut self.state.world, &mut self.state.resources);
+            self.scenario.update(&mut self.state.ecs.world, &mut self.state.ecs.resources);
 
         }
+
+    }
+
+    pub fn get_state(&self) -> &SimulatorState {
+
+        &self.state
 
     }
 
