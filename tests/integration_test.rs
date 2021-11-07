@@ -13,8 +13,8 @@ fn test_dynamics_no_ecs() {
     let Q = DMatrix::<f32>::identity(6, 6);
     let R = DMatrix::<f32>::identity(3, 3);
     let lqr = LQR::new(
-        model.dynamics.A.clone(),
-        model.dynamics.B.clone(),
+        model.dynamics().A.clone(),
+        model.dynamics().B.clone(),
         Q,
         R,
     );

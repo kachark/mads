@@ -1,7 +1,7 @@
 
 use na::{DMatrix, DVector};
 use crate::dynamics::linear_system::LinearSystem;
-use crate::dynamics::statespace::StateSpaceRepresentation;
+use crate::dynamics::statespace::{Statespace, StatespaceType, StateSpaceRepresentation};
 // use crate::util::print_matrix;
 
 
@@ -10,7 +10,8 @@ use crate::dynamics::statespace::StateSpaceRepresentation;
 #[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator1D {
 
-    pub dynamics: LinearSystem,
+    dynamics: LinearSystem,
+    statespace: Statespace
 
 }
 
@@ -25,9 +26,17 @@ impl DoubleIntegrator1D {
 
         let dynamics = LinearSystem::new(A, B, C, D);
 
-        Self { dynamics }
+        let mut statespace = Statespace::new(2);
+        statespace.add_state(0, StatespaceType::Position0);
+        statespace.add_state(1, StatespaceType::Velocity0);
+
+        Self { dynamics, statespace }
 
     }
+
+    pub fn dynamics(&self) -> &LinearSystem { &self.dynamics }
+
+    pub fn statespace(&self) -> &Statespace { &self.statespace }
 
 }
 
@@ -49,7 +58,8 @@ impl StateSpaceRepresentation for DoubleIntegrator1D {
 #[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator2D {
 
-    pub dynamics: LinearSystem
+    dynamics: LinearSystem,
+    statespace: Statespace
 
 }
 
@@ -82,9 +92,19 @@ impl DoubleIntegrator2D {
 
         let dynamics = LinearSystem::new(A, B, C, D);
 
-        Self { dynamics }
+        let mut statespace = Statespace::new(4);
+        statespace.add_state(0, StatespaceType::Position0);
+        statespace.add_state(1, StatespaceType::Position1);
+        statespace.add_state(2, StatespaceType::Velocity0);
+        statespace.add_state(3, StatespaceType::Velocity1);
+
+        Self { dynamics, statespace }
 
     }
+
+    pub fn dynamics(&self) -> &LinearSystem { &self.dynamics }
+
+    pub fn statespace(&self) -> &Statespace { &self.statespace }
 
 }
 
@@ -107,7 +127,8 @@ impl StateSpaceRepresentation for DoubleIntegrator2D {
 #[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator3D {
 
-    pub dynamics: LinearSystem
+    dynamics: LinearSystem,
+    statespace: Statespace,
 
 }
 
@@ -144,9 +165,23 @@ impl DoubleIntegrator3D {
 
         let dynamics = LinearSystem::new(A, B, C, D);
 
-        Self { dynamics }
+        let mut statespace = Statespace::new(6);
+        statespace.add_state(0, StatespaceType::Position0);
+        statespace.add_state(1, StatespaceType::Position1);
+        statespace.add_state(2, StatespaceType::Position2);
+        statespace.add_state(3, StatespaceType::Velocity0);
+        statespace.add_state(4, StatespaceType::Velocity1);
+        statespace.add_state(5, StatespaceType::Velocity2);
+
+        println!("{:?}", &statespace);
+
+        Self { dynamics, statespace }
 
     }
+
+    pub fn dynamics(&self) -> &LinearSystem { &self.dynamics }
+
+    pub fn statespace(&self) -> &Statespace { &self.statespace }
 
 }
 

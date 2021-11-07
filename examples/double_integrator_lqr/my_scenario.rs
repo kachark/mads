@@ -38,8 +38,8 @@ impl MyScenario {
 
     // Define dynamics models and controllers
     let double_integrator = DoubleIntegrator3D::new();
-    let A = double_integrator.dynamics.A.clone();
-    let B = double_integrator.dynamics.B.clone();
+    let A = double_integrator.dynamics().A.clone();
+    let B = double_integrator.dynamics().B.clone();
     let Q = DMatrix::<f32>::identity(6, 6);
     let R = DMatrix::<f32>::identity(3, 3);
 

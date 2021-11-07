@@ -49,7 +49,7 @@ let sim_state = SimulatorState::new(engine_config, sim_config);
 
 ### Scenarios
 
-Scenarios capture the user-defined world to be simulated, including entities, their interactions, and dynamics models to be evaluated.
+Scenarios capture the user-defined world, including entities, their interactions, and dynamics models to be evaluated.
 Using the Legion ECS library, Scenarios provide a structured way to setup Entities, Systems, the World, and other necessary data strucures
 for the simulation.
 
@@ -58,7 +58,7 @@ and [here](https://docs.rs/legion/0.4.0/legion/).
 
 #### Example
 
-See below for an example user-defined Scenario of a single Entity, with 2D Double Integrator dynamics, and driven by an LQR controller:
+See below for an example user-defined Scenario of a single Entity, with 2D Double Integrator dynamics, driven by an LQR controller:
 
 ```rust
 
@@ -117,10 +117,11 @@ impl MyScenario {
     // Create an entry in the SimulatorResult resource for each Entity
     // Each entity state is updated here as the simulation runs
     for entity in entities.iter() {
+        // Use the entity's SimID and FullState components as key/value for storage
         storage.data.entry(entity.3.clone()).or_insert(vec![entity.0.clone()]);
     }
 
-    // Add the Entities to the World
+    // Add the list of Entities to the World
     world.extend(entities);
 
   }

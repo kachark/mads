@@ -6,6 +6,8 @@ pub trait ClosedFormRepresentation {
     fn rhs(&self, t: f32, x: &DVector<f32>) -> DVector<f32>;
 }
 
+/// An alias for function pointer types that satisfy NonlinearExpression trait bounds
+pub type NonlinearExpression_fn = fn(f32, &DVector<f32>) -> DVector<f32>;
 
 /// Captures a generic expression f(t, x)
 pub struct NonlinearExpression<F>

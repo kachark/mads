@@ -1,7 +1,7 @@
 
 use na::{DMatrix, DVector};
-use crate::dynamics::nonlinear_system::NonlinearSystem;
-use crate::dynamics::statespace::StateSpaceRepresentation;
+use crate::dynamics::nonlinear_system::{NonlinearSystem_fn, NonlinearSystem};
+use crate::dynamics::statespace::{Statespace, StatespaceType, StateSpaceRepresentation};
 
 fn equations_of_motion(_t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
 
@@ -54,8 +54,8 @@ fn output_equations(_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>) -> DVe
 
 pub struct InvertedPendulum {
 
-    dynamics: NonlinearSystem::< fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
-                fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32> >,
+    dynamics: NonlinearSystem::< NonlinearSystem_fn, NonlinearSystem_fn >,
+    statespace: Statespace,
 
 }
 
@@ -64,13 +64,32 @@ impl InvertedPendulum {
     pub fn new() -> Self {
 
         // explicitly convert Function Item to Function pointer
-        let f = equations_of_motion as fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>;
-        let h = output_equations as fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>;
+        let f = equations_of_motion as NonlinearSystem_fn;
+        let h = output_equations as NonlinearSystem_fn;
         let dynamics = NonlinearSystem::new(f, h, 2, 1);
+
+        let mut statespace = Statespace::new(4);
+        statespace.add_state(0, StatespaceType::Attitude0);
+        statespace.add_state(1, StatespaceType::AngularVelocity0);
+        statespace.add_state(2, StatespaceType::Position0);
+        statespace.add_state(3, StatespaceType::Velocity0);
 
         Self {
             dynamics,
+            statespace
         }
+
+    }
+
+    pub fn dynamics(&self) -> &NonlinearSystem< NonlinearSystem_fn, NonlinearSystem_fn > {
+
+        &self.dynamics
+
+    }
+
+    pub fn statespace(&self) -> &Statespace {
+
+        &self.statespace
 
     }
 

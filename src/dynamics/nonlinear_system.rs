@@ -2,6 +2,9 @@
 use na::DVector;
 use crate::dynamics::statespace::StateSpaceRepresentation;
 
+/// An alias for function pointer type that satisfy NonlinearSystem trait bounds
+pub type NonlinearSystem_fn = fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>;
+
 // https://stackoverflow.com/questions/27831944/how-do-i-store-a-closure-in-a-struct-in-rust
 // https://doc.rust-lang.org/reference/types/closure.html
 // NOTE: why generic over 2 function signatures?

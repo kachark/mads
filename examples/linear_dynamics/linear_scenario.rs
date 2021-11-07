@@ -45,8 +45,8 @@ impl LinearScenario {
 
         // Define dynamics models and controllers
         let inverted_pendulum = InvertedPendulum::new();
-        let A = inverted_pendulum.dynamics.A.clone();
-        let B = inverted_pendulum.dynamics.B.clone();
+        let A = inverted_pendulum.dynamics().A.clone();
+        let B = inverted_pendulum.dynamics().B.clone();
         let Q = DMatrix::<f32>::identity(4, 4);
         let R = DMatrix::<f32>::identity(1, 1);
 

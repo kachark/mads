@@ -96,7 +96,7 @@ mod tests {
         let model = InvertedPendulum::new();
 
         // explicitly capture the model ODE within a closure of the form f(t, x)
-        let f = |t: f32, x: &DVector<f32>| model.dynamics.f(t, x, None);
+        let f = |t: f32, x: &DVector<f32>| model.dynamics().f(t, x, None);
 
         // integrate and handle errors
         let t_span = (0.0, 1.0);

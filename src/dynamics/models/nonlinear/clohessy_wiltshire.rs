@@ -1,7 +1,8 @@
 
 use na::DVector;
 use crate::dynamics::closed_form::ClosedFormRepresentation;
-use crate::dynamics::closed_form::NonlinearExpression;
+use crate::dynamics::statespace::{Statespace, StatespaceType};
+use crate::dynamics::closed_form::{NonlinearExpression_fn, NonlinearExpression};
 
 pub fn ClohessyWiltshireSolution(t: f32, x: &DVector<f32>) -> DVector<f32> {
 
@@ -41,7 +42,8 @@ pub fn ClohessyWiltshireSolution(t: f32, x: &DVector<f32>) -> DVector<f32> {
 
 pub struct ClohessyWiltshire {
 
-    dynamics: NonlinearExpression::< fn(f32, &DVector<f32>) -> DVector<f32> >
+    dynamics: NonlinearExpression::< NonlinearExpression_fn >,
+    statespace: Statespace,
 
 }
 
@@ -50,10 +52,30 @@ impl ClohessyWiltshire {
     pub fn new() -> Self {
 
         // explicitly convert Function Item to Function pointer
-        let model = ClohessyWiltshireSolution as fn(f32, &DVector<f32>) -> DVector<f32>;
+        let model = ClohessyWiltshireSolution as NonlinearExpression_fn;
         let expression = NonlinearExpression::new(model);
 
-        Self { dynamics: expression }
+        let mut statespace = Statespace::new(6);
+        statespace.add_state(0, StatespaceType::Position0);
+        statespace.add_state(1, StatespaceType::Position1);
+        statespace.add_state(2, StatespaceType::Position2);
+        statespace.add_state(3, StatespaceType::Velocity0);
+        statespace.add_state(4, StatespaceType::Velocity1);
+        statespace.add_state(5, StatespaceType::Velocity2);
+
+        Self { dynamics: expression, statespace }
+
+    }
+
+    pub fn dynamics(&self) -> &NonlinearExpression< NonlinearExpression_fn > {
+
+        &self.dynamics
+
+    }
+
+    pub fn statespace(&self) -> &Statespace {
+
+        &self.statespace
 
     }
 

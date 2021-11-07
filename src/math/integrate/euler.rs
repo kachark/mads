@@ -77,8 +77,8 @@ mod tests {
         let R = DMatrix::from_vec(1, 1, vec![1.]);
 
         let lqr = LQR::new(
-            model.dynamics.A.clone(),
-            model.dynamics.B.clone(),
+            model.dynamics().A.clone(),
+            model.dynamics().B.clone(),
             Q,
             R,
         );
@@ -92,7 +92,7 @@ mod tests {
         // Wrap dynamics/controls in appropriately defined closure
         let f = |t: f32, x: &DVector<f32>| {
             let u = -&K * x;
-            model.dynamics.f(t, x, Some(&u))
+            model.dynamics().f(t, x, Some(&u))
         };
 
         let t0 = 0.0;
@@ -120,8 +120,8 @@ mod tests {
         let R = DMatrix::<f32>::identity(2, 2);
 
         let lqr = LQR::new(
-            model.dynamics.A.clone(),
-            model.dynamics.B.clone(),
+            model.dynamics().A.clone(),
+            model.dynamics().B.clone(),
             Q,
             R,
         );
@@ -136,7 +136,7 @@ mod tests {
         // Wrap dynamics/controls in appropriately defined closure
         let f = |t: f32, x: &DVector<f32>| {
             let u = -&K * x;
-            model.dynamics.f(t, x, Some(&u))
+            model.dynamics().f(t, x, Some(&u))
         };
 
         let t0 = 0.0;

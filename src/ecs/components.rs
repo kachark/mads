@@ -4,7 +4,7 @@ use nalgebra::DVector;
 use uuid::Uuid;
 use serde::Serialize;
 use crate::controls::models::lqr::LinearQuadraticRegulator;
-use crate::dynamics::statespace::StateSpaceRepresentation;
+use crate::dynamics::statespace::{Statespace, StateSpaceRepresentation};
 use crate::dynamics::closed_form::ClosedFormRepresentation;
 use crate::math::frames::ReferenceFrame;
 
@@ -50,6 +50,10 @@ impl fmt::Display for SimID {
 
 // IDENTIFIERS
 
+/// Flags an Entity as having a dynamics model
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct DynamicFlag(pub bool);
+
 /// Flags an Entity as Static
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct StaticFlag(pub bool);
@@ -70,6 +74,21 @@ pub struct LoggableFlag(pub bool);
 
 
 // DYNAMICS MODELS
+
+/// Component which defines a statespace for an Entity
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct StatespaceComponent {
+    data: Statespace
+}
+impl StatespaceComponent {
+    pub fn new(data: Statespace) -> Self {
+        Self { data }
+    }
+
+    pub fn get(&self) -> &Statespace {
+        &self.data
+    }
+}
 
 /// Generic Component for a Dynamics model
 #[derive(Clone, Debug, PartialEq)]
