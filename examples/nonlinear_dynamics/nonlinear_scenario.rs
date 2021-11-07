@@ -9,7 +9,6 @@ use mads::ecs::systems::simple::*;
 use mads::ecs::systems::simulate::integrate_dynamics_system;
 use mads::ecs::components::*;
 use mads::ecs::resources::*;
-use mads::dynamics::models::nonlinear::double_pendulum::DoublePendulum;
 
 use crate::resources::NumAgents;
 
@@ -47,8 +46,8 @@ impl NonlinearScenario {
         let mut storage = resources.get_mut::<SimulationResult>().unwrap();
 
         // Define Components for "Agent" Entity
-        let agents: Vec<(FullState, DynamicsModel::<DoublePendulum>, SimID)> = (0..self.num_agents).into_iter()
-            .map(| i | -> (FullState, DynamicsModel::<DoublePendulum>, SimID) {
+        let agents: Vec<(FullState, DoublePendulumComponent, SimID)> = (0..self.num_agents).into_iter()
+            .map(| i | -> (FullState, DoublePendulumComponent, SimID) {
 
                 let name = "Agent".to_string() + &i.to_string();
                 let id = Uuid::new_v4();
@@ -59,7 +58,7 @@ impl NonlinearScenario {
                 let fullstate = FullState { data: state };
 
                 // Define dynamics model to simulate
-                let dynamics = DynamicsModel { model: DoublePendulum::new() };
+                let dynamics = DoublePendulumComponent::new();
 
                 (fullstate, dynamics, sim_id)
             })
@@ -98,7 +97,7 @@ impl Scenario for NonlinearScenario {
 
         let schedule = Schedule::builder()
             .add_system(print_time_system())
-            .add_system(integrate_dynamics_system::<DoublePendulum>()) // can add any dynamics type here
+            .add_system(integrate_dynamics_system::<DoublePendulumComponent>()) // can add any dynamics type here
             .add_system(update_result_system())
             .add_system(print_state_system())
             .add_system(increment_time_system())

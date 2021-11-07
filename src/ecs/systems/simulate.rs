@@ -14,8 +14,8 @@ use crate::ecs::components::*;
 #[system(par_for_each)]
 pub fn integrate_lqr_dynamics<T>(
     state: &mut FullState,
-    dynamics: &DynamicsModel<T>,
-    controller: &LQRController,
+    dynamics: &T,
+    controller: &LQRComponent,
     #[resource] time: &SimulationTime,
     #[resource] sim_step: &EngineStep,
     #[resource] integrator: &Integrator,
@@ -30,7 +30,7 @@ where
     let mut trajectory: Vec<DVector<f32>> = vec![x0.clone()];
 
     // Solve the LQR controller
-    let (K, _P) = match controller.model.solve() {
+    let (K, _P) = match controller.solve() {
         Ok((value1, value2)) => (value1, value2),
         Err(_) => (DMatrix::<f32>::zeros(1, 1), DMatrix::<f32>::zeros(1, 1)),
     };
@@ -46,7 +46,7 @@ where
     // Wrap dynamics/controls in appropriately defined closure - f(t, x)
     let f = |t: f32, x: &DVector<f32>| {
         let u = -&K * x;
-        dynamics.model.f(t, x, Some(&u))
+        dynamics.f(t, x, Some(&u))
     };
 
     // Integrate dynamics
@@ -78,7 +78,7 @@ where
 #[system(par_for_each)]
 pub fn integrate_dynamics<T>(
     state: &mut FullState,
-    dynamics: &DynamicsModel<T>,
+    dynamics: &T,
     #[resource] time: &SimulationTime,
     #[resource] sim_step: &EngineStep,
     #[resource] integrator: &Integrator,
@@ -102,7 +102,7 @@ where
 
     // Wrap dynamics/controls in appropriately defined closure - f(t, x)
     let f = |t: f32, x: &DVector<f32>| {
-        dynamics.model.f(t, x, None)
+        dynamics.f(t, x, None)
     };
 
     // Integrate dynamics
@@ -134,7 +134,7 @@ where
 #[system(par_for_each)]
 pub fn evaluate_closed_form<T>(
     state: &mut FullState,
-    dynamics: &ClosedForm<T>,
+    dynamics: &T,
     #[resource] time: &SimulationTime,
     #[resource] sim_step: &EngineStep,
     #[resource] step: &IntegratorStep
@@ -148,7 +148,7 @@ where
     let x_prev = state.data.clone();
 
     // Solve for state at tf
-    let new_state = dynamics.model.rhs(tf, &x_prev);
+    let new_state = dynamics.rhs(tf, &x_prev);
 
     // Update entity FullState component
     state.data = new_state.clone();

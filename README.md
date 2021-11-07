@@ -61,6 +61,11 @@ and [here](https://docs.rs/legion/0.4.0/legion/).
 See below for an example user-defined Scenario of a single Entity, with 2D Double Integrator dynamics, driven by an LQR controller:
 
 ```rust
+...
+use mads::ecs::systems::simple::*;
+use mads::ecs::systems::simulate::integrate_lqr_dynamics_system;
+use mads::ecs::components::*;
+use mads::ecs::resources::*;
 
 pub struct MyScenario {
 
@@ -84,16 +89,16 @@ impl MyScenario {
     // See src/ecs/resources.rs
     let mut storage = resources.get_mut::<SimulationResult>().unwrap();
 
-    // Define dynamics models and controllers
-    let double_integrator = DoubleIntegrator2D::new();
+    // Define dynamics models and controllers matrices
+    let double_integrator = DoubleIntegrator2DComponent::new();
     let A = double_integrator.dynamics().A.clone();
     let B = double_integrator.dynamics().B.clone();
     let Q = DMatrix::<f32>::identity(4, 4);
     let R = DMatrix::<f32>::identity(2, 2);
 
     // Iterate over the range of 0-n entities, initialize each Entity as a tuple of Components, and collect into a vector
-    let entities: Vec<(FullState, DynamicsModel::<DoubleIntegrator2D>, LQRController, SimID)> = (0..self.num_entities).into_iter()
-        .map(| i | -> (FullState, DynamicsModel::<DoubleIntegrator2D>, LQRController, SimID) {
+    let entities: Vec<(FullState, DoubleIntegrator2DComponent, LQRComponent, SimID)> = (0..self.num_entities).into_iter()
+        .map(| i | -> (FullState, DoubleIntegrator2DComponent, LQRComponent, SimID) {
 
             // Generate an ID for each Entity
             let name = "Entity".to_string() + &i.to_string();
@@ -105,10 +110,10 @@ impl MyScenario {
             let fullstate = FullState { data: state };
 
             // Define dynamics model component
-            let dynamics = DynamicsModel { model: DoubleIntegrator2D::new() };
+            let dynamics = DoubleIntegrator2DComponent::new();
 
             // Define controller component
-            let controller = LQRController { model: LinearQuadraticRegulator::new(A.clone(), B.clone(), Q.clone(), R.clone()) };
+            let controller = LQRComponent::new(A.clone(), B.clone(), Q.clone(), R.clone());
 
             (fullstate, dynamics, controller, sim_id)
         })
@@ -148,7 +153,7 @@ impl Scenario for MyScenario {
   fn build(&self) -> Schedule {
     let schedule = Schedule::builder()
         .add_system(print_time_system())
-        .add_system(integrate_lqr_dynamics_system::<DoubleIntegrator2D>())
+        .add_system(integrate_lqr_dynamics_system::<DoubleIntegrator2DComponent>())
         .add_system(update_result_system())
         .add_system(print_state_system())
         .add_system(increment_time_system())

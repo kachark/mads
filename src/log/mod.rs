@@ -211,17 +211,19 @@ mod tests {
             let fullstate = FullState { data: state };
 
             // Agent dynamics model
-            let dynamics = DynamicsModel { model: DoubleIntegrator3D::new() };
+            let dynamics_component = DoubleIntegrator3DComponent::new();
+            let A = dynamics_component.dynamics().A.clone();
+            let B = dynamics_component.dynamics().B.clone();
 
             // Agent controller
             let Q = DMatrix::<f32>::identity(6, 6);
             let R = DMatrix::<f32>::identity(3, 3);
-            let controller = LQRController { model: LinearQuadraticRegulator::new(dynamics.model.dynamics().A.clone(), dynamics.model.dynamics().B.clone(), Q.clone(), R.clone()) };
+            let controller_component = LQRComponent::new(A, B, Q, R);
 
             let dynamics_flag = DynamicFlag { 0: true };
-            let statespace_cmp = StatespaceComponent::new(dynamics.model.statespace().clone());
+            let statespace_component = dynamics_component.statespace().clone();
 
-            let entity = (fullstate, dynamics, statespace_cmp, controller, sim_id, dynamics_flag);
+            let entity = (fullstate, dynamics_component, statespace_component, controller_component, sim_id, dynamics_flag);
 
             world.push(entity.clone());
 

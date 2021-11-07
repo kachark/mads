@@ -11,7 +11,6 @@ use mads::ecs::systems::simple::*;
 use mads::ecs::systems::simulate::evaluate_closed_form_system;
 use mads::ecs::components::*;
 use mads::ecs::resources::*;
-use mads::dynamics::models::nonlinear::clohessy_wiltshire::ClohessyWiltshire;
 
 pub struct MyScenario {
 
@@ -38,8 +37,8 @@ impl MyScenario {
     let mut rng = thread_rng();
 
     // Define each Entity as a tuple of Components and collect into a vector
-    let entities: Vec<(FullState, ClosedForm::<ClohessyWiltshire>, SimID)> = (0..self.num_entities).into_iter()
-        .map(| i | -> (FullState, ClosedForm::<ClohessyWiltshire>, SimID) {
+    let entities: Vec<(FullState, ClohessyWiltshireComponent, SimID)> = (0..self.num_entities).into_iter()
+        .map(| i | -> (FullState, ClohessyWiltshireComponent, SimID) {
 
             // Generate an ID for each Entity
             let name = "Entity".to_string() + &i.to_string();
@@ -56,7 +55,7 @@ impl MyScenario {
             let fullstate = FullState { data: state };
 
             // Define dynamics model component
-            let dynamics = ClosedForm { model: ClohessyWiltshire::new() };
+            let dynamics = ClohessyWiltshireComponent::new();
 
             (fullstate, dynamics, sim_id)
         })
@@ -89,7 +88,7 @@ impl Scenario for MyScenario {
   fn build(&self) -> Schedule {
     let schedule = Schedule::builder()
         // .add_system(print_time_system())
-        .add_system(evaluate_closed_form_system::<ClohessyWiltshire>())
+        .add_system(evaluate_closed_form_system::<ClohessyWiltshireComponent>())
         .add_system(update_result_system())
         .add_system(increment_time_system())
         .build();

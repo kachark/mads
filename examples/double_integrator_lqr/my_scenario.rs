@@ -11,8 +11,6 @@ use mads::ecs::systems::simple::*;
 use mads::ecs::systems::simulate::integrate_lqr_dynamics_system;
 use mads::ecs::components::*;
 use mads::ecs::resources::*;
-use mads::dynamics::models::linear::double_integrator::DoubleIntegrator3D;
-use mads::controls::models::lqr::LinearQuadraticRegulator;
 
 pub struct MyScenario {
 
@@ -37,7 +35,7 @@ impl MyScenario {
     let mut storage = resources.get_mut::<SimulationResult>().unwrap();
 
     // Define dynamics models and controllers
-    let double_integrator = DoubleIntegrator3D::new();
+    let double_integrator = DoubleIntegrator3DComponent::new();
     let A = double_integrator.dynamics().A.clone();
     let B = double_integrator.dynamics().B.clone();
     let Q = DMatrix::<f32>::identity(6, 6);
@@ -46,8 +44,8 @@ impl MyScenario {
     let mut rng = thread_rng();
 
     // Define each Entity as a tuple of Components and collect into a vector
-    let entities: Vec<(FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID)> = (0..self.num_entities).into_iter()
-        .map(| i | -> (FullState, DynamicsModel::<DoubleIntegrator3D>, LQRController, SimID) {
+    let entities: Vec<(FullState, DoubleIntegrator3DComponent, LQRComponent, SimID)> = (0..self.num_entities).into_iter()
+        .map(| i | -> (FullState, DoubleIntegrator3DComponent, LQRComponent, SimID) {
 
             // Generate an ID for each Entity
             let name = "Entity".to_string() + &i.to_string();
@@ -64,10 +62,10 @@ impl MyScenario {
             let fullstate = FullState { data: state };
 
             // Define dynamics model component
-            let dynamics = DynamicsModel { model: DoubleIntegrator3D::new() };
+            let dynamics = DoubleIntegrator3DComponent::new();
 
             // Define controller component
-            let controller = LQRController { model: LinearQuadraticRegulator::new(A.clone(), B.clone(), Q.clone(), R.clone()) };
+            let controller = LQRComponent::new(A.clone(), B.clone(), Q.clone(), R.clone());
 
             (fullstate, dynamics, controller, sim_id)
         })
@@ -100,7 +98,7 @@ impl Scenario for MyScenario {
   fn build(&self) -> Schedule {
     let schedule = Schedule::builder()
         .add_system(print_time_system())
-        .add_system(integrate_lqr_dynamics_system::<DoubleIntegrator3D>())
+        .add_system(integrate_lqr_dynamics_system::<DoubleIntegrator3DComponent>())
         .add_system(update_result_system())
         .add_system(print_state_system())
         .add_system(increment_time_system())

@@ -6,6 +6,8 @@ use serde::Serialize;
 use crate::controls::models::lqr::LinearQuadraticRegulator;
 use crate::dynamics::statespace::{Statespace, StateSpaceRepresentation};
 use crate::dynamics::closed_form::ClosedFormRepresentation;
+use crate::dynamics::models::*;
+use crate::controls::models::*;
 use crate::math::frames::ReferenceFrame;
 
 // Define Components
@@ -73,46 +75,19 @@ pub struct WaypointFlag(pub bool);
 pub struct LoggableFlag(pub bool);
 
 
-// DYNAMICS MODELS
+// DYNAMICS
 
-/// Component which defines a statespace for an Entity
-#[derive(Clone, Debug, PartialEq, Serialize)]
-pub struct StatespaceComponent {
-    data: Statespace
-}
-impl StatespaceComponent {
-    pub fn new(data: Statespace) -> Self {
-        Self { data }
-    }
+pub type StatespaceComponent = Statespace;
 
-    pub fn get(&self) -> &Statespace {
-        &self.data
-    }
-}
-
-/// Generic Component for a Dynamics model
-#[derive(Clone, Debug, PartialEq)]
-pub struct DynamicsModel<T>
-where
-    T: StateSpaceRepresentation
-{
-    pub model: T
-}
-
-/// Generic Component for a closed-form equation
-#[derive(Clone, Debug, PartialEq)]
-pub struct ClosedForm<T>
-where
-    T: ClosedFormRepresentation
-{
-    pub model: T
-}
+pub type LinearInvertedPendulumComponent = linear::inverted_pendulum::InvertedPendulum;
+pub type DoubleIntegrator1DComponent = linear::double_integrator::DoubleIntegrator1D;
+pub type DoubleIntegrator2DComponent = linear::double_integrator::DoubleIntegrator2D;
+pub type DoubleIntegrator3DComponent = linear::double_integrator::DoubleIntegrator3D;
+pub type NonlinearInvertedPendulumComponent = nonlinear::inverted_pendulum::InvertedPendulum;
+pub type DoublePendulumComponent = nonlinear::double_pendulum::DoublePendulum;
+pub type ClohessyWiltshireComponent = nonlinear::clohessy_wiltshire::ClohessyWiltshire;
 
 // CONTROLLERS
 
-/// Component representing a Linear-Quadratic Regulator
-#[derive(Clone, Debug, PartialEq)]
-pub struct LQRController {
-    pub model: LinearQuadraticRegulator
-}
+pub type LQRComponent = lqr::LinearQuadraticRegulator;
 
