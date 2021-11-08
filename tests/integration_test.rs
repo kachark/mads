@@ -3,7 +3,7 @@ use nalgebra::{DVector, DMatrix};
 use mads::dynamics::models::linear::double_integrator::DoubleIntegrator3D;
 use mads::dynamics::statespace::StateSpaceRepresentation;
 use mads::controls::models::lqr::LinearQuadraticRegulator as LQR;
-use mads::math::integrate::{solve_ivp, SolverOptions, IntegratorType, IntegrateError};
+use mads::math::integrate::{solve_ivp, SolverOptions, IntegratorType};
 
 #[test]
 fn test_dynamics_no_ecs() {
