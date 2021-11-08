@@ -1,9 +1,14 @@
 
 use na::DVector;
 use crate::dynamics::statespace::StateSpaceRepresentation;
+use crate::dynamics::closed_form::ClosedFormSolution;
 
 /// An alias for function pointer type that satisfy NonlinearSystem trait bounds
 pub type NonlinearStateSpace_fn = fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>;
+
+/// An alias for function pointer types that satisfy NonlinearExpression trait bounds
+pub type NonlinearExpression_fn = fn(f32, &DVector<f32>) -> DVector<f32>;
+
 
 // https://stackoverflow.com/questions/27831944/how-do-i-store-a-closure-in-a-struct-in-rust
 // https://doc.rust-lang.org/reference/types/closure.html
@@ -65,20 +70,56 @@ where
 }
 
 
+
+/// Captures a generic nonlinear expression f(t, x)
+pub struct NonlinearExpression<F>
+where
+    F: Fn(f32, &DVector<f32>) -> DVector<f32>
+{
+
+    expression: F
+
+}
+
+impl<F> NonlinearExpression<F>
+where
+    F: Fn(f32, &DVector<f32>) -> DVector<f32>
+{
+
+    pub fn new(f: F) -> Self {
+
+        Self { expression: f }
+
+    }
+
+}
+
+impl<F> ClosedFormSolution for NonlinearExpression<F>
+where
+    F: Fn(f32, &DVector<f32>) -> DVector<f32>
+{
+
+    fn rhs(&self, t: f32, x: &DVector<f32>) -> DVector<f32> {
+
+        (self.expression)(t, x)
+
+    }
+
+}
+
+
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::dynamics::models::nonlinear::clohessy_wiltshire::ClohessyWiltshireSolution;
 
     #[test]
     fn test_NonlinearSystem() {
 
         use std::f32::consts as consts;
         use crate::math::integrate::runge_kutta::RK45;
-
-        // Declare a NonlinearSystem and indicate the function signature that it is generic over
-        // let _model: NonlinearSystem::< fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
-        //                             fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>>;
-
 
         // Pendulum model params
         // https://ctms.engin.umich.edu/CTMS/index.php?aux=Activities_Pendulum
@@ -131,4 +172,31 @@ mod tests {
         }
 
     }
+
+    #[test]
+    fn test_NonlinearExpression() {
+
+        let closed_form = NonlinearExpression::new(ClohessyWiltshireSolution);
+
+        let dt = 20.0;
+        let x0 = DVector::from_vec(vec![0., 0., 0., 0.1, 0., 0.]);
+        let mut traj = Vec::new();
+        for i in 0..100 {
+
+            let t = dt*i as f32;
+            let test = closed_form.rhs(t, &x0);
+
+            traj.push(test);
+
+        }
+
+        for ele in traj.iter() {
+            println!("{:?}", ele.data);
+        }
+
+
+
+    }
+
+
 }

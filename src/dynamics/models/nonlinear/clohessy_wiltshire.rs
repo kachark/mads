@@ -2,7 +2,7 @@
 use na::DVector;
 use crate::dynamics::closed_form::ClosedFormSolution;
 use crate::dynamics::statespace::{Statespace, StatespaceType};
-use crate::dynamics::closed_form::{NonlinearExpression_fn, NonlinearExpression};
+use crate::dynamics::nonlinear_system::{NonlinearExpression_fn, NonlinearExpression};
 
 pub fn ClohessyWiltshireSolution(t: f32, x: &DVector<f32>) -> DVector<f32> {
 
