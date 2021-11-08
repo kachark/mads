@@ -3,7 +3,7 @@ use na::DVector;
 use crate::dynamics::statespace::StateSpaceRepresentation;
 
 /// An alias for function pointer type that satisfy NonlinearSystem trait bounds
-pub type NonlinearSystem_fn = fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>;
+pub type NonlinearStateSpace_fn = fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>;
 
 // https://stackoverflow.com/questions/27831944/how-do-i-store-a-closure-in-a-struct-in-rust
 // https://doc.rust-lang.org/reference/types/closure.html
@@ -11,8 +11,12 @@ pub type NonlinearSystem_fn = fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> D
 // - allows you to define a closure as inputs for both state_equation AND output_equation.
 // - This is because a closure type is unique and therefore could never satisfy constraining
 // two struct fields simultaneously
+
+/// A nonlinear state-space model of the form:
+/// x_dot(t) = f(t, x(t), u(t))
+/// y(t) = h(t, x(t), u(t))
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct NonlinearSystem<F, H>
+pub struct NonlinearStateSpaceModel<F, H>
 where
     F: Fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
     H: Fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
@@ -25,7 +29,7 @@ where
 
 }
 
-impl<F, H> NonlinearSystem<F, H>
+impl<F, H> NonlinearStateSpaceModel<F, H>
 where
     F: Fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
     H: Fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
@@ -39,7 +43,7 @@ where
 
 }
 
-impl<F, H> StateSpaceRepresentation for NonlinearSystem<F, H>
+impl<F, H> StateSpaceRepresentation for NonlinearStateSpaceModel<F, H>
 where
     F: Fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
     H: Fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>,
@@ -100,7 +104,7 @@ mod tests {
             x.clone()
         };
 
-        let _model = NonlinearSystem::new(f, h, 2, 1);
+        let _model = NonlinearStateSpaceModel::new(f, h, 2, 1);
 
         // initial conditions
         let x0 = DVector::<f32>::from_vec(vec![consts::PI/4.0, -1.0]); // omega, omega_dot

@@ -4,7 +4,7 @@ use crate::dynamics::statespace::StateSpaceRepresentation;
 
 /// Defines a linear time-invariant system of equations
 #[derive(Debug, Clone, PartialEq)]
-pub struct LinearSystem {
+pub struct LTISystem {
     /// A: State/system matrix
     /// B: Input matrix
     /// C: Output matrix
@@ -19,7 +19,7 @@ pub struct LinearSystem {
     pub du: usize,
 }
 
-impl LinearSystem {
+impl LTISystem {
     pub fn new(A: DMatrix<f32>, B: DMatrix<f32>, C: DMatrix<f32>, D: DMatrix<f32>) -> Self {
         let dx = A.shape().1 as usize;
         let du = B.shape().1 as usize;
@@ -28,7 +28,7 @@ impl LinearSystem {
     }
 }
 
-impl StateSpaceRepresentation for LinearSystem {
+impl StateSpaceRepresentation for LTISystem {
     /// Implements a Linear Time-Invariant system
 
     /// Solves for the State vector - \dot{x} = Ax + Bu = f(x,u)
@@ -77,7 +77,7 @@ mod tests {
         let D = B.clone();
 
         // move A, B, C, D into double_integrator
-        let double_integrator = LinearSystem::new(A, B, C, D);
+        let double_integrator = LTISystem::new(A, B, C, D);
 
         let x = DVector::from_vec(vec![10., 10.]);
         let u = DVector::from_vec(vec![10.]);
@@ -97,7 +97,7 @@ mod tests {
         let B = D.clone();
 
         // move A, B, C, D into double_integrator
-        let double_integrator = LinearSystem::new(A, B, C, D);
+        let double_integrator = LTISystem::new(A, B, C, D);
 
         let x = DVector::from_vec(vec![10., 10.]);
 

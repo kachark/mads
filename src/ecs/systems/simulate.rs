@@ -4,7 +4,7 @@ use legion::*;
 use legion::storage::Component;
 use thiserror::Error;
 use crate::dynamics::statespace::StateSpaceRepresentation;
-use crate::dynamics::closed_form::ClosedFormRepresentation;
+use crate::dynamics::closed_form::ClosedFormSolution;
 use crate::math::integrate::{solve_ivp, SolverOptions, IntegrateError};
 use crate::ecs::resources::*;
 use crate::ecs::components::*;
@@ -140,7 +140,7 @@ pub fn evaluate_closed_form<T>(
     #[resource] step: &IntegratorStep
 )
 where
-    T: Component + ClosedFormRepresentation
+    T: Component + ClosedFormSolution
 {
 
     let dt = sim_step.0;

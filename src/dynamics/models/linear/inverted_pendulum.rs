@@ -1,6 +1,6 @@
 
 use na::{DVector, DMatrix};
-use crate::dynamics::linear_system::LinearSystem;
+use crate::dynamics::linear_system::LTISystem;
 use crate::dynamics::statespace::{Statespace, StatespaceType, StateSpaceRepresentation};
 
 /// Linearized inverted pendulum
@@ -10,7 +10,7 @@ use crate::dynamics::statespace::{Statespace, StatespaceType, StateSpaceRepresen
 #[derive(Debug, Clone, PartialEq)]
 pub struct InvertedPendulum {
 
-    dynamics: LinearSystem,
+    dynamics: LTISystem,
     statespace: Statespace,
 
 }
@@ -36,7 +36,7 @@ impl InvertedPendulum {
 
         let D = DMatrix::from_row_slice(2, 1, &[0., 0.]);
 
-        let dynamics = LinearSystem::new(A, B, C, D);
+        let dynamics = LTISystem::new(A, B, C, D);
 
         let mut statespace = Statespace::new(4);
         statespace.add_state(0, StatespaceType::Position0);
@@ -48,7 +48,7 @@ impl InvertedPendulum {
 
     }
 
-    pub fn dynamics(&self) -> &LinearSystem { &self.dynamics }
+    pub fn dynamics(&self) -> &LTISystem { &self.dynamics }
 
     pub fn statespace(&self) -> &Statespace { &self.statespace }
 

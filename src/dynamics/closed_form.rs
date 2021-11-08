@@ -2,20 +2,22 @@
 use na::DVector;
 
 /// Defines an interface for solving closed-form equations
-pub trait ClosedFormRepresentation {
+pub trait ClosedFormSolution {
     fn rhs(&self, t: f32, x: &DVector<f32>) -> DVector<f32>;
 }
 
+
+// TODO: move this to nonlinear_system.rs
 /// An alias for function pointer types that satisfy NonlinearExpression trait bounds
 pub type NonlinearExpression_fn = fn(f32, &DVector<f32>) -> DVector<f32>;
 
-/// Captures a generic expression f(t, x)
+/// Captures a generic nonlinear expression f(t, x)
 pub struct NonlinearExpression<F>
 where
     F: Fn(f32, &DVector<f32>) -> DVector<f32>
 {
 
-    pub expression: F
+    expression: F
 
 }
 
@@ -32,7 +34,7 @@ where
 
 }
 
-impl<F> ClosedFormRepresentation for NonlinearExpression<F>
+impl<F> ClosedFormSolution for NonlinearExpression<F>
 where
     F: Fn(f32, &DVector<f32>) -> DVector<f32>
 {
@@ -52,7 +54,7 @@ mod tests {
     use na::DVector;
 
     use super::NonlinearExpression;
-    use super::ClosedFormRepresentation;
+    use super::ClosedFormSolution;
 
     #[test]
     fn test_NonlinearExpression() {

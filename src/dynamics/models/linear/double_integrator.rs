@@ -1,6 +1,6 @@
 
 use na::{DMatrix, DVector};
-use crate::dynamics::linear_system::LinearSystem;
+use crate::dynamics::linear_system::LTISystem;
 use crate::dynamics::statespace::{Statespace, StatespaceType, StateSpaceRepresentation};
 // use crate::util::print_matrix;
 
@@ -10,7 +10,7 @@ use crate::dynamics::statespace::{Statespace, StatespaceType, StateSpaceRepresen
 #[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator1D {
 
-    dynamics: LinearSystem,
+    dynamics: LTISystem,
     statespace: Statespace
 
 }
@@ -24,7 +24,7 @@ impl DoubleIntegrator1D {
         let C = A.clone();
         let D = B.clone();
 
-        let dynamics = LinearSystem::new(A, B, C, D);
+        let dynamics = LTISystem::new(A, B, C, D);
 
         let mut statespace = Statespace::new(2);
         statespace.add_state(0, StatespaceType::Position0);
@@ -34,7 +34,7 @@ impl DoubleIntegrator1D {
 
     }
 
-    pub fn dynamics(&self) -> &LinearSystem { &self.dynamics }
+    pub fn dynamics(&self) -> &LTISystem { &self.dynamics }
 
     pub fn statespace(&self) -> &Statespace { &self.statespace }
 
@@ -58,7 +58,7 @@ impl StateSpaceRepresentation for DoubleIntegrator1D {
 #[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator2D {
 
-    dynamics: LinearSystem,
+    dynamics: LTISystem,
     statespace: Statespace
 
 }
@@ -90,7 +90,7 @@ impl DoubleIntegrator2D {
         let C = A.clone();
         let D = B.clone();
 
-        let dynamics = LinearSystem::new(A, B, C, D);
+        let dynamics = LTISystem::new(A, B, C, D);
 
         let mut statespace = Statespace::new(4);
         statespace.add_state(0, StatespaceType::Position0);
@@ -102,7 +102,7 @@ impl DoubleIntegrator2D {
 
     }
 
-    pub fn dynamics(&self) -> &LinearSystem { &self.dynamics }
+    pub fn dynamics(&self) -> &LTISystem { &self.dynamics }
 
     pub fn statespace(&self) -> &Statespace { &self.statespace }
 
@@ -127,7 +127,7 @@ impl StateSpaceRepresentation for DoubleIntegrator2D {
 #[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator3D {
 
-    dynamics: LinearSystem,
+    dynamics: LTISystem,
     statespace: Statespace,
 
 }
@@ -163,7 +163,7 @@ impl DoubleIntegrator3D {
         let C = A.clone();
         let D = B.clone();
 
-        let dynamics = LinearSystem::new(A, B, C, D);
+        let dynamics = LTISystem::new(A, B, C, D);
 
         let mut statespace = Statespace::new(6);
         statespace.add_state(0, StatespaceType::Position0);
@@ -179,7 +179,7 @@ impl DoubleIntegrator3D {
 
     }
 
-    pub fn dynamics(&self) -> &LinearSystem { &self.dynamics }
+    pub fn dynamics(&self) -> &LTISystem { &self.dynamics }
 
     pub fn statespace(&self) -> &Statespace { &self.statespace }
 

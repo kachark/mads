@@ -1,6 +1,6 @@
 
 use na::DVector;
-use crate::dynamics::closed_form::ClosedFormRepresentation;
+use crate::dynamics::closed_form::ClosedFormSolution;
 use crate::dynamics::statespace::{Statespace, StatespaceType};
 use crate::dynamics::closed_form::{NonlinearExpression_fn, NonlinearExpression};
 
@@ -81,7 +81,7 @@ impl ClohessyWiltshire {
 
 }
 
-impl ClosedFormRepresentation for ClohessyWiltshire {
+impl ClosedFormSolution for ClohessyWiltshire {
 
     fn rhs(&self, t: f32, x: &DVector<f32>) -> DVector<f32> {
 
