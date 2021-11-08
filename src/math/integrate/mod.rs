@@ -84,7 +84,7 @@ where
 #[cfg(test)]
 mod tests {
 
-    use crate::dynamics::models::linear::inverted_pendulum::InvertedPendulum;
+    use crate::dynamics::models::InvertedPendulum;
     use crate::dynamics::statespace::StateSpaceRepresentation;
     use super::{SolverOptions, IntegratorType};
     use na::DVector;

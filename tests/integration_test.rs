@@ -1,8 +1,8 @@
 
 use nalgebra::{DVector, DMatrix};
-use mads::dynamics::models::linear::double_integrator::DoubleIntegrator3D;
+use mads::dynamics::models::DoubleIntegrator3D;
 use mads::dynamics::statespace::StateSpaceRepresentation;
-use mads::controls::models::lqr::LinearQuadraticRegulator as LQR;
+use mads::controls::models::LinearQuadraticRegulator as LQR;
 use mads::math::integrate::{solve_ivp, SolverOptions, IntegratorType};
 
 #[test]

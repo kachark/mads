@@ -113,7 +113,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::dynamics::models::nonlinear::clohessy_wiltshire::ClohessyWiltshireSolution;
+    use crate::dynamics::models::closed_form_solution::ClohessyWiltshireSolution;
 
     #[test]
     fn test_NonlinearSystem() {

@@ -171,8 +171,7 @@ mod tests {
     use uuid::Uuid;
     use na::{DVector, DMatrix};
     use crate::scene::scenario::Scenario;
-    use crate::dynamics::models::linear::double_integrator::DoubleIntegrator3D;
-    use crate::controls::models::lqr::LinearQuadraticRegulator;
+    use crate::dynamics::models::DoubleIntegrator3D;
 
     use super::*;
 

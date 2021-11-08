@@ -1,1 +1,3 @@
-pub mod lqr;
+mod lqr;
+
+pub use self::lqr::LinearQuadraticRegulator;

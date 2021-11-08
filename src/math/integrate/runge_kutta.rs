@@ -277,8 +277,8 @@ mod tests {
     fn test_RKF45() {
 
         use na::DMatrix;
-        use crate::controls::models::lqr::LinearQuadraticRegulator as LQR;
-        use crate::dynamics::models::linear::double_integrator::*;
+        use crate::controls::models::LinearQuadraticRegulator as LQR;
+        use crate::dynamics::models::*;
         use crate::dynamics::statespace::StateSpaceRepresentation;
 
         let model = DoubleIntegrator3D::new();
@@ -321,8 +321,8 @@ mod tests {
     fn test_RK45() {
 
         use na::DMatrix;
-        use crate::controls::models::lqr::LinearQuadraticRegulator as LQR;
-        use crate::dynamics::models::linear::double_integrator::*;
+        use crate::controls::models::LinearQuadraticRegulator as LQR;
+        use crate::dynamics::models::*;
         use crate::dynamics::statespace::StateSpaceRepresentation;
 
         let model = DoubleIntegrator3D::new();

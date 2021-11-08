@@ -4,8 +4,6 @@ use nalgebra::DVector;
 use uuid::Uuid;
 use serde::Serialize;
 use crate::dynamics::statespace::Statespace;
-use crate::dynamics::models::*;
-use crate::controls::models::*;
 use crate::math::frames::ReferenceFrame;
 
 // Define Components
@@ -77,15 +75,15 @@ pub struct LoggableFlag(pub bool);
 
 pub type StatespaceComponent = Statespace;
 
-pub type LinearInvertedPendulumComponent = linear::inverted_pendulum::InvertedPendulum;
-pub type DoubleIntegrator1DComponent = linear::double_integrator::DoubleIntegrator1D;
-pub type DoubleIntegrator2DComponent = linear::double_integrator::DoubleIntegrator2D;
-pub type DoubleIntegrator3DComponent = linear::double_integrator::DoubleIntegrator3D;
-pub type NonlinearInvertedPendulumComponent = nonlinear::inverted_pendulum::InvertedPendulum;
-pub type DoublePendulumComponent = nonlinear::double_pendulum::DoublePendulum;
-pub type ClohessyWiltshireComponent = nonlinear::clohessy_wiltshire::ClohessyWiltshire;
+pub type LinearInvertedPendulumComponent = crate::dynamics::models::InvertedPendulum;
+pub type DoubleIntegrator1DComponent = crate::dynamics::models::DoubleIntegrator1D;
+pub type DoubleIntegrator2DComponent = crate::dynamics::models::DoubleIntegrator2D;
+pub type DoubleIntegrator3DComponent = crate::dynamics::models::DoubleIntegrator3D;
+pub type NonlinearInvertedPendulumComponent = crate::dynamics::models::NonlinearInvertedPendulum;
+pub type DoublePendulumComponent = crate::dynamics::models::DoublePendulum;
+pub type ClohessyWiltshireComponent = crate::dynamics::models::ClohessyWiltshire;
 
 // CONTROLLERS
 
-pub type LQRComponent = lqr::LinearQuadraticRegulator;
+pub type LQRComponent = crate::controls::models::LinearQuadraticRegulator;
 
