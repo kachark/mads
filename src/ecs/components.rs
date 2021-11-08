@@ -6,21 +6,6 @@ use serde::Serialize;
 use crate::dynamics::statespace::Statespace;
 use crate::math::frames::ReferenceFrame;
 
-// Define Components
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Position {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Velocity {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32
-}
-
 /// Define reference frame for an entity
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct EntityFrame {
@@ -45,6 +30,9 @@ impl fmt::Display for SimID {
         write!(f, "uuid: {}, name: {}", self.uuid, self.name)
     }
 }
+
+/// Defines the statespace for a dynamically modeled entity
+pub type StatespaceComponent = Statespace;
 
 // IDENTIFIERS
 
@@ -72,8 +60,6 @@ pub struct LoggableFlag(pub bool);
 
 
 // DYNAMICS
-
-pub type StatespaceComponent = Statespace;
 
 pub type LinearInvertedPendulumComponent = crate::dynamics::models::InvertedPendulum;
 pub type DoubleIntegrator1DComponent = crate::dynamics::models::DoubleIntegrator1D;
