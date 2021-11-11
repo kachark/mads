@@ -17,9 +17,32 @@ pub type NonlinearExpression_fn = fn(f32, &DVector<f32>) -> DVector<f32>;
 // - This is because a closure type is unique and therefore could never satisfy constraining
 // two struct fields simultaneously
 
-/// A nonlinear state-space model of the form:
-/// x_dot(t) = f(t, x(t), u(t))
-/// y(t) = h(t, x(t), u(t))
+/// A nonlinear state-space model of the form: \
+/// x_dot(t) = f(t, x(t), u(t)) \
+/// y(t) = h(t, x(t), u(t)) \
+///
+/// # Example
+///
+/// ```
+/// use nalgebra::DVector;
+/// use mads::dynamics::nonlinear_system::*;
+///
+/// fn equations_of_motion(t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
+///     (x*x).clone()
+/// }
+///
+/// fn output_equations(t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
+///     x.clone()
+/// }
+///
+/// let dx = 4;
+/// let du = 2;
+///
+/// let f = equations_of_motion as NonlinearStateSpace_fn;
+/// let h = output_equations as NonlinearStateSpace_fn;
+/// let model = NonlinearStateSpaceModel::new(f, h, dx, du);
+/// ```
+///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct NonlinearStateSpaceModel<F, H>
 where
@@ -71,7 +94,23 @@ where
 
 
 
-/// Captures a generic nonlinear expression f(t, x)
+/// A generic nonlinear expression f(t, x) \
+///
+/// x(t) = f(t, x(t)) \
+///
+/// # Example
+///
+/// ```
+/// use nalgebra::DVector;
+/// use mads::dynamics::nonlinear_system::*;
+///
+/// fn closed_form_solution(t: f32, x: &DVector<f32>) -> DVector<f32> {
+///     x.clone()
+/// }
+///
+/// let model = NonlinearExpression::new(closed_form_solution);
+/// ```
+///
 pub struct NonlinearExpression<F>
 where
     F: Fn(f32, &DVector<f32>) -> DVector<f32>

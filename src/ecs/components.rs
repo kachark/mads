@@ -3,7 +3,7 @@ use std::fmt;
 use nalgebra::DVector;
 use uuid::Uuid;
 use serde::Serialize;
-use crate::dynamics::statespace::Statespace;
+use crate::dynamics::statespace::StateSpace;
 use crate::math::frames::ReferenceFrame;
 
 /// Define reference frame for an entity
@@ -32,7 +32,7 @@ impl fmt::Display for SimID {
 }
 
 /// Defines the statespace for a dynamically modeled entity
-pub type StatespaceComponent = Statespace;
+pub type StatespaceComponent = StateSpace;
 
 // IDENTIFIERS
 

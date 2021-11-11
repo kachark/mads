@@ -1,7 +1,7 @@
 
 use na::DVector;
 use crate::dynamics::closed_form::ClosedFormSolution;
-use crate::dynamics::statespace::{Statespace, StatespaceType};
+use crate::dynamics::statespace::{StateSpace, StateSpaceType};
 use crate::dynamics::nonlinear_system::{NonlinearExpression_fn, NonlinearExpression};
 
 pub fn ClohessyWiltshireSolution(t: f32, x: &DVector<f32>) -> DVector<f32> {
@@ -40,10 +40,34 @@ pub fn ClohessyWiltshireSolution(t: f32, x: &DVector<f32>) -> DVector<f32> {
 
 }
 
+
+/// Closed-form solution of the Clohessy-Wiltshire equations of motion
+///
+/// \ddot{x}(t) = 3n^2x(t) + 2n\dot{y}(t) \
+/// \ddot{y}(t) = -2n\dot{x}(t) \
+/// \ddot{z}(t) = -n^2z(t) \
+///
+/// These equations describe the relative motion of a satellite with respect to a target object
+/// which is in a circular orbit about a central body, represented as a point mass.
+///
+/// The x-axis is along the radius vector of the target object, the z-axis is along the angular
+/// momentum vector of the target object, and the y-axis is orthogonal to both. The central body is
+/// toward the negative x direction and the y-axis points along the velocity vector of the target
+/// object.
+///
+/// x = [position0]\
+///     [position1]\
+///     [position2]\
+///     [velocity0]\
+///     [velocity1]\
+///     [velocity2]\
+///
+/// [Reference](http://www.ae.utexas.edu/courses/ase366k/cw_equations.pdf)
+///
 pub struct ClohessyWiltshire {
 
     dynamics: NonlinearExpression::< NonlinearExpression_fn >,
-    statespace: Statespace,
+    statespace: StateSpace,
 
 }
 
@@ -55,13 +79,13 @@ impl ClohessyWiltshire {
         let model = ClohessyWiltshireSolution as NonlinearExpression_fn;
         let expression = NonlinearExpression::new(model);
 
-        let mut statespace = Statespace::new(6);
-        statespace.add_state(0, StatespaceType::Position0);
-        statespace.add_state(1, StatespaceType::Position1);
-        statespace.add_state(2, StatespaceType::Position2);
-        statespace.add_state(3, StatespaceType::Velocity0);
-        statespace.add_state(4, StatespaceType::Velocity1);
-        statespace.add_state(5, StatespaceType::Velocity2);
+        let mut statespace = StateSpace::new(6);
+        statespace.add_state(0, StateSpaceType::Position0);
+        statespace.add_state(1, StateSpaceType::Position1);
+        statespace.add_state(2, StateSpaceType::Position2);
+        statespace.add_state(3, StateSpaceType::Velocity0);
+        statespace.add_state(4, StateSpaceType::Velocity1);
+        statespace.add_state(5, StateSpaceType::Velocity2);
 
         Self { dynamics: expression, statespace }
 
@@ -73,7 +97,7 @@ impl ClohessyWiltshire {
 
     }
 
-    pub fn statespace(&self) -> &Statespace {
+    pub fn statespace(&self) -> &StateSpace {
 
         &self.statespace
 

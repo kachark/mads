@@ -1,7 +1,7 @@
 
 use na::{DMatrix, DVector};
 use crate::dynamics::nonlinear_system::{NonlinearStateSpace_fn, NonlinearStateSpaceModel};
-use crate::dynamics::statespace::{Statespace, StatespaceType, StateSpaceRepresentation};
+use crate::dynamics::statespace::{StateSpace, StateSpaceType, StateSpaceRepresentation};
 
 fn equations_of_motion(_t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
 
@@ -52,10 +52,20 @@ fn output_equations(_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>) -> DVe
 
 }
 
+
+/// Inverted pendulum on a cart dynamics model
+///
+/// x = [attitude0] (rod angle)\
+///     [angular_velocity0] (rod angular velocity)\
+///     [position0] (cart position)\
+///     [velocity0] (cart velocity)\
+///
+/// [Reference](https://link.springer.com/article/10.1007/s11633-014-0818-1)
+///
 pub struct InvertedPendulum {
 
     dynamics: NonlinearStateSpaceModel::< NonlinearStateSpace_fn, NonlinearStateSpace_fn >,
-    statespace: Statespace,
+    statespace: StateSpace,
 
 }
 
@@ -68,11 +78,11 @@ impl InvertedPendulum {
         let h = output_equations as NonlinearStateSpace_fn;
         let dynamics = NonlinearStateSpaceModel::new(f, h, 2, 1);
 
-        let mut statespace = Statespace::new(4);
-        statespace.add_state(0, StatespaceType::Attitude0);
-        statespace.add_state(1, StatespaceType::AngularVelocity0);
-        statespace.add_state(2, StatespaceType::Position0);
-        statespace.add_state(3, StatespaceType::Velocity0);
+        let mut statespace = StateSpace::new(4);
+        statespace.add_state(0, StateSpaceType::Attitude0);
+        statespace.add_state(1, StateSpaceType::AngularVelocity0);
+        statespace.add_state(2, StateSpaceType::Position0);
+        statespace.add_state(3, StateSpaceType::Velocity0);
 
         Self {
             dynamics,
@@ -87,7 +97,7 @@ impl InvertedPendulum {
 
     }
 
-    pub fn statespace(&self) -> &Statespace {
+    pub fn statespace(&self) -> &StateSpace {
 
         &self.statespace
 

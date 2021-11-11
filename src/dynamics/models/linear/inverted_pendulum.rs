@@ -1,17 +1,24 @@
 
 use na::{DVector, DMatrix};
 use crate::dynamics::linear_system::LTISystem;
-use crate::dynamics::statespace::{Statespace, StatespaceType, StateSpaceRepresentation};
+use crate::dynamics::statespace::{StateSpace, StateSpaceType, StateSpaceRepresentation};
 
 /// Linearized inverted pendulum
 /// Small angle approximations and linearized about vertically upward angle
 /// theta = pi
-/// https://ctms.engin.umich.edu/CTMS/index.php?example=InvertedPendulum&section=SystemModeling
+///
+/// x = [position0]\
+///     [velocity0]\
+///     [attitude0]\
+///     [angular_velocity0]\
+///
+/// [Reference](https://ctms.engin.umich.edu/CTMS/index.php?example=InvertedPendulum&section=SystemModeling)
+///
 #[derive(Debug, Clone, PartialEq)]
 pub struct InvertedPendulum {
 
     dynamics: LTISystem,
-    statespace: Statespace,
+    statespace: StateSpace,
 
 }
 
@@ -38,11 +45,11 @@ impl InvertedPendulum {
 
         let dynamics = LTISystem::new(A, B, C, D);
 
-        let mut statespace = Statespace::new(4);
-        statespace.add_state(0, StatespaceType::Position0);
-        statespace.add_state(1, StatespaceType::Velocity0);
-        statespace.add_state(2, StatespaceType::Attitude0);
-        statespace.add_state(3, StatespaceType::AngularVelocity0);
+        let mut statespace = StateSpace::new(4);
+        statespace.add_state(0, StateSpaceType::Position0);
+        statespace.add_state(1, StateSpaceType::Velocity0);
+        statespace.add_state(2, StateSpaceType::Attitude0);
+        statespace.add_state(3, StateSpaceType::AngularVelocity0);
 
         Self { dynamics, statespace }
 
@@ -50,7 +57,7 @@ impl InvertedPendulum {
 
     pub fn dynamics(&self) -> &LTISystem { &self.dynamics }
 
-    pub fn statespace(&self) -> &Statespace { &self.statespace }
+    pub fn statespace(&self) -> &StateSpace { &self.statespace }
 
 }
 

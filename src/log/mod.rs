@@ -8,7 +8,6 @@ use legion::*;
 use crate::ecs::resources::{SimulationResult, SimulationTimeHistory};
 use crate::ecs::components::*;
 use crate::simulator::state::SimulatorState;
-use crate::dynamics::statespace::Statespace;
 
 #[derive(Error, Debug)]
 pub enum LogError {

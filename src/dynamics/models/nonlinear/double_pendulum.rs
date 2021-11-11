@@ -1,7 +1,7 @@
 
 use na::{DMatrix, DVector};
 use crate::dynamics::nonlinear_system::{NonlinearStateSpaceModel, NonlinearStateSpace_fn};
-use crate::dynamics::statespace::{Statespace, StatespaceType, StateSpaceRepresentation};
+use crate::dynamics::statespace::{StateSpace, StateSpaceType, StateSpaceRepresentation};
 
 fn equations_of_motion(_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>) -> DVector<f32> {
 
@@ -59,10 +59,19 @@ fn output_equations(_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>) -> DVe
 
 }
 
+/// Double pendulum dynamics model
+///
+/// x = [attitude0] (rod 1)\
+///     [angular_velocity0] (rod 1)\
+///     [attitude1] (rod 2)\
+///     [angular_velocity1] (rod 2)\
+///
+/// [Reference](https://web.mit.edu/jorloff/www/chaosTalk/double-pendulum/double-pendulum-en.html)
+///
 pub struct DoublePendulum {
 
     dynamics: NonlinearStateSpaceModel::< NonlinearStateSpace_fn, NonlinearStateSpace_fn >,
-    statespace: Statespace,
+    statespace: StateSpace,
 
 }
 
@@ -75,11 +84,11 @@ impl DoublePendulum {
         let h = output_equations as NonlinearStateSpace_fn;
         let dynamics = NonlinearStateSpaceModel::new(f, h, 2, 1);
 
-        let mut statespace = Statespace::new(4);
-        statespace.add_state(0, StatespaceType::Attitude0);
-        statespace.add_state(1, StatespaceType::AngularVelocity0);
-        statespace.add_state(2, StatespaceType::Attitude1);
-        statespace.add_state(3, StatespaceType::AngularVelocity1);
+        let mut statespace = StateSpace::new(4);
+        statespace.add_state(0, StateSpaceType::Attitude0);
+        statespace.add_state(1, StateSpaceType::AngularVelocity0);
+        statespace.add_state(2, StateSpaceType::Attitude1);
+        statespace.add_state(3, StateSpaceType::AngularVelocity1);
 
         Self {
             dynamics,
@@ -94,7 +103,7 @@ impl DoublePendulum {
 
     }
 
-    pub fn statespace(&self) -> &Statespace {
+    pub fn statespace(&self) -> &StateSpace {
 
         &self.statespace
 

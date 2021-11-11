@@ -3,14 +3,15 @@ use na::{DMatrix, DVector};
 use crate::dynamics::statespace::StateSpaceRepresentation;
 
 /// Defines a linear time-invariant system of equations
+///
+/// A: State/system matrix \
+/// B: Input matrix \
+/// C: Output matrix \
+/// D: Feedforward matrix \
+/// dx: Statespace size \
+/// du: control input size \
 #[derive(Debug, Clone, PartialEq)]
 pub struct LTISystem {
-    /// A: State/system matrix
-    /// B: Input matrix
-    /// C: Output matrix
-    /// D: Feedforward matrix
-    /// dx: Statespace size
-    /// du: control input size
     pub A: DMatrix<f32>,
     pub B: DMatrix<f32>,
     pub C: DMatrix<f32>,
@@ -29,7 +30,6 @@ impl LTISystem {
 }
 
 impl StateSpaceRepresentation for LTISystem {
-    /// Implements a Linear Time-Invariant system
 
     /// Solves for the State vector - \dot{x} = Ax + Bu = f(x,u)
     /// t: time

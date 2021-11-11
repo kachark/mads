@@ -1,17 +1,31 @@
 
 use na::{DMatrix, DVector};
 use crate::dynamics::linear_system::LTISystem;
-use crate::dynamics::statespace::{Statespace, StatespaceType, StateSpaceRepresentation};
+use crate::dynamics::statespace::{StateSpace, StateSpaceType, StateSpaceRepresentation};
 // use crate::util::print_matrix;
 
 
 // TODO: implement the println trait for each and print out the matrices nicely
 
+
+/// A 1-dimensional double integrator
+///
+/// \dot{x}(t) = Ax + Bu
+///
+/// A = [0 1]\
+///     [0 0]\
+///
+/// B = [0]\
+///     [1]\
+///
+/// x = [position0]\
+///     [velocity0]\
+///
 #[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator1D {
 
     dynamics: LTISystem,
-    statespace: Statespace
+    statespace: StateSpace
 
 }
 
@@ -26,9 +40,9 @@ impl DoubleIntegrator1D {
 
         let dynamics = LTISystem::new(A, B, C, D);
 
-        let mut statespace = Statespace::new(2);
-        statespace.add_state(0, StatespaceType::Position0);
-        statespace.add_state(1, StatespaceType::Velocity0);
+        let mut statespace = StateSpace::new(2);
+        statespace.add_state(0, StateSpaceType::Position0);
+        statespace.add_state(1, StateSpaceType::Velocity0);
 
         Self { dynamics, statespace }
 
@@ -36,7 +50,7 @@ impl DoubleIntegrator1D {
 
     pub fn dynamics(&self) -> &LTISystem { &self.dynamics }
 
-    pub fn statespace(&self) -> &Statespace { &self.statespace }
+    pub fn statespace(&self) -> &StateSpace { &self.statespace }
 
 }
 
@@ -55,11 +69,32 @@ impl StateSpaceRepresentation for DoubleIntegrator1D {
     }
 }
 
+
+
+/// A 2-dimensional double integrator
+///
+/// \dot{x}(t) = Ax + Bu
+///
+/// A = [0 0 1 0]\
+///     [0 0 0 1]\
+///     [0 0 0 0]\
+///     [0 0 0 0]\
+///
+/// B = [0 0]\
+///     [0 0]\
+///     [1 0]\
+///     [0 1]\
+///
+/// x = [position0]\
+///     [position1]\
+///     [velocity0]\
+///     [velocity1]\
+///
 #[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator2D {
 
     dynamics: LTISystem,
-    statespace: Statespace
+    statespace: StateSpace
 
 }
 
@@ -92,11 +127,11 @@ impl DoubleIntegrator2D {
 
         let dynamics = LTISystem::new(A, B, C, D);
 
-        let mut statespace = Statespace::new(4);
-        statespace.add_state(0, StatespaceType::Position0);
-        statespace.add_state(1, StatespaceType::Position1);
-        statespace.add_state(2, StatespaceType::Velocity0);
-        statespace.add_state(3, StatespaceType::Velocity1);
+        let mut statespace = StateSpace::new(4);
+        statespace.add_state(0, StateSpaceType::Position0);
+        statespace.add_state(1, StateSpaceType::Position1);
+        statespace.add_state(2, StateSpaceType::Velocity0);
+        statespace.add_state(3, StateSpaceType::Velocity1);
 
         Self { dynamics, statespace }
 
@@ -104,7 +139,7 @@ impl DoubleIntegrator2D {
 
     pub fn dynamics(&self) -> &LTISystem { &self.dynamics }
 
-    pub fn statespace(&self) -> &Statespace { &self.statespace }
+    pub fn statespace(&self) -> &StateSpace { &self.statespace }
 
 }
 
@@ -124,11 +159,35 @@ impl StateSpaceRepresentation for DoubleIntegrator2D {
 }
 
 
+/// A 3-dimensional double integrator
+///
+/// \dot{x}(t) = Ax + Bu
+///
+/// A = [0 0 0 1 0 0]\
+///     [0 0 0 0 1 0]\
+///     [0 0 0 0 0 1]\
+///     [0 0 0 0 0 0]\
+///     [0 0 0 0 0 0]\
+///     [0 0 0 0 0 0]\
+///
+/// B = [0 0 0]\
+///     [0 0 0]\
+///     [1 0 0]\
+///     [0 1 0]\
+///     [0 0 1]\
+///
+/// x = [position0]\
+///     [position1]\
+///     [position2]\
+///     [velocity0]\
+///     [velocity1]\
+///     [velocity2]\
+///
 #[derive(Debug, Clone, PartialEq)]
 pub struct DoubleIntegrator3D {
 
     dynamics: LTISystem,
-    statespace: Statespace,
+    statespace: StateSpace,
 
 }
 
@@ -165,13 +224,13 @@ impl DoubleIntegrator3D {
 
         let dynamics = LTISystem::new(A, B, C, D);
 
-        let mut statespace = Statespace::new(6);
-        statespace.add_state(0, StatespaceType::Position0);
-        statespace.add_state(1, StatespaceType::Position1);
-        statespace.add_state(2, StatespaceType::Position2);
-        statespace.add_state(3, StatespaceType::Velocity0);
-        statespace.add_state(4, StatespaceType::Velocity1);
-        statespace.add_state(5, StatespaceType::Velocity2);
+        let mut statespace = StateSpace::new(6);
+        statespace.add_state(0, StateSpaceType::Position0);
+        statespace.add_state(1, StateSpaceType::Position1);
+        statespace.add_state(2, StateSpaceType::Position2);
+        statespace.add_state(3, StateSpaceType::Velocity0);
+        statespace.add_state(4, StateSpaceType::Velocity1);
+        statespace.add_state(5, StateSpaceType::Velocity2);
 
         println!("{:?}", &statespace);
 
@@ -181,7 +240,7 @@ impl DoubleIntegrator3D {
 
     pub fn dynamics(&self) -> &LTISystem { &self.dynamics }
 
-    pub fn statespace(&self) -> &Statespace { &self.statespace }
+    pub fn statespace(&self) -> &StateSpace { &self.statespace }
 
 }
 

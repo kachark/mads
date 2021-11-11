@@ -1,7 +1,7 @@
 
 // Dynamics primitives
-mod linear_system;
-mod nonlinear_system;
+pub mod linear_system;
+pub mod nonlinear_system;
 
 // Representations
 pub mod statespace;
