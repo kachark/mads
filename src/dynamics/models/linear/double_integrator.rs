@@ -232,8 +232,6 @@ impl DoubleIntegrator3D {
         statespace.add_state(4, StateSpaceType::Velocity1);
         statespace.add_state(5, StateSpaceType::Velocity2);
 
-        println!("{:?}", &statespace);
-
         Self { dynamics, statespace }
 
     }
