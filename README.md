@@ -26,10 +26,8 @@ To setup MADS, you must first configure these two components into the initial Si
 Legion ECS Resources, Schedule, and World with some of these parameters. Further user configuration and world building is done with Scenarios:
 
 ```rust
-use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
-use mads::simulator::state::SimulatorState;
-use mads::simulator::Simulator;
-use mads::math::integrators::IntegratorType;
+
+use mads::prelude::*;
 
 // Configure engine
 let start_time = 0.0;

@@ -1,7 +1,5 @@
 
-use mads::simulator::configuration::{EngineConfig, SimulatorConfig};
-use mads::simulator::Simulator;
-use mads::simulator::state::SimulatorState;
+use mads::prelude::*;
 use mads::log::{SimpleLogger, Logger, LogDataType};
 use mads::scene::scenario::SimpleScenario;
 
