@@ -49,6 +49,29 @@ impl Default for SolverOptions {
 }
 
 /// Integrates a system of ordinary differential equations given an initial value
+///
+/// ```rust
+///
+/// use nalgebra::{DVector, dvector};
+/// use mads::math::integrate::{solve_ivp, IntegratorType, SolverOptions};
+///
+/// // explicitly capture the model ODE within a closure of the form f(t, x)
+/// let f = |t: f32, x: &DVector<f32>| {
+///     x.clone()
+/// };
+///
+/// // integrate and handle errors
+/// let t_span = (0.0, 1.0);
+/// let x0 = dvector![10., 10., 10., 10.];
+/// let opts = SolverOptions{ first_step: Some(0.1), ..SolverOptions::default() };
+///
+/// //let (_times, trajectory) = match solve_ivp(f, t_span, x0, IntegratorType::RK45, opts) {
+/// //    Ok(ode_result) => (ode_result.0, ode_result.1),
+/// //    Err(_) => panic!("solve_ivp failed"),
+/// //};
+///
+/// ```
+///
 pub fn solve_ivp<F>(fun: F, t_span: (f32, f32), y0: DVector<f32>, method: IntegratorType, options: SolverOptions)
     -> Result< (Vec<f32>, Vec<DVector<f32>>), IntegrateError >
 where
@@ -84,23 +107,24 @@ where
 #[cfg(test)]
 mod tests {
 
-    use crate::dynamics::models::InvertedPendulum;
+    use crate::dynamics::models::NonlinearInvertedPendulum;
     use crate::dynamics::statespace::StateSpaceRepresentation;
     use super::{SolverOptions, IntegratorType};
     use na::DVector;
+    use std::f32::consts::FRAC_PI_4;
 
     #[test]
     fn test_solve_ivp() {
 
         // define a dynamics model
-        let model = InvertedPendulum::new();
+        let model = NonlinearInvertedPendulum::new();
 
         // explicitly capture the model ODE within a closure of the form f(t, x)
         let f = |t: f32, x: &DVector<f32>| model.dynamics().f(t, x, None);
 
         // integrate and handle errors
-        let t_span = (0.0, 1.0);
-        let x0 = DVector::from_vec(vec![10., 10., 10., 10.]);
+        let t_span = (0.0, 10.0);
+        let x0 = DVector::from_vec(vec![FRAC_PI_4, -1., 0., 0.]);
         let opts = SolverOptions{ first_step: Some(0.1), ..SolverOptions::default() };
         let (_times, trajectory) = match super::solve_ivp(f, t_span, x0, IntegratorType::RK45, opts) {
             Ok(ode_result) => (ode_result.0, ode_result.1),

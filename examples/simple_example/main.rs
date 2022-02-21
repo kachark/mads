@@ -7,16 +7,21 @@ use mads::scene::scenario::SimpleScenario;
 
 fn main() {
 
-    // Configure simulation, engine, and scenario
-    let engine_config = EngineConfig::default();
-    let sim_config = SimulatorConfig::default();
-    let sim_state = SimulatorState::new(engine_config, sim_config);
-    let scenario = SimpleScenario::new();
+    // Configure simulation and engine
+    let sim_state = SimulatorState::new(
+        EngineConfig::default(),
+        SimulatorConfig::default()
+    );
 
-    println!("Running...");
-    let mut simulator = Simulator::new(sim_state, scenario);
+    // Build and run a scenario
+    let mut simulator = Simulator::new(
+        sim_state,
+        SimpleScenario::new()
+    );
     simulator.build();
     simulator.run();
+
+    println!("Running...");
 
     // Serialize results to csv
     println!("Logging...");

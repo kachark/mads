@@ -35,7 +35,7 @@ impl Scenario for SimpleScenario {
 
     fn setup(&self, _world: &mut World, resources: &mut Resources) {
 
-        // Insert this Resource as a object to store Entity data
+        // Insert this Resource as an object to store Entity data
         let storage = SimulationResult{ data: HashMap::new() };
         resources.insert(storage);
 

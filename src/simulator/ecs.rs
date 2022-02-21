@@ -7,6 +7,13 @@ use crate::ecs::components::{EntityFrame, SimID};
 use crate::simulator::configuration::{EngineConfig, SimulatorConfig};
 
 /// Defines the ECS for the MADS engine and configures core resources and entities
+///
+/// ```rust
+///
+///
+/// ```
+///
+///
 pub struct EntityComponentSystem {
 
     pub world: World,

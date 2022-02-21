@@ -2,7 +2,7 @@
 use na::DVector;
 use crate::dynamics::closed_form::ClosedFormSolution;
 use crate::dynamics::statespace::{StateSpace, StateSpaceType};
-use crate::dynamics::nonlinear_system::{NonlinearExpression_fn, NonlinearExpression};
+use crate::dynamics::nonlinear_system::{NonlinearExpressionFnType, NonlinearExpression};
 
 pub fn ClohessyWiltshireSolution(t: f32, x: &DVector<f32>) -> DVector<f32> {
 
@@ -66,7 +66,7 @@ pub fn ClohessyWiltshireSolution(t: f32, x: &DVector<f32>) -> DVector<f32> {
 ///
 pub struct ClohessyWiltshire {
 
-    dynamics: NonlinearExpression::< NonlinearExpression_fn >,
+    dynamics: NonlinearExpression::< NonlinearExpressionFnType >,
     statespace: StateSpace,
 
 }
@@ -76,7 +76,7 @@ impl ClohessyWiltshire {
     pub fn new() -> Self {
 
         // explicitly convert Function Item to Function pointer
-        let model = ClohessyWiltshireSolution as NonlinearExpression_fn;
+        let model = ClohessyWiltshireSolution as NonlinearExpressionFnType;
         let expression = NonlinearExpression::new(model);
 
         let mut statespace = StateSpace::new(6);
@@ -91,7 +91,7 @@ impl ClohessyWiltshire {
 
     }
 
-    pub fn dynamics(&self) -> &NonlinearExpression< NonlinearExpression_fn > {
+    pub fn dynamics(&self) -> &NonlinearExpression< NonlinearExpressionFnType > {
 
         &self.dynamics
 

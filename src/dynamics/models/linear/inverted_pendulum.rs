@@ -24,6 +24,8 @@ pub struct InvertedPendulum {
 
 impl InvertedPendulum {
 
+    // NOTE: mass and other parameters hardcoded for now
+
     pub fn new() -> Self {
 
         let A = DMatrix::from_row_slice(4, 4, 

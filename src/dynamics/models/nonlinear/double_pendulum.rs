@@ -1,6 +1,6 @@
 
 use na::{DMatrix, DVector};
-use crate::dynamics::nonlinear_system::{NonlinearStateSpaceModel, NonlinearStateSpace_fn};
+use crate::dynamics::nonlinear_system::{NonlinearStateSpaceModel, NonlinearStateSpaceFnType};
 use crate::dynamics::statespace::{StateSpace, StateSpaceType, StateSpaceRepresentation};
 
 fn equations_of_motion(_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>) -> DVector<f32> {
@@ -70,7 +70,7 @@ fn output_equations(_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>) -> DVe
 ///
 pub struct DoublePendulum {
 
-    dynamics: NonlinearStateSpaceModel::< NonlinearStateSpace_fn, NonlinearStateSpace_fn >,
+    dynamics: NonlinearStateSpaceModel::< NonlinearStateSpaceFnType, NonlinearStateSpaceFnType >,
     statespace: StateSpace,
 
 }
@@ -80,8 +80,8 @@ impl DoublePendulum {
     pub fn new() -> Self {
 
         // explicitly convert Function Item to Function pointer
-        let f = equations_of_motion as NonlinearStateSpace_fn;
-        let h = output_equations as NonlinearStateSpace_fn;
+        let f = equations_of_motion as NonlinearStateSpaceFnType;
+        let h = output_equations as NonlinearStateSpaceFnType;
         let dynamics = NonlinearStateSpaceModel::new(f, h, 2, 1);
 
         let mut statespace = StateSpace::new(4);
@@ -97,7 +97,7 @@ impl DoublePendulum {
 
     }
 
-    pub fn dynamics(&self) -> &NonlinearStateSpaceModel< NonlinearStateSpace_fn, NonlinearStateSpace_fn > {
+    pub fn dynamics(&self) -> &NonlinearStateSpaceModel< NonlinearStateSpaceFnType, NonlinearStateSpaceFnType > {
 
         &self.dynamics
 

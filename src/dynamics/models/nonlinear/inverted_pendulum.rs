@@ -1,6 +1,6 @@
 
-use na::{DMatrix, DVector};
-use crate::dynamics::nonlinear_system::{NonlinearStateSpace_fn, NonlinearStateSpaceModel};
+use na::{DMatrix, DVector, dvector};
+use crate::dynamics::nonlinear_system::{NonlinearStateSpaceFnType, NonlinearStateSpaceModel};
 use crate::dynamics::statespace::{StateSpace, StateSpaceType, StateSpaceRepresentation};
 
 fn equations_of_motion(_t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> DVector<f32> {
@@ -33,7 +33,15 @@ fn equations_of_motion(_t: f32, x: &DVector<f32>, u: Option<&DVector<f32>>) -> D
                 ( M + m - m*x1.cos().powf(2.0) );
         },
 
-        None => println!("no control input provided")
+        None => {
+            let u = 0.;
+            res[0] = x2;
+            res[1] = (u*x1.cos() - (M+m)*g*x1.sin() + m*l*(x1.cos() * x1.sin())*x2.powf(2.0)) / 
+                ( m*l*x1.cos().powf(2.0) - (M+m)*l );
+            res[2] = x4;
+            res[3] = (u + m*l*(x1.sin())*x2.powf(2.0) - m*g*x1.cos()*x1.sin()) / 
+                ( M + m - m*x1.cos().powf(2.0) );
+        },
 
     };
 
@@ -64,7 +72,7 @@ fn output_equations(_t: f32, x: &DVector<f32>, _u: Option<&DVector<f32>>) -> DVe
 ///
 pub struct InvertedPendulum {
 
-    dynamics: NonlinearStateSpaceModel::< NonlinearStateSpace_fn, NonlinearStateSpace_fn >,
+    dynamics: NonlinearStateSpaceModel::< NonlinearStateSpaceFnType, NonlinearStateSpaceFnType >,
     statespace: StateSpace,
 
 }
@@ -74,8 +82,8 @@ impl InvertedPendulum {
     pub fn new() -> Self {
 
         // explicitly convert Function Item to Function pointer
-        let f = equations_of_motion as NonlinearStateSpace_fn;
-        let h = output_equations as NonlinearStateSpace_fn;
+        let f = equations_of_motion as NonlinearStateSpaceFnType;
+        let h = output_equations as NonlinearStateSpaceFnType;
         let dynamics = NonlinearStateSpaceModel::new(f, h, 2, 1);
 
         let mut statespace = StateSpace::new(4);
@@ -91,7 +99,7 @@ impl InvertedPendulum {
 
     }
 
-    pub fn dynamics(&self) -> &NonlinearStateSpaceModel< NonlinearStateSpace_fn, NonlinearStateSpace_fn > {
+    pub fn dynamics(&self) -> &NonlinearStateSpaceModel< NonlinearStateSpaceFnType, NonlinearStateSpaceFnType > {
 
         &self.dynamics
 
@@ -140,7 +148,7 @@ mod tests {
         // Wrap model in appropriately defined closure for integrator (ie. f(t,x))
         let dynamics = |t: f32, x: &DVector<f32>| {
             // Some constant control input
-            let u = DVector::<f32>::from_vec(vec![0.0]);
+            let u = DVector::<f32>::from_vec(vec![1.0]);
             pendulum.f(t, x, Some(&u))
         };
 

@@ -4,10 +4,10 @@ use crate::dynamics::statespace::StateSpaceRepresentation;
 use crate::dynamics::closed_form::ClosedFormSolution;
 
 /// An alias for function pointer type that satisfy NonlinearSystem trait bounds
-pub type NonlinearStateSpace_fn = fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>;
+pub type NonlinearStateSpaceFnType = fn(f32, &DVector<f32>, Option<&DVector<f32>>) -> DVector<f32>;
 
 /// An alias for function pointer types that satisfy NonlinearExpression trait bounds
-pub type NonlinearExpression_fn = fn(f32, &DVector<f32>) -> DVector<f32>;
+pub type NonlinearExpressionFnType = fn(f32, &DVector<f32>) -> DVector<f32>;
 
 
 // https://stackoverflow.com/questions/27831944/how-do-i-store-a-closure-in-a-struct-in-rust
@@ -23,7 +23,7 @@ pub type NonlinearExpression_fn = fn(f32, &DVector<f32>) -> DVector<f32>;
 ///
 /// # Example
 ///
-/// ```
+/// ```rust
 /// use nalgebra::DVector;
 /// use mads::dynamics::nonlinear_system::*;
 ///
@@ -38,8 +38,8 @@ pub type NonlinearExpression_fn = fn(f32, &DVector<f32>) -> DVector<f32>;
 /// let dx = 4;
 /// let du = 2;
 ///
-/// let f = equations_of_motion as NonlinearStateSpace_fn;
-/// let h = output_equations as NonlinearStateSpace_fn;
+/// let f = equations_of_motion as NonlinearStateSpaceFnType;
+/// let h = output_equations as NonlinearStateSpaceFnType;
 /// let model = NonlinearStateSpaceModel::new(f, h, dx, du);
 /// ```
 ///
@@ -100,7 +100,7 @@ where
 ///
 /// # Example
 ///
-/// ```
+/// ```rust
 /// use nalgebra::DVector;
 /// use mads::dynamics::nonlinear_system::*;
 ///
