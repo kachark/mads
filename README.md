@@ -1,8 +1,12 @@
 # MADS: Multi-Agent Dynamics Simulator
 
-![](https://github.com/kachark/mads/blob/main/images/5_clohessy_wiltshire.gif)
+![](https://github.com/kachark/mads/actions/workflows/build.yaml/badge.svg?branch=main)
+<!-- ![Crates.io](https://img.shields.io/crates/v/mads) -->
+![GitHub](https://img.shields.io/github/license/kachark/mads)
 
 This library provides tools to perform large-scale multi-agent simulations using an Entity Component System.
+
+![](https://github.com/kachark/mads/blob/main/images/5_clohessy_wiltshire.gif)
 
 The following are supported:
 
